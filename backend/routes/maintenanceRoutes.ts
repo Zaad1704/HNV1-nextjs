@@ -1,6 +1,6 @@
 import express from 'express';
 import { requireOrganization } from '../middleware/auth';
-import { getMaintenanceRequests, createMaintenanceRequest, updateMaintenanceRequest } from '../controllers/maintenanceController';
+import { getMaintenanceRequests, createMaintenanceRequest, updateMaintenanceRequest } from '../controllers/maintenanceController-real';
 
 const router = express.Router();
 

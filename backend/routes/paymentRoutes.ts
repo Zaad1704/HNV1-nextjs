@@ -1,6 +1,6 @@
 import express from 'express';
 import { requireOrganization } from '../middleware/auth';
-import { getPayments, createPayment, updatePayment } from '../controllers/paymentController';
+import { getPayments, createPayment, updatePayment } from '../controllers/paymentController-real';
 
 const router = express.Router();
 

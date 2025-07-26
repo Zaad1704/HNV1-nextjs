@@ -5,11 +5,8 @@ import {
   getTenant,
   createTenant,
   updateTenant,
-  deleteTenant,
-  addNote,
-  updateNote,
-  deleteNote
-} from '../controllers/tenantController';
+  deleteTenant
+} from '../controllers/tenantController-real';
 
 const router = express.Router();
 
@@ -22,11 +19,6 @@ router.route('/:id')
   .put(requireOrganization, updateTenant)
   .delete(requireOrganization, deleteTenant);
 
-router.route('/:id/notes')
-  .post(requireOrganization, addNote);
-
-router.route('/:id/notes/:noteId')
-  .put(requireOrganization, updateNote)
-  .delete(requireOrganization, deleteNote);
+// Note routes temporarily disabled
 
 export default router;

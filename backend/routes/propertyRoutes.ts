@@ -5,11 +5,8 @@ import {
   getProperty,
   createProperty,
   updateProperty,
-  deleteProperty,
-  addUnit,
-  updateUnit,
-  deleteUnit
-} from '../controllers/propertyController';
+  deleteProperty
+} from '../controllers/propertyController-real';
 
 const router = express.Router();
 
@@ -22,11 +19,6 @@ router.route('/:id')
   .put(requireOrganization, updateProperty)
   .delete(requireOrganization, deleteProperty);
 
-router.route('/:id/units')
-  .post(requireOrganization, addUnit);
-
-router.route('/:id/units/:unitId')
-  .put(requireOrganization, updateUnit)
-  .delete(requireOrganization, deleteUnit);
+// Unit routes temporarily disabled
 
 export default router;

@@ -18,7 +18,7 @@ export default function ApiTestPage() {
         options.body = JSON.stringify(data);
       }
 
-      const response = await fetch(`http://localhost:5001${endpoint}`, options);
+      const response = await fetch(`http://localhost:5000${endpoint}`, options);
       const result = await response.json();
       setResult(result);
     } catch (error: any) {
@@ -163,8 +163,8 @@ export default function ApiTestPage() {
 
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
           <h3 className="font-semibold text-yellow-800 mb-2">🔧 Backend Status:</h3>
-          <p className="text-yellow-700">Backend server running on: <code className="bg-yellow-100 px-2 py-1 rounded">http://localhost:5001</code></p>
-          <p className="text-yellow-700 mt-1">API endpoints available at: <code className="bg-yellow-100 px-2 py-1 rounded">http://localhost:5001/api/*</code></p>
+          <p className="text-yellow-700">Backend server running on: <code className="bg-yellow-100 px-2 py-1 rounded">http://localhost:5000</code></p>
+          <p className="text-yellow-700 mt-1">API endpoints available at: <code className="bg-yellow-100 px-2 py-1 rounded">http://localhost:5000/api/*</code></p>
         </div>
       </div>
     </div>

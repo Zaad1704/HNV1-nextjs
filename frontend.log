@@ -46,3 +46,18 @@ digest: "3374457209"
  ✓ Compiled in 190ms (499 modules)
  ✓ Compiled in 250ms (499 modules)
  ✓ Compiled in 196ms (499 modules)
+ ✓ Compiled in 265ms (499 modules)
+   Reload env: .env.local
+ ✓ Compiled in 183ms (456 modules)
+ ✓ Compiled in 221ms (499 modules)
+ ✓ Compiled in 197ms (499 modules)
+ ⚠ Found a change in next.config.js. Restarting the server to apply the changes...
+  ▲ Next.js 14.2.30
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ⨯ Middleware cannot be used with "output: export". See more info here: https://nextjs.org/docs/advanced-features/static-html-export
+ ✓ Ready in 1693ms
+ ⨯ Middleware cannot be used with "output: export". See more info here: https://nextjs.org/docs/advanced-features/static-html-export
+   Reload env: .env.local

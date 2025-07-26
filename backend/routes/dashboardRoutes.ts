@@ -4,7 +4,7 @@ import {
   getDashboardStats,
   getFinancialSummary,
   getOccupancyTrends
-} from '../controllers/dashboardController';
+} from '../controllers/dashboardController-real';
 
 const router = express.Router();
 

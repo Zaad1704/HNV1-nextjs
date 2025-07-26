@@ -1,0 +1,34 @@
+
+> hnv1-nextjs-backend@1.0.0 dev
+> node start-dev.js
+
+/Users/mdsabersajib/HNV1/frontend-nextjs/backend/node_modules/ts-node/src/index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+middleware/auth.ts(9,7): error TS2717: Subsequent property declarations must have the same type.  Property 'user' must be of type 'User | undefined', but here has type 'IUser | undefined'.
+middleware/auth.ts(125,38): error TS2339: Property 'role' does not exist on type 'User'.
+middleware/auth.ts(147,19): error TS2339: Property 'permissions' does not exist on type 'User'.
+middleware/auth.ts(147,64): error TS2339: Property 'role' does not exist on type 'User'.
+middleware/auth.ts(172,17): error TS2339: Property 'organization' does not exist on type 'User'.
+middleware/auth.ts(196,17): error TS2339: Property 'isEmailVerified' does not exist on type 'User'.
+middleware/auth.ts(215,29): error TS2339: Property '_id' does not exist on type 'User'.
+
+    at createTSError (/Users/mdsabersajib/HNV1/frontend-nextjs/backend/node_modules/ts-node/src/index.ts:859:12)
+    at reportTSError (/Users/mdsabersajib/HNV1/frontend-nextjs/backend/node_modules/ts-node/src/index.ts:863:19)
+    at getOutput (/Users/mdsabersajib/HNV1/frontend-nextjs/backend/node_modules/ts-node/src/index.ts:1077:36)
+    at Object.compile (/Users/mdsabersajib/HNV1/frontend-nextjs/backend/node_modules/ts-node/src/index.ts:1433:41)
+    at Module.m._compile (/Users/mdsabersajib/HNV1/frontend-nextjs/backend/node_modules/ts-node/src/index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (/Users/mdsabersajib/HNV1/frontend-nextjs/backend/node_modules/ts-node/src/index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [
+    2717, 2339,
+    2339, 2339,
+    2339, 2339,
+    2339
+  ]
+}
+Server exited with code 1

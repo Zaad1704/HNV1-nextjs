@@ -1,31 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  experimental: {
-    esmExternals: false,
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: process.env.NODE_ENV === 'production' 
-          ? 'https://hnv.onrender.com/api/:path*'
-          : 'http://localhost:5000/api/:path*',
-      },
-    ];
-  },
+  output: 'export',
+  trailingSlash: true,
   images: {
-    domains: ['localhost'],
+    unoptimized: true
   },
   env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
-  },
-};
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://hnv1-backend.onrender.com/api'
+  }
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

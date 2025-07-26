@@ -10,13 +10,13 @@ import { Server } from 'socket.io';
 import dotenv from 'dotenv';
 
 // Import configurations
-import { connectDB } from './config/database';
+import { connectDB } from './config/database-memory';
 import { setupPassport } from './config/passport';
 import { setupSwagger } from './config/swagger';
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler';
-import { authMiddleware } from './middleware/auth';
+import { authMiddleware } from './middleware/auth-simple';
 
 // Import routes
 import authRoutes from './routes/authRoutes';
@@ -44,7 +44,7 @@ const io = new Server(server, {
   }
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 
 // Connect to MongoDB
 connectDB();

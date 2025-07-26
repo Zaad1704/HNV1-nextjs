@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: hnv1-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        fromDatabase:
+          name: hnv1-mongodb
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://hnv1-frontend.onrender.com
+
+  - type: web
+    name: hnv1-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./out
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://hnv1-backend.onrender.com/api
+
+databases:
+  - name: hnv1-mongodb
+    plan: free
