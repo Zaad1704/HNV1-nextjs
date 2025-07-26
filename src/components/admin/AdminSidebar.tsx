@@ -31,11 +31,11 @@ const AdminSidebar: React.FC = () => {
                 <Link href="/admin/dashboard" className={getLinkClass('/admin/dashboard')}><LayoutDashboard size={18}/> Dashboard</Link>
                 <Link href="/admin/organizations" className={getLinkClass('/admin/organizations')}><Building size={18}/> Organizations</Link>
                 <Link href="/admin/users" className={getLinkClass('/admin/users')}><Users size={18}/> Users</Link>
-                <Link href="/admin/moderators" className={getLinkClass('/admin/moderators')}><Users size={18}/> Moderators</Link>
+                <Link href="/super-admin/moderators" className={getLinkClass('/super-admin/moderators')}><Users size={18}/> Moderators</Link>
                 <Link href="/admin/plans" className={getLinkClass('/admin/plans')}><CreditCard size={18}/> Manage Plans</Link>
-                <Link href="/admin/site-editor" className={getLinkClass('/admin/site-editor')}><Brush size={18}/> Site Editor</Link>
+                <Link href="/super-admin/site-editor" className={getLinkClass('/super-admin/site-editor')}><Brush size={18}/> Site Editor</Link>
                 <Link href="/admin/billing" className={getLinkClass('/admin/billing')}><LifeBuoy size={18}/> Billing</Link>
-                <Link href="/admin/settings" className={getLinkClass('/admin/settings')}><Settings size={18}/> Settings</Link>
+                <Link href="/super-admin/settings" className={getLinkClass('/super-admin/settings')}><Settings size={18}/> Settings</Link>
             </nav>
             <div className="p-4 border-t border-app-border space-y-2">
                 <Link href="/dashboard" className="flex items-center justify-center gap-2 w-full text-center px-4 py-3 rounded-2xl font-medium text-text-secondary bg-app-bg hover:bg-app-border transition-colors">
