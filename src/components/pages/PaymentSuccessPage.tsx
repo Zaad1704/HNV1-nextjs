@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CheckCircle, ArrowRight, Home } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';

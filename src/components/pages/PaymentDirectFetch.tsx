@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import apiClient from '@/lib/api';
 import PropertyStyleBackground from '@/components/common/PropertyStyleBackground';

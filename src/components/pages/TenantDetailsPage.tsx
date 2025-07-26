@@ -75,7 +75,7 @@ const TenantDetailsPage = () => {
     return (
       <div className="text-center py-16">
         <h3 className="text-xl font-bold text-text-primary mb-2">Tenant Not Found</h3>
-        <Link to="/dashboard/tenants" className="btn-gradient px-6 py-3 rounded-2xl font-semibold">
+        <Link href="/dashboard/tenants" className="btn-gradient px-6 py-3 rounded-2xl font-semibold">
           Back to Tenants
         </Link>
       </div>
@@ -319,7 +319,7 @@ const TenantDetailsPage = () => {
               <PropertyStyleCard gradient="primary">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-bold text-white/90">Recent Receipts</h3>
-                  <Link to={`/dashboard/receipts?tenantId=${tenantId}`} className="text-blue-400 text-sm hover:text-blue-300 transition-colors">View All</Link>
+                  <Link href={`/dashboard/receipts?tenantId=${tenantId}`} className="text-blue-400 text-sm hover:text-blue-300 transition-colors">View All</Link>
                 </div>
                 <div className="space-y-3">
                   {relatedData?.receipts?.slice(0, 3).map((receipt: any) => (
@@ -506,7 +506,7 @@ const TenantDetailsPage = () => {
               <PropertyStyleCard gradient="dark">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-bold text-white/90">Recent Activity</h3>
-                  <Link to={`/dashboard/audit?tenantId=${tenantId}`} className="text-blue-400 text-sm hover:text-blue-300 transition-colors">View All</Link>
+                  <Link href={`/dashboard/audit?tenantId=${tenantId}`} className="text-blue-400 text-sm hover:text-blue-300 transition-colors">View All</Link>
                 </div>
                 <div className="space-y-2">
                   {relatedData?.auditLogs?.slice(0, 5).map((log: any) => (

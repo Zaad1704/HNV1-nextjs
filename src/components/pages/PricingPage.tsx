@@ -145,7 +145,7 @@ const PricingPage = () => {
           className="text-center mt-16"
         >
           <p className="text-text-secondary mb-8">
-            Need a custom solution? <Link to="/contact" className="text-brand-blue hover:underline font-semibold">Contact our sales team</Link>
+            Need a custom solution? <Link href="/contact" className="text-brand-blue hover:underline font-semibold">Contact our sales team</Link>
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">

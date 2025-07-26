@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import Link, Navigate } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import UniversalCard from '@/components/common/UniversalCard';
 import UniversalHeader from '@/components/common/UniversalHeader';
@@ -214,7 +214,7 @@ const DashboardPage = () => {
               Your account has limited access. Please reactivate your subscription to unlock all features.
             </p>
             <div className="flex flex-col gap-3">
-              <Link to="/dashboard/billing" className="px-6 py-3 rounded-2xl font-semibold text-white" style={{background: 'linear-gradient(to right, #FFDAB9, #ADD8E6)'}}>
+              <Link href="/dashboard/billing" className="px-6 py-3 rounded-2xl font-semibold text-white" style={{background: 'linear-gradient(to right, #FFDAB9, #ADD8E6)'}}>
                 Reactivate Subscription
               </Link>
               <button 
@@ -241,7 +241,7 @@ const DashboardPage = () => {
                 }
               </p>
             </div>
-            <Link to="/dashboard/billing" className="text-white px-4 py-2 rounded-lg text-sm transition-all" style={{background: 'linear-gradient(to right, #FFDAB9, #ADD8E6)'}}>
+            <Link href="/dashboard/billing" className="text-white px-4 py-2 rounded-lg text-sm transition-all" style={{background: 'linear-gradient(to right, #FFDAB9, #ADD8E6)'}}>
               Upgrade Now
             </Link>
           </div>
@@ -357,12 +357,12 @@ const DashboardPage = () => {
             </div>
           </div>
           <div className="relative z-10 flex gap-3 mt-8">
-            <Link to="/dashboard/properties" className="font-bold py-4 px-8 rounded-2xl text-sm hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center gap-2" style={{background: 'linear-gradient(to right, #FFDAB9, #ADD8E6)', color: '#333'}}>
+            <Link href="/dashboard/properties" className="font-bold py-4 px-8 rounded-2xl text-sm hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center gap-2" style={{background: 'linear-gradient(to right, #FFDAB9, #ADD8E6)', color: '#333'}}>
               <Building2 size={16} />
               View Properties
             </Link>
             {user?.role !== 'Tenant' && (
-              <Link to="/dashboard/tenants" className="bg-white/20 backdrop-blur-sm text-white font-bold py-4 px-6 rounded-2xl text-sm hover:bg-white/30 transition-all duration-300 border border-white/30 flex items-center gap-2">
+              <Link href="/dashboard/tenants" className="bg-white/20 backdrop-blur-sm text-white font-bold py-4 px-6 rounded-2xl text-sm hover:bg-white/30 transition-all duration-300 border border-white/30 flex items-center gap-2">
                 <Users size={16} />
                 Tenants
               </Link>
@@ -412,7 +412,7 @@ const DashboardPage = () => {
               </div>
             </div>
             
-            <Link to="/dashboard/properties" className="text-white font-semibold py-3 px-6 rounded-2xl mt-4 self-start text-sm hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2" style={{background: 'linear-gradient(to right, #FFDAB9, #ADD8E6)'}}>
+            <Link href="/dashboard/properties" className="text-white font-semibold py-3 px-6 rounded-2xl mt-4 self-start text-sm hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2" style={{background: 'linear-gradient(to right, #FFDAB9, #ADD8E6)'}}>
               <Building2 size={14} />
               View Properties
             </Link>
@@ -437,7 +437,7 @@ const DashboardPage = () => {
             <p className="text-white/70 text-xs mb-4">
               {dashboardStats.pendingMaintenance === 0 ? 'All caught up!' : 'Requires attention'}
             </p>
-            <Link to="/dashboard/maintenance?status=Open" className="px-4 py-2 rounded-2xl text-sm font-bold inline-flex items-center gap-2 hover:shadow-xl transition-all duration-300 hover:scale-105" style={{background: 'linear-gradient(to right, #FFDAB9, #ADD8E6)', color: '#333'}}>
+            <Link href="/dashboard/maintenance?status=Open" className="px-4 py-2 rounded-2xl text-sm font-bold inline-flex items-center gap-2 hover:shadow-xl transition-all duration-300 hover:scale-105" style={{background: 'linear-gradient(to right, #FFDAB9, #ADD8E6)', color: '#333'}}>
               <Activity size={14} />
               View Pending
             </Link>
@@ -541,12 +541,12 @@ const DashboardPage = () => {
               )}
             </div>
             <div className="flex gap-3 mt-6">
-              <Link to="/dashboard/audit-log" className="gradient-dark-orange-blue text-white font-bold py-3 px-6 rounded-2xl text-sm hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2">
+              <Link href="/dashboard/audit-log" className="gradient-dark-orange-blue text-white font-bold py-3 px-6 rounded-2xl text-sm hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2">
                 <Activity size={16} />
                 View Activity Log
               </Link>
               {user?.role !== 'Tenant' && (
-                <Link to="/dashboard/settings" className="font-bold py-3 px-6 rounded-2xl text-sm transition-all duration-300 flex items-center gap-2 text-white border border-white/20 hover:scale-105" style={{background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)'}}>
+                <Link href="/dashboard/settings" className="font-bold py-3 px-6 rounded-2xl text-sm transition-all duration-300 flex items-center gap-2 text-white border border-white/20 hover:scale-105" style={{background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)'}}>
                   <Settings size={16} />
                   Settings
                 </Link>

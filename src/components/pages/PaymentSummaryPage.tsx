@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CheckCircle, CreditCard, ArrowLeft } from 'lucide-react';
 

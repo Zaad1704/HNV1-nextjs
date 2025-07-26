@@ -28,10 +28,10 @@ const RoleBasedDashboard: React.FC<RoleBasedDashboardProps> = ({ stats }) => {
             <h1 className="text-4xl font-bold mb-4">Tenant Portal</h1>
             <p className="text-white/90 mb-6">Welcome to your personal tenant dashboard. Access your lease information, payment history, and submit maintenance requests.</p>
             <div className="flex gap-3">
-              <Link to="/dashboard/payments" className="bg-white text-brand-orange font-bold py-3 px-6 rounded-2xl hover:shadow-lg transition-all">
+              <Link href="/dashboard/payments" className="bg-white text-brand-orange font-bold py-3 px-6 rounded-2xl hover:shadow-lg transition-all">
                 View Payments
               </Link>
-              <Link to="/dashboard/maintenance" className="bg-white/20 text-white font-bold py-3 px-6 rounded-2xl hover:bg-white/30 transition-all">
+              <Link href="/dashboard/maintenance" className="bg-white/20 text-white font-bold py-3 px-6 rounded-2xl hover:bg-white/30 transition-all">
                 Maintenance
               </Link>
             </div>
@@ -50,7 +50,7 @@ const RoleBasedDashboard: React.FC<RoleBasedDashboardProps> = ({ stats }) => {
           </div>
           <h3 className="text-xl font-bold text-text-primary mb-2">Payment Status</h3>
           <p className="text-text-secondary text-sm mb-4">Current month payment status</p>
-          <Link to="/dashboard/payments" className="text-green-600 font-semibold hover:underline">
+          <Link href="/dashboard/payments" className="text-green-600 font-semibold hover:underline">
             View Payment History →
           </Link>
         </motion.div>
@@ -67,7 +67,7 @@ const RoleBasedDashboard: React.FC<RoleBasedDashboardProps> = ({ stats }) => {
           </div>
           <h3 className="text-xl font-bold text-text-primary mb-2">Maintenance</h3>
           <p className="text-text-secondary text-sm mb-4">Submit and track maintenance requests</p>
-          <Link to="/dashboard/maintenance" className="text-orange-600 font-semibold hover:underline">
+          <Link href="/dashboard/maintenance" className="text-orange-600 font-semibold hover:underline">
             Submit Request →
           </Link>
         </motion.div>
@@ -84,7 +84,7 @@ const RoleBasedDashboard: React.FC<RoleBasedDashboardProps> = ({ stats }) => {
           </div>
           <h3 className="text-xl font-bold text-text-primary mb-2">Lease Info</h3>
           <p className="text-text-secondary text-sm mb-4">View your lease details and documents</p>
-          <Link to="/dashboard/tenants" className="text-blue-600 font-semibold hover:underline">
+          <Link href="/dashboard/tenants" className="text-blue-600 font-semibold hover:underline">
             View Details →
           </Link>
         </motion.div>
@@ -141,10 +141,10 @@ const RoleBasedDashboard: React.FC<RoleBasedDashboardProps> = ({ stats }) => {
               </div>
             </div>
             <div className="flex gap-3">
-              <Link to="/dashboard/properties" className="bg-white text-brand-orange font-bold py-3 px-6 rounded-2xl hover:shadow-lg transition-all">
+              <Link href="/dashboard/properties" className="bg-white text-brand-orange font-bold py-3 px-6 rounded-2xl hover:shadow-lg transition-all">
                 My Properties
               </Link>
-              <Link to="/dashboard/tenants" className="bg-white/20 text-white font-bold py-3 px-6 rounded-2xl hover:bg-white/30 transition-all">
+              <Link href="/dashboard/tenants" className="bg-white/20 text-white font-bold py-3 px-6 rounded-2xl hover:bg-white/30 transition-all">
                 My Tenants
               </Link>
             </div>
@@ -164,7 +164,7 @@ const RoleBasedDashboard: React.FC<RoleBasedDashboardProps> = ({ stats }) => {
           <h3 className="text-xl font-bold text-text-primary mb-2">Collections</h3>
           <p className="text-2xl font-bold text-green-600 mb-2">${stats?.monthlyRevenue?.toLocaleString() || 0}</p>
           <p className="text-text-secondary text-sm mb-4">This month's collections</p>
-          <Link to="/dashboard/payments" className="text-green-600 font-semibold hover:underline">
+          <Link href="/dashboard/payments" className="text-green-600 font-semibold hover:underline">
             Record Payment →
           </Link>
         </motion.div>
@@ -181,7 +181,7 @@ const RoleBasedDashboard: React.FC<RoleBasedDashboardProps> = ({ stats }) => {
           </div>
           <h3 className="text-xl font-bold text-text-primary mb-2">Approvals</h3>
           <p className="text-text-secondary text-sm mb-4">Requests pending landlord approval</p>
-          <Link to="/dashboard/approvals" className="text-orange-600 font-semibold hover:underline">
+          <Link href="/dashboard/approvals" className="text-orange-600 font-semibold hover:underline">
             View Requests →
           </Link>
         </motion.div>
@@ -206,7 +206,7 @@ const RoleBasedDashboard: React.FC<RoleBasedDashboardProps> = ({ stats }) => {
             <p className="text-blue-800 text-sm mb-3">
               Submit your daily collection report with proof of payments received and any issues encountered.
             </p>
-            <Link to="/dashboard/agent-handover" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
+            <Link href="/dashboard/agent-handover" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
               Submit Handover
             </Link>
           </div>
@@ -221,19 +221,19 @@ const RoleBasedDashboard: React.FC<RoleBasedDashboardProps> = ({ stats }) => {
         >
           <h3 className="text-xl font-bold text-text-primary mb-4">Quick Actions</h3>
           <div className="grid grid-cols-2 gap-3">
-            <Link to="/dashboard/payments" className="bg-green-100 text-green-800 p-3 rounded-xl text-center hover:bg-green-200 transition-colors">
+            <Link href="/dashboard/payments" className="bg-green-100 text-green-800 p-3 rounded-xl text-center hover:bg-green-200 transition-colors">
               <DollarSign size={20} className="mx-auto mb-1" />
               <span className="text-sm font-medium">Record Payment</span>
             </Link>
-            <Link to="/dashboard/maintenance" className="bg-orange-100 text-orange-800 p-3 rounded-xl text-center hover:bg-orange-200 transition-colors">
+            <Link href="/dashboard/maintenance" className="bg-orange-100 text-orange-800 p-3 rounded-xl text-center hover:bg-orange-200 transition-colors">
               <Settings size={20} className="mx-auto mb-1" />
               <span className="text-sm font-medium">Maintenance</span>
             </Link>
-            <Link to="/dashboard/tenants" className="bg-blue-100 text-blue-800 p-3 rounded-xl text-center hover:bg-blue-200 transition-colors">
+            <Link href="/dashboard/tenants" className="bg-blue-100 text-blue-800 p-3 rounded-xl text-center hover:bg-blue-200 transition-colors">
               <Users size={20} className="mx-auto mb-1" />
               <span className="text-sm font-medium">Add Tenant</span>
             </Link>
-            <Link to="/dashboard/properties" className="bg-purple-100 text-purple-800 p-3 rounded-xl text-center hover:bg-purple-200 transition-colors">
+            <Link href="/dashboard/properties" className="bg-purple-100 text-purple-800 p-3 rounded-xl text-center hover:bg-purple-200 transition-colors">
               <Building2 size={20} className="mx-auto mb-1" />
               <span className="text-sm font-medium">View Properties</span>
             </Link>

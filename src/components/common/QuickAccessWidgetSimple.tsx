@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Plus, Building, Users, CreditCard, Home, Settings } from 'lucide-react';
 
 const QuickAccessWidget: React.FC = () => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Share2, Copy, Mail, MessageCircle, Send, Link, Download, QrCode } from 'lucide-react';
+import { Share2, Copy, Mail, MessageCircle, Send, Download, QrCode } from 'lucide-react';
 
 interface ShareButtonProps {
   title: string;

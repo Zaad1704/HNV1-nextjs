@@ -199,7 +199,7 @@ const SmartDashboardPage: React.FC = () => {
 
           {/* Key Metrics */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <Link to="/dashboard/tenants" className="bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-lg transition-all group">
+            <Link href="/dashboard/tenants" className="bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-lg transition-all group">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Users size={20} className="text-blue-600" />
@@ -211,7 +211,7 @@ const SmartDashboardPage: React.FC = () => {
               </div>
             </Link>
             
-            <Link to="/dashboard/properties" className="bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-lg transition-all group">
+            <Link href="/dashboard/properties" className="bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-lg transition-all group">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Building2 size={20} className="text-green-600" />
@@ -223,7 +223,7 @@ const SmartDashboardPage: React.FC = () => {
               </div>
             </Link>
             
-            <Link to="/dashboard/payments" className="bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-lg transition-all group">
+            <Link href="/dashboard/payments" className="bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-lg transition-all group">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <CreditCard size={20} className="text-purple-600" />
@@ -235,7 +235,7 @@ const SmartDashboardPage: React.FC = () => {
               </div>
             </Link>
             
-            <Link to="/dashboard/receipts" className="bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-lg transition-all group">
+            <Link href="/dashboard/receipts" className="bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-lg transition-all group">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <DollarSign size={20} className="text-indigo-600" />
@@ -247,7 +247,7 @@ const SmartDashboardPage: React.FC = () => {
               </div>
             </Link>
             
-            <Link to="/dashboard/maintenance" className="bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-lg transition-all group">
+            <Link href="/dashboard/maintenance" className="bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-lg transition-all group">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Wrench size={20} className="text-orange-600" />

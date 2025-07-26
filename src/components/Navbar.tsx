@@ -76,7 +76,7 @@ const Navbar = () => {
           </div>
 
           {/* Center: Brand */}
-          <Link to="/" className="flex items-center gap-3 text-xl font-bold text-white">
+          <Link href="/" className="flex items-center gap-3 text-xl font-bold text-white">
             {settings?.logos?.faviconUrl && (
               <img 
                 src={settings.logos.faviconUrl} 

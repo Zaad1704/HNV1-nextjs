@@ -1,6 +1,5 @@
 'use client';
 import React from "react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "../../store/authStore";
 import { LayoutDashboard, Building, Users, CreditCard, Brush, LifeBuoy, LogOut, ShieldCheck, ArrowLeft, Settings } from 'lucide-react';

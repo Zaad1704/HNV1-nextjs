@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'next/navigation';
+import Link, useLocation, useRouter } from 'next/navigation';
 import { Home, Info, DollarSign, Phone, LogIn } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 

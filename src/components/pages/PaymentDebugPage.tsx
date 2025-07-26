@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import apiClient from '@/lib/api';
 import PropertyStyleBackground from '@/components/common/PropertyStyleBackground';
 
@@ -60,7 +60,7 @@ const PaymentDebugPage = () => {
           <div className="text-center p-8 rounded-3xl border border-white/20" style={{background: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(10px)'}}>
             <h2 className="text-xl font-semibold text-white mb-2">Payment not found</h2>
             <p className="text-white/80 mb-4">Error: {error || 'Unknown error'}</p>
-            <Link to="/dashboard/payments" className="bg-gradient-to-r from-orange-400 to-blue-400 text-white px-4 py-2 rounded-xl hover:scale-105 transition-all">
+            <Link href="/dashboard/payments" className="bg-gradient-to-r from-orange-400 to-blue-400 text-white px-4 py-2 rounded-xl hover:scale-105 transition-all">
               ← Back to Payments
             </Link>
           </div>
@@ -102,10 +102,10 @@ const PaymentDebugPage = () => {
           </div>
           
           <div className="flex gap-4">
-            <Link to="/dashboard/payments" className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-all">
+            <Link href="/dashboard/payments" className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-all">
               Back to Payments
             </Link>
-            <Link to={`/dashboard/payments/details/${id}`} className="bg-blue-500/50 hover:bg-blue-500/70 text-white px-4 py-2 rounded-lg transition-all">
+            <Link href={`/dashboard/payments/details/${id}`} className="bg-blue-500/50 hover:bg-blue-500/70 text-white px-4 py-2 rounded-lg transition-all">
               Go to Regular View
             </Link>
           </div>

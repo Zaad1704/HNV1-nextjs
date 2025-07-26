@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/api';
 import { motion } from 'framer-motion';
@@ -45,7 +45,7 @@ const CashFlowDetailsPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link to="/dashboard/cashflow" className="p-2 rounded-xl hover:bg-app-bg transition-colors">
+          <Link href="/dashboard/cashflow" className="p-2 rounded-xl hover:bg-app-bg transition-colors">
             <ArrowLeft size={24} />
           </Link>
           <div>

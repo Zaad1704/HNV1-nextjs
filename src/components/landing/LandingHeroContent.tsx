@@ -57,7 +57,7 @@ const LandingHeroContent = () => {
                 {settings?.heroSection?.subtitle || t('landing.hero_subtitle')}
               </p>
             </div>
-            <Link to="/register" className="btn-light font-bold py-3 px-6 rounded-lg mt-8 self-start text-sm">
+            <Link href="/register" className="btn-light font-bold py-3 px-6 rounded-lg mt-8 self-start text-sm">
                 {settings?.heroSection?.ctaText || t('landing.hero_cta')}
             </Link>
           </motion.div>

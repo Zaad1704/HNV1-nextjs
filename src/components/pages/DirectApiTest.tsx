@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import axios from 'axios';
 
 const DirectApiTest = () => {
@@ -75,7 +75,7 @@ const DirectApiTest = () => {
       )}
       
       <div style={{ marginTop: '20px' }}>
-        <Link to="/dashboard/payments" style={{ color: '#3498db' }}>Back to Payments</Link>
+        <Link href="/dashboard/payments" style={{ color: '#3498db' }}>Back to Payments</Link>
       </div>
     </div>
   );

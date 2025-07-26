@@ -654,7 +654,7 @@ const PaymentDetailsPageUniversal = () => {
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {payment?.tenantId?._id && (
-                      <Link to={`/dashboard/tenants/${payment.tenantId._id}`} className="inline-flex items-center gap-1 bg-blue-500/50 hover:bg-blue-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
+                      <Link href={`/dashboard/tenants/${payment.tenantId._id}`} className="inline-flex items-center gap-1 bg-blue-500/50 hover:bg-blue-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
                         <Eye size={14} />
                         View Tenant
                       </Link>
@@ -712,7 +712,7 @@ const PaymentDetailsPageUniversal = () => {
                   )}
                   <div className="mt-3">
                     {payment?.propertyId?._id && (
-                      <Link to={`/dashboard/properties/${payment.propertyId._id}`} className="inline-flex items-center gap-1 bg-purple-500/50 hover:bg-purple-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
+                      <Link href={`/dashboard/properties/${payment.propertyId._id}`} className="inline-flex items-center gap-1 bg-purple-500/50 hover:bg-purple-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
                         <Eye size={14} />
                         View Property
                       </Link>

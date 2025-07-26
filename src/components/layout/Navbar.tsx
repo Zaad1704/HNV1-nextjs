@@ -61,7 +61,7 @@ const Navbar = () => {
           </div>
 
           {/* Center: Brand */}
-          <Link to="/" className="flex items-center justify-center gap-3 text-xl font-bold text-white hover:scale-105 transition-transform">
+          <Link href="/" className="flex items-center justify-center gap-3 text-xl font-bold text-white hover:scale-105 transition-transform">
             <img 
               src={settings?.logos?.faviconUrl || '/logo-min.png'} 
               alt="Logo" 
@@ -101,7 +101,7 @@ const Navbar = () => {
               <Menu size={16} />
             </button>
             
-            <Link to="/" className="flex items-center gap-1 text-white flex-1 justify-center px-2">
+            <Link href="/" className="flex items-center gap-1 text-white flex-1 justify-center px-2">
               <img 
                 src={settings?.logos?.faviconUrl || '/logo-min.png'} 
                 alt="Logo" 

@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useSearchParams } from 'react-router-dom';
+import Link, useSearchParams } from 'next/navigation';
 import { DollarSign, Plus, Calendar, Tag, Building, Download, Eye } from 'lucide-react';
 import PropertyStyleBackground from '@/components/common/PropertyStyleBackground';
 import PropertyStyleCard from '@/components/common/PropertyStyleCard';

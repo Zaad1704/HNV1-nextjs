@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'next/navigation';
 import { CreditCard, Plus, DollarSign, Calendar, User, Download, Building2, Users, FileText, TrendingUp, AlertTriangle, CheckCircle, Clock, Eye, Edit, Trash2, Archive, Share2, Filter } from 'lucide-react';
 import LazyLoader from '@/components/common/LazyLoader';
 import SkeletonLoader from '@/components/common/SkeletonLoader';

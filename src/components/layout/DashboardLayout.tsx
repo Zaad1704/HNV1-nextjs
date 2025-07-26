@@ -90,7 +90,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const Sidebar = ({ isMobile = false }) => (
     <aside className={`${isMobile ? 'w-full max-w-sm' : 'w-72 xl:w-80'} flex-shrink-0 border border-white/10 flex flex-col h-full`} style={{background: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(20px) saturate(180%)'}}>
       <div className="h-20 flex items-center justify-between px-6 border-b border-white/10">
-        <Link to="/dashboard" className="flex items-center space-x-3 text-xl font-bold text-white">
+        <Link href="/dashboard" className="flex items-center space-x-3 text-xl font-bold text-white">
           <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-blue-400 rounded-xl flex items-center justify-center">
             <Building size={20} className="text-white" />
           </div>

@@ -87,7 +87,7 @@ const PublicHeader = () => {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
                     {/* Logo and Company Name */}
-                    <Link to="/" className="flex items-center space-x-3 flex-shrink-0">
+                    <Link href="/" className="flex items-center space-x-3 flex-shrink-0">
                         <img src={settings?.logos?.faviconUrl || "/logo-min.png"} alt="HNV Logo" className="h-10 w-10 rounded-lg" />
                         <span className="hidden md:block text-xl font-bold text-white">{settings?.logos?.companyName || "HNV Property Management Solutions"}</span>
                     </Link>
@@ -114,10 +114,10 @@ const PublicHeader = () => {
                                 Install
                             </button>
                         )}
-                        <Link to="/login" className="font-semibold text-white/90 hover:text-white transition-colors">
+                        <Link href="/login" className="font-semibold text-white/90 hover:text-white transition-colors">
                             {t('header.login', 'Log In')}
                         </Link>
-                        <Link to="/register" className="px-5 py-2.5 bg-white text-brand-blue font-semibold rounded-lg shadow-md hover:bg-gray-100 transition-all">
+                        <Link href="/register" className="px-5 py-2.5 bg-white text-brand-blue font-semibold rounded-lg shadow-md hover:bg-gray-100 transition-all">
                             {t('header.get_started', 'Get Started')}
                         </Link>
                     </div>
@@ -149,10 +149,10 @@ const PublicHeader = () => {
                         </a>
                     ))}
                     <div className="px-3 py-2">
-                        <Link to="/login" className="block w-full text-center py-2 px-4 text-gray-600 dark:text-gray-300 hover:text-brand-primary dark:hover:text-brand-primary-dark transition-colors">
+                        <Link href="/login" className="block w-full text-center py-2 px-4 text-gray-600 dark:text-gray-300 hover:text-brand-primary dark:hover:text-brand-primary-dark transition-colors">
                             {t('header.login', 'Log In')}
                         </Link>
-                        <Link to="/register" className="block w-full text-center mt-2 py-2 px-4 bg-brand-primary text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition-all">
+                        <Link href="/register" className="block w-full text-center mt-2 py-2 px-4 bg-brand-primary text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition-all">
                             {t('header.get_started', 'Get Started')}
                         </Link>
                     </div>

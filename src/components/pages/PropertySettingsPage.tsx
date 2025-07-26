@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Settings, Save, Archive, AlertTriangle } from 'lucide-react';
 import apiClient from '@/lib/api';
@@ -70,7 +70,7 @@ const PropertySettingsPage = () => {
       <div className="min-h-screen relative flex items-center justify-center" style={{background: 'linear-gradient(to right, #FFDAB9, #ADD8E6)'}}>
         <div className="backdrop-blur-xl bg-white/10 border-2 border-white/20 rounded-2xl p-8 shadow-2xl text-center" style={{backdropFilter: 'blur(20px) saturate(180%)'}}>
           <h2 className="text-xl font-semibold text-gray-800 mb-2">Property not found</h2>
-          <Link to="/dashboard/properties" className="text-blue-600 hover:text-blue-800">
+          <Link href="/dashboard/properties" className="text-blue-600 hover:text-blue-800">
             ← Back to Properties
           </Link>
         </div>

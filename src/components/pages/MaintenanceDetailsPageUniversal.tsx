@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   Wrench, 
@@ -321,7 +321,7 @@ const MaintenanceDetailsPageUniversal = () => {
                   )}
                   <div className="mt-3">
                     {maintenance?.propertyId?._id && (
-                      <Link to={`/dashboard/properties/${maintenance.propertyId._id}`} className="inline-flex items-center gap-1 bg-purple-500/50 hover:bg-purple-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
+                      <Link href={`/dashboard/properties/${maintenance.propertyId._id}`} className="inline-flex items-center gap-1 bg-purple-500/50 hover:bg-purple-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
                         <Eye size={14} />
                         View Property
                       </Link>
@@ -352,7 +352,7 @@ const MaintenanceDetailsPageUniversal = () => {
                   )}
                   <div className="mt-3 flex flex-wrap gap-2">
                     {maintenance?.tenantId?._id && (
-                      <Link to={`/dashboard/tenants/${maintenance.tenantId._id}`} className="inline-flex items-center gap-1 bg-blue-500/50 hover:bg-blue-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
+                      <Link href={`/dashboard/tenants/${maintenance.tenantId._id}`} className="inline-flex items-center gap-1 bg-blue-500/50 hover:bg-blue-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
                         <Eye size={14} />
                         View Tenant
                       </Link>

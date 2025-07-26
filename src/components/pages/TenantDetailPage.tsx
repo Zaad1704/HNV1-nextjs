@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Edit, Share2, Download, MessageCircle, Phone, Mail, MapPin, Calendar, DollarSign, FileText, User, AlertTriangle } from 'lucide-react';
 import TenantProfileDashboard from '@/components/tenant/TenantProfileDashboard';
 import TenantCommunicationLog from '@/components/tenant/TenantCommunicationLog';
@@ -50,7 +50,7 @@ const TenantDetailPage = () => {
           <div className="text-center p-8 rounded-3xl border border-white/20" style={{background: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(10px)'}}>
             <h2 className="text-xl font-semibold text-white mb-2">Tenant not found</h2>
             <p className="text-white/80 mb-4">The tenant you're looking for doesn't exist or you don't have access to it.</p>
-            <Link to="/dashboard/tenants" className="bg-gradient-to-r from-orange-400 to-blue-400 text-white px-4 py-2 rounded-xl hover:scale-105 transition-all">
+            <Link href="/dashboard/tenants" className="bg-gradient-to-r from-orange-400 to-blue-400 text-white px-4 py-2 rounded-xl hover:scale-105 transition-all">
               ← Back to Tenants
             </Link>
           </div>

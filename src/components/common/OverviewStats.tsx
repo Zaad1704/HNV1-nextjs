@@ -84,7 +84,7 @@ const OverviewStats: React.FC<OverviewStatsProps> = ({ stats, className = '' }) 
           animate="visible"
           className="group relative"
         >
-          <Link to={card.link} className="block">
+          <Link href={card.link} className="block">
             <div className={`bg-gradient-to-br ${card.bgColor} rounded-3xl p-6 border-2 border-transparent hover:border-opacity-30 hover:border-gray-300 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 relative overflow-hidden`}>
               {/* Background Gradient */}
               <div className={`absolute inset-0 bg-gradient-to-br ${card.color} opacity-0 group-hover:opacity-5 transition-all duration-500`}></div>

@@ -2,7 +2,7 @@
 // frontend/src/pages/MaintenanceRequestsPage.tsx
 import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link, useSearchParams } from 'react-router-dom';
+import Link, useSearchParams } from 'next/navigation';
 import apiClient from '@/lib/api';
 import LazyLoader from '@/components/common/LazyLoader';
 import SkeletonLoader from '@/components/common/SkeletonLoader';

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { usePathname } from 'next/navigation';
 import { Plus, Home, Building, Users, CreditCard, Settings, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

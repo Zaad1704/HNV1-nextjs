@@ -22,7 +22,7 @@ const PublicMobileHeader = () => {
           <Menu size={20} />
         </button>
 
-        <Link to="/" className="flex items-center gap-2 text-white">
+        <Link href="/" className="flex items-center gap-2 text-white">
           <img 
             src={settings?.logos?.faviconUrl || '/logo-min.png'} 
             alt="Logo" 

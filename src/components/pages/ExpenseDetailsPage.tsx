@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/api';
 import { motion } from 'framer-motion';
@@ -54,7 +54,7 @@ const ExpenseDetailsPage = () => {
     return (
       <div className="text-center py-16">
         <h3 className="text-xl font-bold text-text-primary mb-2">Expense Not Found</h3>
-        <Link to="/dashboard/expenses" className="btn-gradient px-6 py-3 rounded-2xl font-semibold">
+        <Link href="/dashboard/expenses" className="btn-gradient px-6 py-3 rounded-2xl font-semibold">
           Back to Expenses
         </Link>
       </div>
@@ -72,7 +72,7 @@ const ExpenseDetailsPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link to="/dashboard/expenses" className="p-2 rounded-xl hover:bg-app-bg transition-colors">
+          <Link href="/dashboard/expenses" className="p-2 rounded-xl hover:bg-app-bg transition-colors">
             <ArrowLeft size={24} />
           </Link>
           <div>

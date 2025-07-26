@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, 
@@ -283,7 +283,7 @@ const PaymentDetailsPage = () => {
             <h2 className="text-xl font-semibold text-white mb-2">Invalid Payment ID</h2>
             <p className="text-white/80 mb-4">The payment ID format is invalid. Please check the URL and try again.</p>
             <p className="text-white/60 mb-6 font-mono text-sm">ID: {id}</p>
-            <Link to="/dashboard/payments" className="bg-gradient-to-r from-orange-400 to-blue-400 text-white px-4 py-2 rounded-xl hover:scale-105 transition-all">
+            <Link href="/dashboard/payments" className="bg-gradient-to-r from-orange-400 to-blue-400 text-white px-4 py-2 rounded-xl hover:scale-105 transition-all">
               ← Back to Payments
             </Link>
           </div>
@@ -348,7 +348,7 @@ const PaymentDetailsPage = () => {
             )}
             
             <div className="flex gap-3 justify-center">
-              <Link to="/dashboard/payments" className="bg-gradient-to-r from-orange-400 to-blue-400 text-white px-4 py-2 rounded-xl hover:scale-105 transition-all">
+              <Link href="/dashboard/payments" className="bg-gradient-to-r from-orange-400 to-blue-400 text-white px-4 py-2 rounded-xl hover:scale-105 transition-all">
                 ← Back to Payments
               </Link>
               <button 
@@ -782,7 +782,7 @@ const PaymentDetailsPage = () => {
                       {payment.tenantId && (
                         <div>
                           <p className="text-sm text-white/70 mb-1">Tenant</p>
-                          <Link to={`/dashboard/tenants/${payment.tenantId._id}`} className="text-blue-400 hover:text-blue-300 transition-colors">
+                          <Link href={`/dashboard/tenants/${payment.tenantId._id}`} className="text-blue-400 hover:text-blue-300 transition-colors">
                             {payment.tenantId.name}
                           </Link>
                         </div>
@@ -790,7 +790,7 @@ const PaymentDetailsPage = () => {
                       {payment.propertyId && (
                         <div>
                           <p className="text-sm text-white/70 mb-1">Property</p>
-                          <Link to={`/dashboard/properties/${payment.propertyId._id}`} className="text-purple-400 hover:text-purple-300 transition-colors">
+                          <Link href={`/dashboard/properties/${payment.propertyId._id}`} className="text-purple-400 hover:text-purple-300 transition-colors">
                             {payment.propertyId.name}
                           </Link>
                         </div>
@@ -804,7 +804,7 @@ const PaymentDetailsPage = () => {
                       {payment.leaseId && (
                         <div>
                           <p className="text-sm text-white/70 mb-1">Lease</p>
-                          <Link to={`/dashboard/leases/${payment.leaseId}`} className="text-green-400 hover:text-green-300 transition-colors">
+                          <Link href={`/dashboard/leases/${payment.leaseId}`} className="text-green-400 hover:text-green-300 transition-colors">
                             View Lease
                           </Link>
                         </div>

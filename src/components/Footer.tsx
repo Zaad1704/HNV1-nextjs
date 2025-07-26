@@ -18,11 +18,11 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-semibold text-dark-text dark:text-dark-text-dark mb-3">{t('footer.quick_links')}</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/about" className="hover:text-brand-primary dark:hover:text-brand-secondary transition-colors">{t('nav.about')}</Link></li>
-              <li><Link to="/services" className="hover:text-brand-primary dark:hover:text-brand-secondary transition-colors">{t('nav.services')}</Link></li>
-              <li><Link to="/leadership" className="hover:text-brand-primary dark:hover:text-brand-secondary transition-colors">{t('leadership.title')}</Link></li>
-              <li><Link to="/contact" className="hover:text-brand-primary dark:hover:text-brand-secondary transition-colors">{t('nav.contact')}</Link></li>
-              <li><Link to="/privacy" className="hover:text-brand-primary dark:hover:text-brand-secondary transition-colors">{t('footer.privacy_policy')}</Link></li>
+              <li><Link href="/about" className="hover:text-brand-primary dark:hover:text-brand-secondary transition-colors">{t('nav.about')}</Link></li>
+              <li><Link href="/services" className="hover:text-brand-primary dark:hover:text-brand-secondary transition-colors">{t('nav.services')}</Link></li>
+              <li><Link href="/leadership" className="hover:text-brand-primary dark:hover:text-brand-secondary transition-colors">{t('leadership.title')}</Link></li>
+              <li><Link href="/contact" className="hover:text-brand-primary dark:hover:text-brand-secondary transition-colors">{t('nav.contact')}</Link></li>
+              <li><Link href="/privacy" className="hover:text-brand-primary dark:hover:text-brand-secondary transition-colors">{t('footer.privacy_policy')}</Link></li>
             </ul>
           </div>
           <div>
@@ -39,7 +39,7 @@ export default function Footer() {
         </div>
         <div className="border-t border-border-color dark:border-border-color-dark pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
           <p>© {year} {t('app_name')}. {t('footer.all_rights_reserved')}</p>
-          <Link to="/login" className="text-light-text dark:text-light-text-dark hover:text-brand-primary dark:hover:text-brand-secondary transition-colors mt-4 md:mt-0">{t('header.login')}</Link>
+          <Link href="/login" className="text-light-text dark:text-light-text-dark hover:text-brand-primary dark:hover:text-brand-secondary transition-colors mt-4 md:mt-0">{t('header.login')}</Link>
         </div>
       </div>
     </footer>

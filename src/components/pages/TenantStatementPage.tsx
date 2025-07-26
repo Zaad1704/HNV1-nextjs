@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/api';
 import { motion } from 'framer-motion';

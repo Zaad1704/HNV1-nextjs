@@ -31,7 +31,7 @@ const MobileNavbar = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 text-lg font-bold text-white">
+            <Link href="/" className="flex items-center gap-2 text-lg font-bold text-white">
               {settings?.logos?.faviconUrl && (
                 <img 
                   src={settings.logos.faviconUrl} 

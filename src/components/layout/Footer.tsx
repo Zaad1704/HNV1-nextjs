@@ -36,9 +36,9 @@ const Footer = () => {
                 </a>
               )) || (
                 <>
-                  <Link to="/#about" className="block text-white/80 hover:text-white transition-colors">About</Link>
-                  <Link to="/#features" className="block text-white/80 hover:text-white transition-colors">Features</Link>
-                  <Link to="/#pricing" className="block text-white/80 hover:text-white transition-colors">Pricing</Link>
+                  <Link href="/#about" className="block text-white/80 hover:text-white transition-colors">About</Link>
+                  <Link href="/#features" className="block text-white/80 hover:text-white transition-colors">Features</Link>
+                  <Link href="/#pricing" className="block text-white/80 hover:text-white transition-colors">Pricing</Link>
                 </>
               )}
             </div>
@@ -47,8 +47,8 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Legal</h4>
             <div className="space-y-2">
-              <Link to="/privacy" className="block text-white/80 hover:text-white transition-colors">Privacy Policy</Link>
-              <Link to="/terms" className="block text-white/80 hover:text-white transition-colors">Terms of Service</Link>
+              <Link href="/privacy" className="block text-white/80 hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/terms" className="block text-white/80 hover:text-white transition-colors">Terms of Service</Link>
             </div>
           </div>
         </div>

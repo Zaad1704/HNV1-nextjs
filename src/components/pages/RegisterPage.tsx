@@ -138,7 +138,7 @@ const RegisterPage: React.FC = () => {
           <p className="text-text-secondary mb-8">
             {t('auth.verification_sent')}
           </p>
-          <Link to="/login" className="btn-gradient px-8 py-3 rounded-2xl inline-flex items-center gap-2">
+          <Link href="/login" className="btn-gradient px-8 py-3 rounded-2xl inline-flex items-center gap-2">
             {t('auth.go_to_login')} <ArrowRight size={16} />
           </Link>
         </motion.div>
@@ -335,7 +335,7 @@ const RegisterPage: React.FC = () => {
           <div className="mt-8 text-center">
             <p className="text-text-secondary">
               {t('auth.have_account')}{' '}
-              <Link to="/login" className="font-semibold text-brand-blue hover:text-brand-blue/80 transition-colors">
+              <Link href="/login" className="font-semibold text-brand-blue hover:text-brand-blue/80 transition-colors">
                 {t('auth.sign_in')}
               </Link>
             </p>

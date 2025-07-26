@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { CreditCard, Lock, Check, ArrowLeft } from 'lucide-react';

@@ -61,7 +61,7 @@ const QuickStatsCard: React.FC<QuickStatsCardProps> = ({
 
   if (href) {
     return (
-      <Link to={href} className="block">
+      <Link href={href} className="block">
         {cardContent}
       </Link>
     );

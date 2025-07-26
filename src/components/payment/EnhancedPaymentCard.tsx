@@ -56,7 +56,7 @@ const EnhancedPaymentCard: React.FC<EnhancedPaymentCardProps> = ({
           )}
           
           {/* Tenant name overlay */}
-          <Link to={`/dashboard/tenants/${payment.tenantId?._id}`} className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap hover:bg-black/90 transition-colors">
+          <Link href={`/dashboard/tenants/${payment.tenantId?._id}`} className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap hover:bg-black/90 transition-colors">
             {payment.tenantId?.name || 'Unknown Tenant'}
           </Link>
         </div>
@@ -81,7 +81,7 @@ const EnhancedPaymentCard: React.FC<EnhancedPaymentCardProps> = ({
           )}
           
           {/* Property name overlay */}
-          <Link to={`/dashboard/properties/${payment.propertyId?._id}`} className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-black/90 transition-colors">
+          <Link href={`/dashboard/properties/${payment.propertyId?._id}`} className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-black/90 transition-colors">
             {payment.propertyId?.name || 'Unknown Property'}
           </Link>
         </div>

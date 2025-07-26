@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   Receipt, 
@@ -300,7 +300,7 @@ const ReceiptDetailsPageUniversal = () => {
                   )}
                   <div className="mt-3">
                     {receipt?.tenantId && (
-                      <Link to={`/dashboard/tenants/${receipt.tenantId}`} className="inline-flex items-center gap-1 bg-blue-500/50 hover:bg-blue-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
+                      <Link href={`/dashboard/tenants/${receipt.tenantId}`} className="inline-flex items-center gap-1 bg-blue-500/50 hover:bg-blue-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
                         <Eye size={14} />
                         View Tenant
                       </Link>
@@ -330,7 +330,7 @@ const ReceiptDetailsPageUniversal = () => {
                   )}
                   <div className="mt-3">
                     {receipt?.propertyId && (
-                      <Link to={`/dashboard/properties/${receipt.propertyId}`} className="inline-flex items-center gap-1 bg-purple-500/50 hover:bg-purple-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
+                      <Link href={`/dashboard/properties/${receipt.propertyId}`} className="inline-flex items-center gap-1 bg-purple-500/50 hover:bg-purple-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
                         <Eye size={14} />
                         View Property
                       </Link>
@@ -374,7 +374,7 @@ const ReceiptDetailsPageUniversal = () => {
                 </div>
                 <div className="space-y-4">
                   <div className="mt-3">
-                    <Link to={`/dashboard/payments-universal/${receipt?.paymentId}`} className="inline-flex items-center gap-1 bg-green-500/50 hover:bg-green-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
+                    <Link href={`/dashboard/payments-universal/${receipt?.paymentId}`} className="inline-flex items-center gap-1 bg-green-500/50 hover:bg-green-500/70 text-white px-3 py-1 rounded-lg text-sm transition-colors">
                       <Eye size={14} />
                       View Payment
                     </Link>
