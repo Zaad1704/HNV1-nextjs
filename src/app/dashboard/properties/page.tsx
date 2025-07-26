@@ -1,5 +1,5 @@
-import PropertiesPage from '@/components/pages/PropertiesPage';
+import PropertiesPageConnected from '@/components/pages/PropertiesPageConnected';
 
 export default function Properties() {
-  return <PropertiesPage />;
+  return <PropertiesPageConnected />;
 }

@@ -1,5 +1,5 @@
-import MaintenancePage from '@/components/pages/MaintenanceRequestsPageUniversal';
+import MaintenancePageConnected from '@/components/pages/MaintenancePageConnected';
 
 export default function Maintenance() {
-  return <MaintenancePage />;
+  return <MaintenancePageConnected />;
 }

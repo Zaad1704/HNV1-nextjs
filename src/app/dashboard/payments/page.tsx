@@ -1,5 +1,5 @@
-import PaymentsPageUniversal from '@/components/pages/PaymentsPageUniversal';
+import PaymentsPageConnected from '@/components/pages/PaymentsPageConnected';
 
 export default function Payments() {
-  return <PaymentsPageUniversal />;
+  return <PaymentsPageConnected />;
 }

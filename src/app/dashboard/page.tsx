@@ -1,5 +1,5 @@
-import DashboardPage from '@/components/pages/DashboardPageSimple';
+import DashboardPageConnected from '@/components/pages/DashboardPageConnected';
 
 export default function Dashboard() {
-  return <DashboardPage />;
+  return <DashboardPageConnected />;
 }

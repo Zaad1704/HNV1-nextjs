@@ -1,5 +1,5 @@
-import TenantsPage from '@/components/pages/TenantsPage';
+import TenantsPageConnected from '@/components/pages/TenantsPageConnected';
 
 export default function Tenants() {
-  return <TenantsPage />;
+  return <TenantsPageConnected />;
 }
