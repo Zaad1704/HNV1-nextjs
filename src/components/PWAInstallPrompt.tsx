@@ -8,11 +8,11 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const PWAInstallPrompt = () => {
-
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [deviceType, setDeviceType] = useState<'android' | 'ios' | 'desktop' | 'other'>('other');
+  const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
     // Check if already installed
@@ -126,8 +126,6 @@ const PWAInstallPrompt = () => {
   if (isInstalled || !showPrompt) return null;
 
   const instructions = getInstallInstructions();
-
-  const [showInstructions, setShowInstructions] = useState(false);
 
   if (showInstructions) {
     return (

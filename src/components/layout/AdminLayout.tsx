@@ -1,10 +1,10 @@
+'use client';
 import React from 'react';
-import { Outlet } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import AdminSidebar from '@/admin/AdminSidebar';
+import AdminSidebar from '@/components/admin/AdminSidebar';
 import MobileBottomNav from './MobileBottomNav';
 
-const AdminLayout = () => {
+const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuthStore();
 
   if (!user) {
@@ -26,7 +26,7 @@ const AdminLayout = () => {
             </div>
         </header>
         <div className="flex-1 p-4 sm:p-8 overflow-y-auto pb-24 md:pb-8">
-          <Outlet /> 
+          {children}
         </div>
       </main>
       <MobileBottomNav />

@@ -1,10 +1,11 @@
+'use client';
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Building, Users, CreditCard, FileText, Settings } from 'lucide-react';
 
 const MobileBottomNav = () => {
-  const location = usePathname();
+  const pathname = usePathname();
   
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Home' },
@@ -22,7 +23,7 @@ const MobileBottomNav = () => {
           return (
             <Link
               key={item.href}
-              to={item.href}
+              href={item.href}
               className={`flex flex-col items-center py-1 px-2 rounded-lg ${
                 isActive ? 'text-blue-600' : 'text-gray-600'
               }`}

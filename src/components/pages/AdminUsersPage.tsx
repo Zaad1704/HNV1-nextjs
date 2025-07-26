@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useMemo } from "react";
-import apiClient from "../api/client";
+import apiClient from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Trash2, Eye, X, CreditCard, DollarSign, AlertTriangle, Bug } from 'lucide-react';
 import { testUserDeletion } from '@/utils/adminTestHelpers';

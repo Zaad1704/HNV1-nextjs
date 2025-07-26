@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import apiClient from '@/lib/api';
 import { Lock, ArrowLeft, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
