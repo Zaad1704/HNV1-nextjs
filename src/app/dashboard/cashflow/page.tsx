@@ -1,5 +1,5 @@
-import CashFlowPageUniversal from '@/components/pages/CashFlowPageUniversal';
+import CashFlowPage from '@/components/pages/CashFlowPageUniversal';
 
 export default function CashFlow() {
-  return <CashFlowPageUniversal />;
+  return <CashFlowPage />;
 }

@@ -1,5 +1,5 @@
-import MaintenanceRequestsPageUniversal from '@/components/pages/MaintenanceRequestsPageUniversal';
+import MaintenancePage from '@/components/pages/MaintenanceRequestsPageUniversal';
 
 export default function Maintenance() {
-  return <MaintenanceRequestsPageUniversal />;
+  return <MaintenancePage />;
 }

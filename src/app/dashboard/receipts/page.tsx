@@ -1,5 +1,5 @@
-import ReceiptsPageUniversal from '@/components/pages/ReceiptsPageUniversal';
+import ReceiptsPage from '@/components/pages/ReceiptsPageUniversal';
 
 export default function Receipts() {
-  return <ReceiptsPageUniversal />;
+  return <ReceiptsPage />;
 }

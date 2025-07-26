@@ -1,5 +1,5 @@
-import ExpensesPageUniversal from '@/components/pages/ExpensesPageUniversal';
+import ExpensesPage from '@/components/pages/ExpensesPageUniversal';
 
 export default function Expenses() {
-  return <ExpensesPageUniversal />;
+  return <ExpensesPage />;
 }
