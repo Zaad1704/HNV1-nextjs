@@ -1,34 +1,57 @@
 import axios from 'axios';
+import { useAuthStore } from '../store/authStore';
+import { rateLimiter } from '../utils/security';
+
+const getApiUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.endsWith('/api') 
+      ? process.env.NEXT_PUBLIC_API_URL 
+      : `${process.env.NEXT_PUBLIC_API_URL}/api`;
+  }
+  
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+      return 'https://hnv.onrender.com/api';
+    }
+  }
+  
+  return 'http://localhost:5000/api';
+};
 
 const apiClient = axios.create({
-  baseURL: process.env.NODE_ENV === 'production' 
-    ? 'https://your-api-domain.com/api' 
-    : '/api',
-  timeout: 10000,
+  baseURL: getApiUrl(),
+  headers: { 'Content-Type': 'application/json' },
+  timeout: 60000,
+  withCredentials: false,
 });
 
-// Request interceptor to add auth token
-apiClient.interceptors.request.use(
-  (config) => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+apiClient.interceptors.request.use((config) => {
+  const url = config.url || '';
+  if (!rateLimiter.isAllowed(url, 30, 60000)) {
+    return Promise.reject(new Error('Rate limit exceeded'));
+  }
 
-// Response interceptor for error handling
+  const token = useAuthStore.getState().token;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  
+  return config;
+});
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('token');
-        window.location.href = '/login';
+      const { token, isAuthenticated } = useAuthStore.getState();
+      const isAuthEndpoint = error.config?.url?.includes('/auth/me') || error.config?.url?.includes('/auth/login');
+      
+      if (token && isAuthenticated && isAuthEndpoint) {
+        useAuthStore.getState().logout();
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login?session=expired';
+        }
       }
     }
     return Promise.reject(error);

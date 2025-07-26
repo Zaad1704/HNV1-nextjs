@@ -12,6 +12,14 @@ export function middleware(request: NextRequest) {
   // Admin routes
   const adminRoutes = ['/admin'];
   const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
+  
+  // Check admin access
+  if (isAdminRoute) {
+    const userRole = request.cookies.get('userRole')?.value;
+    if (!token || userRole !== 'super_admin') {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+  }
 
   // Redirect to login if accessing protected route without token
   if (isProtectedRoute && !token) {
