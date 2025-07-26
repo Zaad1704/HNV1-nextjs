@@ -1,0 +1,63 @@
+/* Dashboard Card Fixes - Light Mode */
+.dashboard-container {
+  background-color: var(--app-bg);
+  min-height: 100vh;
+}
+
+/* Ensure all dashboard cards have proper backgrounds */
+.dashboard-container .app-surface,
+.dashboard-container [class*="rounded-3xl"]:not(.gradient-dark-orange-blue):not(.gradient-orange-blue),
+.dashboard-container [class*="rounded-2xl"]:not(.gradient-dark-orange-blue):not(.gradient-orange-blue) {
+  background-color: var(--app-surface);
+  border: 1px solid var(--app-border);
+}
+
+/* Fix gradient cards specifically */
+.dashboard-container .gradient-dark-orange-blue {
+  background: linear-gradient(135deg, #C2410C 0%, #1E3A8A 100%);
+  color: white;
+  border: none;
+}
+
+.dashboard-container .gradient-orange-blue {
+  background: linear-gradient(135deg, #EA580C 0%, #3B82F6 100%);
+  color: white;
+  border: none;
+}
+
+/* Ensure text colors are visible */
+.dashboard-container .text-text-primary {
+  color: var(--text-primary);
+}
+
+.dashboard-container .text-text-secondary {
+  color: var(--text-secondary);
+}
+
+.dashboard-container .text-text-muted {
+  color: var(--text-muted);
+}
+
+/* Specific fixes for welcome screen cards */
+.welcome-card {
+  background-color: var(--app-surface) !important;
+  border: 1px solid var(--app-border) !important;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.welcome-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Dark mode support */
+.dark .welcome-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+.dark .welcome-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+}

@@ -1,0 +1,339 @@
+/* Universal Mobile-First Styles for Properties & Tenants */
+
+/* Import tenant-specific mobile styles */
+@import "./mobile-tenant.css";
+
+/* Universal Mobile Grid System */
+.universal-grid {
+  @apply grid gap-4 md:gap-6;
+}
+
+.universal-grid-1 {
+  @apply universal-grid grid-cols-1;
+}
+
+.universal-grid-2 {
+  @apply universal-grid grid-cols-1 md:grid-cols-2;
+}
+
+.universal-grid-3 {
+  @apply universal-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+}
+
+.universal-grid-4 {
+  @apply universal-grid grid-cols-2 md:grid-cols-4;
+}
+
+/* Universal Mobile Cards */
+.universal-mobile-card {
+  @apply bg-white rounded-xl md:rounded-2xl border border-gray-100 shadow-sm;
+  @apply p-4 md:p-6;
+  @apply mb-4 md:mb-6;
+  @apply transition-all duration-200;
+  @apply hover:shadow-md active:scale-95;
+  @apply touch-manipulation;
+}
+
+/* Universal Mobile Headers */
+.universal-mobile-header {
+  @apply sticky top-0 z-10;
+  @apply bg-white/95 backdrop-blur-sm;
+  @apply border-b border-gray-200;
+  @apply px-4 md:px-6 py-3 md:py-4;
+}
+
+/* Universal Mobile Buttons */
+.universal-mobile-btn {
+  @apply px-4 py-3 md:px-6 md:py-3;
+  @apply text-sm md:text-base;
+  @apply rounded-xl;
+  @apply touch-manipulation;
+  @apply transition-all duration-200;
+  @apply active:scale-95;
+  @apply font-medium;
+}
+
+.universal-mobile-btn-primary {
+  @apply universal-mobile-btn;
+  @apply bg-blue-500 text-white;
+  @apply hover:bg-blue-600 active:bg-blue-700;
+  @apply shadow-lg hover:shadow-xl;
+}
+
+.universal-mobile-btn-secondary {
+  @apply universal-mobile-btn;
+  @apply bg-gray-100 text-gray-700;
+  @apply hover:bg-gray-200 active:bg-gray-300;
+}
+
+/* Universal Mobile FAB */
+.universal-mobile-fab {
+  @apply fixed bottom-6 right-6 z-40;
+  @apply w-14 h-14 md:w-16 md:h-16;
+  @apply rounded-full shadow-2xl;
+  @apply flex items-center justify-center;
+  @apply touch-manipulation;
+  @apply transition-all duration-300;
+  @apply active:scale-90;
+  @apply md:hidden;
+}
+
+.universal-mobile-fab-property {
+  @apply universal-mobile-fab;
+  @apply bg-gradient-to-r from-blue-500 to-purple-500;
+  @apply text-white;
+  @apply hover:from-blue-600 hover:to-purple-600;
+}
+
+.universal-mobile-fab-tenant {
+  @apply universal-mobile-fab;
+  @apply bg-gradient-to-r from-green-500 to-blue-500;
+  @apply text-white;
+  @apply hover:from-green-600 hover:to-blue-600;
+}
+
+/* Universal Mobile Filters */
+.universal-mobile-filter-bar {
+  @apply bg-gradient-to-r from-blue-50 to-purple-50;
+  @apply rounded-xl md:rounded-2xl;
+  @apply p-4 md:p-6;
+  @apply border border-blue-100;
+}
+
+.universal-mobile-filter-grid {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-3;
+}
+
+.universal-mobile-filter-btn {
+  @apply flex items-center gap-2;
+  @apply px-3 py-2.5 md:px-4 md:py-3;
+  @apply rounded-xl;
+  @apply text-sm font-medium;
+  @apply transition-all duration-200;
+  @apply touch-manipulation;
+  @apply active:scale-95;
+}
+
+.universal-mobile-filter-btn-active {
+  @apply universal-mobile-filter-btn;
+  @apply text-white shadow-lg scale-105;
+}
+
+.universal-mobile-filter-btn-inactive {
+  @apply universal-mobile-filter-btn;
+  @apply bg-white hover:bg-gray-50 active:bg-gray-100;
+  @apply border;
+}
+
+/* Universal Mobile Search */
+.universal-mobile-search {
+  @apply w-full;
+  @apply px-4 py-3 md:px-3 md:py-2;
+  @apply border border-gray-300 rounded-xl;
+  @apply focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  @apply text-base md:text-sm;
+  @apply touch-manipulation;
+  @apply bg-white;
+}
+
+/* Universal Mobile Tabs */
+.universal-mobile-tabs {
+  @apply sticky top-16 md:top-20 z-10;
+  @apply bg-white border-b border-gray-200;
+}
+
+.universal-mobile-tab-container {
+  @apply flex items-center gap-1;
+  @apply overflow-x-auto scrollbar-hide;
+  @apply px-4 md:px-6 py-3;
+}
+
+.universal-mobile-tab {
+  @apply flex items-center gap-2;
+  @apply px-4 py-2.5;
+  @apply rounded-xl;
+  @apply whitespace-nowrap;
+  @apply transition-all duration-200;
+  @apply touch-manipulation;
+  @apply min-w-max;
+  @apply text-sm font-medium;
+}
+
+.universal-mobile-tab-active {
+  @apply universal-mobile-tab;
+  @apply bg-blue-500 text-white;
+  @apply shadow-lg scale-105;
+}
+
+.universal-mobile-tab-inactive {
+  @apply universal-mobile-tab;
+  @apply text-gray-600;
+  @apply hover:bg-gray-100 active:bg-gray-200;
+}
+
+/* Universal Mobile Modals */
+.universal-mobile-modal {
+  @apply fixed inset-0 z-50;
+  @apply bg-black/50 backdrop-blur-sm;
+  @apply flex items-end md:items-center justify-center;
+  @apply p-0 md:p-4;
+}
+
+.universal-mobile-modal-content {
+  @apply bg-white;
+  @apply w-full md:max-w-lg md:w-full;
+  @apply rounded-t-2xl md:rounded-2xl;
+  @apply max-h-[90vh] overflow-y-auto;
+  @apply transform transition-transform duration-300;
+}
+
+/* Universal Mobile Status Badges */
+.universal-mobile-status {
+  @apply px-2 py-1 md:px-3 md:py-1;
+  @apply rounded-full;
+  @apply text-xs md:text-sm;
+  @apply font-medium;
+}
+
+/* Universal Mobile Spacing */
+.universal-mobile-space-y {
+  @apply space-y-4 md:space-y-6;
+}
+
+.universal-mobile-space-x {
+  @apply space-x-2 md:space-x-4;
+}
+
+.universal-mobile-padding {
+  @apply p-4 md:p-6;
+}
+
+.universal-mobile-margin {
+  @apply m-4 md:m-6;
+}
+
+/* Universal Mobile Typography */
+.universal-mobile-title {
+  @apply text-xl md:text-2xl lg:text-3xl;
+  @apply font-bold;
+}
+
+.universal-mobile-subtitle {
+  @apply text-base md:text-lg;
+  @apply font-semibold;
+}
+
+.universal-mobile-body {
+  @apply text-sm md:text-base;
+}
+
+.universal-mobile-caption {
+  @apply text-xs md:text-sm;
+  @apply text-gray-600;
+}
+
+/* Universal Mobile Animations */
+@media (prefers-reduced-motion: no-preference) {
+  .universal-mobile-animate-in {
+    animation: slideInFromBottom 0.3s ease-out;
+  }
+  
+  .universal-mobile-animate-out {
+    animation: slideOutToBottom 0.2s ease-out;
+  }
+  
+  .universal-mobile-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Universal Mobile Safe Areas */
+.universal-mobile-safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.universal-mobile-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.universal-mobile-safe-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.universal-mobile-safe-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Universal Mobile Touch Targets */
+.universal-mobile-touch-target {
+  @apply min-h-[44px] min-w-[44px];
+  @apply touch-manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Universal Mobile Gradients */
+.universal-gradient-property {
+  @apply bg-gradient-to-r from-blue-500 to-purple-500;
+}
+
+.universal-gradient-tenant {
+  @apply bg-gradient-to-r from-green-500 to-blue-500;
+}
+
+.universal-gradient-card-property {
+  @apply bg-gradient-to-br from-blue-50 to-purple-50;
+  @apply border border-blue-100;
+}
+
+.universal-gradient-card-tenant {
+  @apply bg-gradient-to-br from-green-50 to-blue-50;
+  @apply border border-green-100;
+}
+
+/* Universal Mobile Loading States */
+.universal-mobile-skeleton {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+.universal-mobile-loading {
+  @apply flex items-center justify-center;
+  @apply p-8;
+}
+
+/* Universal Mobile Error States */
+.universal-mobile-error {
+  @apply text-center py-12;
+  @apply text-red-600;
+}
+
+/* Universal Mobile Empty States */
+.universal-mobile-empty {
+  @apply text-center py-16;
+  @apply text-gray-500;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .universal-mobile-card {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  .universal-mobile-btn-secondary {
+    @apply bg-gray-700 text-gray-200;
+    @apply hover:bg-gray-600;
+  }
+  
+  .universal-mobile-search {
+    @apply bg-gray-800 border-gray-600 text-white;
+  }
+  
+  .universal-mobile-filter-bar {
+    @apply from-gray-800 to-gray-700;
+    @apply border-gray-600;
+  }
+}

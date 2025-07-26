@@ -1,0 +1,212 @@
+/* Enhanced Design Styles */
+
+/* Property Section Design Variables */
+:root {
+  --property-gradient-primary: linear-gradient(to right, #FFDAB9, #ADD8E6);
+  --property-gradient-secondary: linear-gradient(to right, #FF6B6B, #4ECDC4);
+  --property-gradient-dark: linear-gradient(to right, #FF8A65, #42A5F5);
+  --property-blur-effect: blur(20px) saturate(180%);
+  --property-border: 2px solid rgba(255, 255, 255, 0.2);
+  --property-border-radius: 1.5rem;
+  --property-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Universal Property-Style Card */
+.property-glassy-card {
+  backdrop-filter: var(--property-blur-effect);
+  -webkit-backdrop-filter: var(--property-blur-effect);
+  background: var(--property-gradient-primary);
+  border: var(--property-border);
+  border-radius: var(--property-border-radius);
+  box-shadow: var(--property-shadow);
+  transition: all 0.3s ease;
+}
+
+.property-glassy-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.35);
+}
+
+.phase3-desktop-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 1.5rem;
+  max-width: 100%;
+}
+
+.phase3-main-content {
+  min-width: 0;
+}
+
+.phase3-sidebar {
+  position: sticky;
+  top: 2rem;
+  height: fit-content;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+  width: 280px;
+}
+
+/* Enhanced search input visibility */
+.enhanced-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-weight: 500;
+}
+
+.enhanced-search-input {
+  color: white !important;
+  font-weight: 600;
+}
+
+.enhanced-search-input:focus {
+  color: white !important;
+}
+
+/* Colorful stars animation */
+@keyframes colorfulPulse {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.7; 
+    transform: scale(1.1);
+  }
+}
+
+.colorful-star {
+  animation: colorfulPulse 2s ease-in-out infinite;
+}
+
+.colorful-star:nth-child(1) { animation-delay: 0s; }
+.colorful-star:nth-child(2) { animation-delay: 0.3s; }
+.colorful-star:nth-child(3) { animation-delay: 0.6s; }
+.colorful-star:nth-child(4) { animation-delay: 0.9s; }
+
+/* Enhanced header gradient */
+.enhanced-header-bg {
+  background: linear-gradient(135deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4, #FFEAA7);
+  background-size: 300% 300%;
+  animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Wheel button positioning */
+.wheel-button-container {
+  position: relative;
+  z-index: 10;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .phase3-desktop-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .phase3-sidebar {
+    position: static;
+    max-height: none;
+  }
+}
+
+/* Enhanced backdrop blur effects */
+.enhanced-blur {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Improved text contrast */
+.enhanced-text-contrast {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Analytics circle animation */
+@keyframes analyticsRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.analytics-circle {
+  animation: analyticsRotate 20s linear infinite;
+}
+
+/* Smart suggestions always visible */
+.smart-suggestions-panel {
+  position: static !important;
+  transform: none !important;
+  opacity: 1 !important;
+  width: 100% !important;
+}
+
+/* AI insights always visible */
+.ai-insights-widget {
+  position: static !important;
+  transform: none !important;
+  opacity: 1 !important;
+  width: 100% !important;
+}
+
+/* Animated border flow for headers */
+@keyframes borderFlow {
+  0% { 
+    background-position: 0% 50%;
+    opacity: 0.8;
+  }
+  50% { 
+    background-position: 100% 50%;
+    opacity: 1;
+  }
+  100% { 
+    background-position: 0% 50%;
+    opacity: 0.8;
+  }
+}
+
+/* Wheel button sizing */
+.w-18 {
+  width: 4.5rem;
+}
+
+.h-18 {
+  height: 4.5rem;
+}
+
+/* Wheel button hover effects */
+.wheel-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wheel-button:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Attention required pulse animation */
+@keyframes attentionPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 165, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255, 165, 0, 0.8);
+  }
+}
+
+/* Gradient flow animation for header borders */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Ensure gradientFlow animation works properly */
+.gradient-flow-border {
+  background: linear-gradient(135deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4, #FFEAA7);
+  background-size: 300% 300%;
+  animation: gradientFlow 4s ease infinite;
+}

@@ -1,0 +1,156 @@
+/* Mobile Property Details Scaling */
+
+/* Mobile header scaling */
+@media (max-width: 767px) {
+  .property-details-header {
+    padding: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .property-details-header h1 {
+    font-size: 1.25rem !important;
+  }
+  
+  .property-details-header .back-button {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+  
+  /* Property overview card scaling */
+  .property-overview-card {
+    padding: 1rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .property-overview-card h3 {
+    font-size: 1rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  /* Stats section scaling */
+  .property-stats-section {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+  
+  .property-stat-item {
+    padding: 0.5rem !important;
+  }
+  
+  .property-stat-item .stat-value {
+    font-size: 1rem !important;
+  }
+  
+  .property-stat-item .stat-label {
+    font-size: 0.75rem !important;
+  }
+  
+  /* Quick actions scaling */
+  .property-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .property-quick-action-button {
+    padding: 0.5rem !important;
+    font-size: 0.75rem !important;
+    flex: 1 0 calc(50% - 0.25rem);
+  }
+  
+  /* Units section scaling */
+  .property-units-section {
+    padding: 0.75rem !important;
+  }
+  
+  .property-unit-card {
+    padding: 0.5rem !important;
+  }
+  
+  /* Related data sections */
+  .related-data-section {
+    padding: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .related-data-section h3 {
+    font-size: 1rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  /* Attention required section - make it more prominent */
+  .attention-required-section {
+    order: -1 !important;
+    margin-bottom: 1rem !important;
+    border: 2px solid rgba(239, 68, 68, 0.5) !important;
+  }
+  
+  /* Retractable cards */
+  .mobile-retractable-card {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  
+  .mobile-retractable-card.collapsed {
+    max-height: 3rem;
+  }
+  
+  .mobile-retractable-card.expanded {
+    max-height: 1000px;
+  }
+  
+  .mobile-card-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.75rem;
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: 600;
+  }
+  
+  /* Bell animation for attention required */
+  @keyframes bell-shake {
+    0% { transform: rotate(0); }
+    20% { transform: rotate(15deg); }
+    40% { transform: rotate(-15deg); }
+    60% { transform: rotate(7deg); }
+    80% { transform: rotate(-7deg); }
+    100% { transform: rotate(0); }
+  }
+  
+  .attention-bell-icon {
+    animation: bell-shake 1s ease infinite;
+    color: rgba(239, 68, 68, 0.9);
+  }
+}
+
+/* Reorder sections for mobile */
+@media (max-width: 767px) {
+  .property-details-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .property-overview-section {
+    order: 1;
+  }
+  
+  .attention-required-section {
+    order: 2;
+  }
+  
+  .quick-actions-section {
+    order: 5;
+  }
+  
+  .units-breakdown-section {
+    order: 4;
+  }
+  
+  .analytics-section {
+    order: 3;
+  }
+}

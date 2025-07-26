@@ -1,0 +1,298 @@
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { 
+  DollarSign, 
+  Calendar, 
+  User, 
+  Building2, 
+  CreditCard, 
+  FileText, 
+  Edit, 
+  Trash2, 
+  Download, 
+  Receipt, 
+  MessageCircle, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Clock, 
+  CheckCircle, 
+  AlertTriangle, 
+  Eye,
+  History,
+  FileCheck,
+  Send
+} from 'lucide-react';
+import apiClient from '../api/client';
+import { useCurrency } from '../contexts/CurrencyContext';
+import { deletePayment, confirmDelete, handleDeleteError, handleDeleteSuccess } from '../utils/deleteHelpers';
+import UniversalSectionPage from '../components/common/UniversalSectionPage';
+import UniversalGlassyCardSimple from '../components/common/UniversalGlassyCardSimple';
+import UniversalRadialActionWheel from '../components/common/UniversalRadialActionWheel';
+import UniversalStatusBadge from '../components/common/UniversalStatusBadge';
+
+const fetchPaymentDetails = async (paymentId: string) => {
+  console.log('Fetching payment details for ID:', paymentId);
+  try {
+    const { data } = await apiClient.get(`/payments/${paymentId}`);
+    console.log('API response:', data);
+    if (!data || !data.data) {
+      throw new Error('Invalid API response format');
+    }
+    return data.data;
+  } catch (error) {
+    console.error('Error in fetchPaymentDetails:', error);
+    throw error;
+  }
+};
+
+const fetchRelatedData = async (paymentId: string) => {
+  try {
+    const [receipts, auditLogs] = await Promise.all([
+      apiClient.get(`/receipts?paymentId=${paymentId}`).catch(() => ({ data: { data: [] } })),
+      apiClient.get(`/audit?resourceId=${paymentId}&limit=10`).catch(() => ({ data: { data: [] } }))
+    ]);
+
+    return {
+      receipts: receipts.data.data || [],
+      auditLogs: auditLogs.data.data || []
+    };
+  } catch (error) {
+    console.error("Error fetching related data:", error);
+    return {
+      receipts: [],
+      auditLogs: []
+    };
+  }
+};
+
+const PaymentDetailsPageUniversal = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { currency } = useCurrency();
+  const [activeTab, setActiveTab] = useState('overview');
+
+  const { data: payment, isLoading, error, isError } = useQuery({
+    queryKey: ['payment', id],
+    queryFn: () => fetchPaymentDetails(id!),
+    enabled: !!id,
+    retry: 2,
+    retryDelay: 1000,
+    staleTime: 0,
+    onError: (err) => {
+      console.error('Payment details query error:', err);
+    }
+  });
+  
+  const { data: relatedData } = useQuery({
+    queryKey: ['paymentRelatedData', id],
+    queryFn: () => fetchRelatedData(id!),
+    enabled: !!id
+  });
+
+  const handleDeletePayment = async () => {
+    if (confirmDelete(`${currency}${payment?.amount}`, 'payment')) {
+      try {
+        await deletePayment(id!);
+        handleDeleteSuccess('payment');
+        navigate('/dashboard/payments');
+      } catch (error: any) {
+        handleDeleteError(error, 'payment');
+      }
+    }
+  };
+
+  const handleDownloadReceipt = async () => {
+    try {
+      const response = await apiClient.get(`/payments/${id}/receipt`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Payment_Receipt_${id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error downloading receipt:", error);
+      alert("Failed to download receipt. Please try again.");
+    }
+  };
+
+  const handleUpdateStatus = async (newStatus: string) => {
+    try {
+      await apiClient.put(`/payments/${id}`, { status: newStatus });
+      queryClient.invalidateQueries({ queryKey: ['payment', id] });
+      alert(`Payment status updated to ${newStatus}`);
+    } catch (error) {
+      console.error("Error updating payment status:", error);
+      alert("Failed to update payment status. Please try again.");
+    }
+  };
+
+  // Calculate stats for the page header
+  const stats = payment ? [
+    { label: 'Amount', value: `${currency}${payment.amount?.toLocaleString()}` },
+    { label: 'Status', value: payment.status || 'Pending' },
+    { label: 'Date', value: new Date(payment.paymentDate).toLocaleDateString() }
+  ] : [];
+
+  return (
+    <UniversalSectionPage
+      title={payment ? `Payment Details` : 'Loading Payment...'}
+      subtitle={payment ? `${payment.description || 'Payment'} - ${new Date(payment.paymentDate).toLocaleDateString()}` : 'Retrieving payment information'}
+      icon={CreditCard}
+      stats={stats}
+      actionWheel={
+        <UniversalRadialActionWheel
+          actions={[
+            { id: 'download', icon: Download, label: 'Download Receipt', onClick: handleDownloadReceipt, angle: -60 },
+            { id: 'edit', icon: Edit, label: 'Edit Payment', onClick: () => {}, angle: 0 },
+            { id: 'delete', icon: Trash2, label: 'Delete Payment', onClick: handleDeletePayment, angle: 60 }
+          ]}
+        />
+      }
+      addButton={null}
+      floatingActionMenu={null}
+      aiInsightsData={{
+        properties: payment?.propertyId ? Array.isArray(payment.propertyId) ? payment.propertyId : [payment.propertyId] : [],
+        tenants: payment?.tenantId ? Array.isArray(payment.tenantId) ? payment.tenantId : [payment.tenantId] : []
+      }}
+      smartSuggestionsData={{
+        properties: payment?.propertyId ? Array.isArray(payment.propertyId) ? payment.propertyId : [payment.propertyId] : [],
+        tenants: payment?.tenantId ? Array.isArray(payment.tenantId) ? payment.tenantId : [payment.tenantId] : []
+      }}
+      isLoading={isLoading}
+      error={error}
+    >
+      {payment && (
+        <div className="space-y-6">
+          {/* Payment Overview */}
+          <UniversalGlassyCardSimple>
+            <h3 className="text-lg font-bold mb-4 text-white/90">Payment Overview</h3>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{background: 'rgba(59, 130, 246, 0.3)', backdropFilter: 'blur(10px)'}}>
+                  <DollarSign size={32} className="text-white" />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-bold text-white">{currency}{payment.amount?.toLocaleString()}</h2>
+                  {payment.originalAmount && payment.originalAmount !== payment.amount && (
+                    <p className="text-green-400 font-medium">
+                      Original: {currency}{payment.originalAmount} (Discount Applied)
+                    </p>
+                  )}
+                </div>
+              </div>
+              <UniversalStatusBadge 
+                status={payment.status || 'Pending'} 
+                variant={payment.status?.toLowerCase() === 'completed' || payment.status?.toLowerCase() === 'paid' ? 'success' : 
+                       payment.status?.toLowerCase() === 'pending' ? 'warning' : 'error'}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background: 'rgba(52, 211, 153, 0.3)', backdropFilter: 'blur(10px)'}}>
+                    <Calendar size={20} className="text-green-300" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-white/70">Payment Date</p>
+                    <p className="font-semibold text-white">{new Date(payment.paymentDate).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background: 'rgba(139, 92, 246, 0.3)', backdropFilter: 'blur(10px)'}}>
+                    <CreditCard size={20} className="text-purple-300" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-white/70">Payment Method</p>
+                    <p className="font-semibold text-white">{payment.paymentMethod || 'Not specified'}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-4">
+                {payment.rentMonth && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background: 'rgba(59, 130, 246, 0.3)', backdropFilter: 'blur(10px)'}}>
+                      <Calendar size={20} className="text-blue-300" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-white/70">Rent Period</p>
+                      <p className="font-semibold text-white">
+                        {new Date(payment.rentMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {payment.referenceNumber && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background: 'rgba(249, 115, 22, 0.3)', backdropFilter: 'blur(10px)'}}>
+                      <Receipt size={20} className="text-orange-300" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-white/70">Reference Number</p>
+                      <p className="font-semibold text-white">{payment.referenceNumber}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </UniversalGlassyCard>
+
+          {/* Tenant Information */}
+          {payment.tenantId && (
+            <UniversalGlassyCard>
+              <h3 className="text-lg font-bold text-white/90 flex items-center gap-2 mb-4">
+                <User size={20} className="text-blue-300" />
+                Tenant Information
+              </h3>
+              
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl" style={{background: 'rgba(59, 130, 246, 0.3)', backdropFilter: 'blur(10px)'}}>
+                  {payment.tenantId.name?.charAt(0) || 'T'}
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-lg font-semibold text-white">{payment.tenantId.name}</h4>
+                  <p className="text-blue-400">{payment.tenantId.email}</p>
+                  {payment.tenantId.phone && (
+                    <p className="text-white/70">{payment.tenantId.phone}</p>
+                  )}
+                </div>
+              </div>
+            </UniversalGlassyCard>
+          )}
+
+          {/* Property Information */}
+          {payment.propertyId && (
+            <UniversalGlassyCard>
+              <h3 className="text-lg font-bold text-white/90 flex items-center gap-2 mb-4">
+                <Building2 size={20} className="text-purple-300" />
+                Property Information
+              </h3>
+              
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl" style={{background: 'rgba(139, 92, 246, 0.3)', backdropFilter: 'blur(10px)'}}>
+                  {payment.propertyId.name?.charAt(0) || 'P'}
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-lg font-semibold text-white">{payment.propertyId.name}</h4>
+                  {payment.propertyId.address && (
+                    <p className="text-purple-400 flex items-center gap-1">
+                      <MapPin size={14} />
+                      {payment.propertyId.address.formattedAddress || payment.propertyId.address.street}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </UniversalGlassyCard>
+          )}
+        </div>
+      )}
+    </UniversalSectionPage>
+  );
+};
+
+export default PaymentDetailsPageUniversal;

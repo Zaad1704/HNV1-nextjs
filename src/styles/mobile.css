@@ -1,0 +1,292 @@
+/* Mobile Responsiveness Enhancements */
+
+/* Base mobile styles */
+@media (max-width: 768px) {
+  /* Dashboard Layout */
+  .dashboard-container {
+    padding: 0.5rem;
+  }
+  
+  .dashboard-header {
+    padding: 0.75rem 1rem;
+    height: 60px;
+  }
+  
+  .dashboard-content {
+    padding: 1rem 0.5rem;
+  }
+
+  /* Cards and Components */
+  .card {
+    margin-bottom: 1rem;
+    border-radius: 0.75rem;
+  }
+  
+  .card-header {
+    padding: 1rem;
+    font-size: 1.125rem;
+  }
+  
+  .card-content {
+    padding: 1rem;
+  }
+
+  /* Tables */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .table {
+    min-width: 600px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  /* Forms */
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-input {
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+  
+  .form-label {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    min-height: 44px; /* Touch target */
+  }
+  
+  .btn-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    min-height: 36px;
+  }
+
+  /* Navigation */
+  .nav-item {
+    padding: 0.75rem 1rem;
+  }
+  
+  .nav-link {
+    font-size: 0.875rem;
+  }
+
+  /* Modals */
+  .modal {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+  
+  .modal-content {
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+  }
+
+  /* Dropdowns */
+  .dropdown-menu {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  /* Stats Cards */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .stats-card {
+    padding: 1.5rem 1rem;
+  }
+
+  /* Charts */
+  .chart-container {
+    height: 250px;
+    margin: 1rem 0;
+  }
+
+  /* Property Cards */
+  .property-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .property-card {
+    padding: 1rem;
+  }
+
+  /* Tenant Cards */
+  .tenant-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Payment Forms */
+  .payment-form {
+    padding: 1rem;
+  }
+  
+  .payment-summary {
+    margin-top: 1rem;
+    padding: 1rem;
+  }
+
+  /* Settings Pages */
+  .settings-nav {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .settings-content {
+    padding: 1rem;
+  }
+
+  /* Profile Section */
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Notification Panel */
+  .notification-panel {
+    width: calc(100vw - 2rem);
+    max-width: none;
+    left: 1rem;
+    right: 1rem;
+  }
+
+  /* Quick Actions */
+  .quick-actions {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .quick-action {
+    flex: 1;
+    min-width: calc(50% - 0.25rem);
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: 0.5rem;
+    height: 56px;
+  }
+  
+  .card-header {
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+  
+  .card-content {
+    padding: 0.75rem;
+  }
+  
+  .btn {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+  
+  .stats-card {
+    padding: 1rem 0.75rem;
+  }
+  
+  .chart-container {
+    height: 200px;
+  }
+  
+  .quick-action {
+    min-width: 100%;
+  }
+}
+
+/* Landscape mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .dashboard-content {
+    padding-bottom: 2rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .property-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Touch improvements */
+@media (hover: none) and (pointer: coarse) {
+  .btn:hover {
+    transform: none;
+  }
+  
+  .card:hover {
+    transform: none;
+  }
+  
+  .nav-link:hover {
+    background-color: transparent;
+  }
+  
+  /* Increase touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Remove hover effects on touch devices */
+  .hover-effect:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .icon {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Accessibility improvements for mobile */
+@media (max-width: 768px) {
+  /* Focus styles */
+  .focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+  
+  /* Text sizing */
+  .text-xs { font-size: 0.8125rem; }
+  .text-sm { font-size: 0.875rem; }
+  .text-base { font-size: 1rem; }
+  .text-lg { font-size: 1.125rem; }
+  .text-xl { font-size: 1.25rem; }
+  
+  /* Spacing adjustments */
+  .space-y-1 > * + * { margin-top: 0.5rem; }
+  .space-y-2 > * + * { margin-top: 0.75rem; }
+  .space-y-3 > * + * { margin-top: 1rem; }
+  .space-y-4 > * + * { margin-top: 1.25rem; }
+}

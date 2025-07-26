@@ -1,0 +1,52 @@
+/* Fix for action wheels and floating menus */
+
+/* Disable all transforms on action buttons */
+.floating-tenant-action-menu button,
+.floating-tenant-action-menu div,
+.glassy-radial-action-wheel button,
+.glassy-radial-action-wheel div {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Use absolute positioning instead of transforms */
+.floating-tenant-action-menu [style*="transform"],
+.glassy-radial-action-wheel [style*="transform"] {
+  transform: none !important;
+}
+
+/* Fix for action button positioning */
+.absolute.bottom-0.right-0 {
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: visible !important;
+}
+
+/* Fix for action button containers */
+.absolute.top-0.left-0 {
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: visible !important;
+}
+
+/* Fix for action button icons */
+.floating-tenant-action-menu svg,
+.glassy-radial-action-wheel svg {
+  pointer-events: none !important;
+}
+
+/* Fix for action button touch interaction */
+.floating-tenant-action-menu button,
+.glassy-radial-action-wheel button {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Fix for action button labels */
+.floating-tenant-action-menu [style*="translate"],
+.glassy-radial-action-wheel [style*="translate"] {
+  transform: none !important;
+}

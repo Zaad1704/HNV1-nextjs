@@ -1,0 +1,65 @@
+/* Additional fixes for action buttons */
+
+/* Fix for GlassyRadialActionWheel buttons */
+.glassy-radial-action-wheel button {
+  transform: none !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  z-index: 9999 !important;
+}
+
+/* Fix for FloatingActionMenu buttons */
+.floating-action-menu button,
+.floating-tenant-action-menu button {
+  transform: none !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  z-index: 9999 !important;
+}
+
+/* Ensure action buttons are properly positioned */
+[style*="position: absolute"] {
+  will-change: opacity !important;
+}
+
+/* Fix for action button labels */
+[style*="position: absolute"] > div {
+  pointer-events: none !important;
+}
+
+/* Fix for action button icons */
+[style*="position: absolute"] svg {
+  pointer-events: none !important;
+}
+
+/* Fix for action wheel positioning */
+.glassy-radial-action-wheel {
+  position: relative !important;
+  z-index: 9999 !important;
+}
+
+/* Fix for floating action menu positioning */
+.floating-tenant-action-menu,
+.floating-action-menu {
+  position: relative !important;
+  z-index: 9999 !important;
+}
+
+/* Fix for action button hover states */
+.glassy-radial-action-wheel button:hover,
+.floating-tenant-action-menu button:hover,
+.floating-action-menu button:hover {
+  transform: none !important;
+}
+
+/* Fix for action button active states */
+.glassy-radial-action-wheel button:active,
+.floating-tenant-action-menu button:active,
+.floating-action-menu button:active {
+  transform: none !important;
+  opacity: 0.9 !important;
+}

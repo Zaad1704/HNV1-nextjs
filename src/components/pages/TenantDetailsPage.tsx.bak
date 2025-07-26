@@ -1,0 +1,1671 @@
+import React, { useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import apiClient from '../api/client';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Users, DollarSign, Calendar, MapPin, Phone, Mail, FileText, Wrench, AlertTriangle, Download, Edit, Trash2, Archive, ArchiveRestore, User, Bell, Eye, Plus } from 'lucide-react';
+import PropertyStyleBackground from '../components/common/PropertyStyleBackground';
+import PropertyStyleCard from '../components/common/PropertyStyleCard';
+import UniversalCard from '../components/common/UniversalCard';
+import UniversalHeader from '../components/common/UniversalHeader';
+import UniversalStatusBadge from '../components/common/UniversalStatusBadge';
+import UniversalActionButton from '../components/common/UniversalActionButton';
+
+import TenantAnalyticsDashboard from '../components/tenant/TenantAnalyticsDashboard';
+import EditTenantModal from '../components/common/EditTenantModal';
+import QuickPaymentModal from '../components/common/QuickPaymentModal';
+
+const TenantDetailsPage = () => {
+  const { tenantId } = useParams<{ tenantId: string }>();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showQuickPayment, setShowQuickPayment] = useState(false);
+  const [paymentType, setPaymentType] = useState<'normal' | 'overdue'>('normal');
+
+  const { data: tenant, isLoading } = useQuery({
+    queryKey: ['tenant', tenantId],
+    queryFn: async () => {
+      const { data } = await apiClient.get(`/tenants/${tenantId}`);
+      return data.data;
+    },
+    enabled: !!tenantId
+  });
+
+  const { data: relatedData } = useQuery({
+    queryKey: ['tenantRelatedData', tenantId],
+    queryFn: async () => {
+      const [payments, expenses, maintenance, approvals, receipts, cashFlow, reminders, auditLogs] = await Promise.all([
+        apiClient.get(`/payments?tenantId=${tenantId}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/expenses?tenantId=${tenantId}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/maintenance?tenantId=${tenantId}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/approvals?tenantId=${tenantId}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/receipts?tenantId=${tenantId}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/cashflow?tenantId=${tenantId}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/reminders?tenantId=${tenantId}&status=active`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/audit?resourceId=${tenantId}&limit=10`).catch(() => ({ data: { data: [] } }))
+      ]);
+
+      return {
+        payments: payments.data.data || [],
+        expenses: expenses.data.data || [],
+        maintenance: maintenance.data.data || [],
+        approvals: approvals.data.data || [],
+        receipts: receipts.data.data || [],
+        cashFlow: cashFlow.data.data || [],
+        reminders: reminders.data.data || [],
+        auditLogs: auditLogs.data.data || []
+      };
+    },
+    enabled: !!tenantId
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 app-gradient rounded-full animate-pulse"></div>
+        <span className="ml-3 text-text-secondary">Loading tenant details...</span>
+      </div>
+    );
+  }
+
+  if (!tenant) {
+    return (
+      <div className="text-center py-16">
+        <h3 className="text-xl font-bold text-text-primary mb-2">Tenant Not Found</h3>
+        <Link to="/dashboard/tenants" className="btn-gradient px-6 py-3 rounded-2xl font-semibold">
+          Back to Tenants
+        </Link>
+      </div>
+    );
+  }
+
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: Users },
+    { id: 'payments', label: 'Payment History', icon: DollarSign },
+    { id: 'maintenance', label: 'Maintenance', icon: Wrench },
+    { id: 'analytics', label: 'Analytics', icon: Calendar },
+    { id: 'documents', label: 'Documents', icon: FileText },
+    { id: 'personal', label: 'Personal Details', icon: User }
+  ];
+
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  const payments = relatedData?.payments || [];
+  const totalPaid = payments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
+  const currentMonthPayment = payments.find((p: any) => {
+    const paymentDate = new Date(p.paymentDate);
+    return paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear;
+  });
+  const outstandingAmount = currentMonthPayment ? 0 : (tenant.rentAmount || 0);
+  const monthsPaid = payments.length;
+  const leaseStartDate = tenant.createdAt ? new Date(tenant.createdAt) : null;
+  const monthsSinceStart = leaseStartDate ? 
+    (currentYear - leaseStartDate.getFullYear()) * 12 + (currentMonth - leaseStartDate.getMonth()) + 1 : 0;
+  
+  // Calculate overdue payments
+  const monthsOverdue = Math.max(0, monthsSinceStart - monthsPaid);
+  const overdueAmount = monthsOverdue * (tenant.rentAmount || 0);
+  const hasOverdue = monthsOverdue > 0;
+
+  return (
+    <PropertyStyleBackground>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 p-6">
+      {/* Mobile Header */}
+      <div className="sticky top-0 z-40 border-b border-white/30 lg:hidden" style={{backdropFilter: 'blur(20px) saturate(180%)', background: 'linear-gradient(135deg, rgba(255,138,101,0.3), rgba(66,165,245,0.3))', borderColor: 'rgba(255, 255, 255, 0.3)'}}>
+        <div className="flex items-center justify-between p-4">
+          <Link 
+            to="/dashboard/tenants"
+            className="p-2 rounded-full transition-all duration-300 hover:scale-105 border border-white/30 shadow-md" 
+            style={{background: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(15px)'}}
+          >
+            <ArrowLeft size={20} className="text-white" />
+          </Link>
+          <div className="flex-1 mx-4">
+            <h1 className="text-lg font-bold bg-gradient-to-r from-orange-400 to-blue-400 bg-clip-text text-transparent truncate">{tenant.name}</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="p-2 text-white rounded-full transition-all duration-300 hover:scale-105 border border-white/30 shadow-md" 
+              style={{background: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(15px)'}}
+            >
+              <Edit size={16} />
+            </button>
+            <button
+              className="p-2 text-white rounded-full transition-all duration-300 hover:scale-105 border border-white/30 shadow-md" 
+              style={{background: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(15px)'}}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="5" r="2" fill="currentColor"/>
+                <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                <circle cx="12" cy="19" r="2" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8">
+        {/* Desktop Header */}
+        <div className="hidden lg:block">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-3xl p-1 animate-pulse" style={{background: 'linear-gradient(135deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4, #FFEAA7)', backgroundSize: '300% 300%', animation: 'gradientFlow 4s ease infinite'}}></div>
+            <div className="relative rounded-3xl p-6 border-2 border-white/40 mb-8" style={{background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(255,138,101,0.05), rgba(66,165,245,0.05))', backdropFilter: 'blur(25px) saturate(200%)'}}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Link 
+                    to="/dashboard/tenants"
+                    className="p-3 rounded-full transition-all duration-300 hover:scale-105 border border-white/30 shadow-lg" 
+                    style={{background: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(15px)'}}
+                  >
+                    <ArrowLeft size={20} className="text-white" />
+                  </Link>
+                  <div>
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-blue-400 bg-clip-text text-transparent">{tenant.name}</h1>
+                    <div className="flex items-center gap-2 text-white/90 mt-1">
+                      <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                        <MapPin size={14} className="text-white" />
+                      </div>
+                      <span>Unit {tenant.unit} • {tenant.propertyId?.name}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={async () => {
+                      try {
+                        const response = await apiClient.post(`/tenants/${tenantId}/download-pdf`, {}, { responseType: 'blob' });
+                        const blob = new Blob([response.data], { type: 'application/pdf' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${tenant.name}-details.pdf`;
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                      } catch (error) {
+                        alert('Failed to download PDF');
+                      }
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-400 to-teal-400 text-white rounded-full hover:scale-105 transition-all duration-300 border border-white/40 shadow-lg"
+                    style={{backdropFilter: 'blur(20px)'}}
+                  >
+                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                      <Download size={14} className="text-white" />
+                    </div>
+                    <span>Download PDF</span>
+                  </button>
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-400 to-blue-400 text-white rounded-full hover:scale-105 transition-all duration-300 border border-white/40 shadow-lg"
+                    style={{backdropFilter: 'blur(20px)'}}
+                  >
+                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                      <Edit size={14} className="text-white" />
+                    </div>
+                    <span>Edit Tenant</span>
+                  </button>
+                  <button
+                    onClick={async () => {
+                      const isCurrentlyArchived = tenant.status === 'Archived';
+                      const action = isCurrentlyArchived ? 'restore' : 'archive';
+                      const confirmMessage = isCurrentlyArchived 
+                        ? `Restore ${tenant.name}? This will make them active again.`
+                        : `Archive ${tenant.name}? This will hide them from active listings.`;
+                      
+                      if (confirm(confirmMessage)) {
+                        try {
+                          await apiClient.put(`/tenants/${tenantId}`, {
+                            status: isCurrentlyArchived ? 'Active' : 'Archived'
+                          });
+                          alert(`Tenant ${action}d successfully!`);
+                          // Refresh the page to show updated status
+                          window.location.reload();
+                        } catch (error: any) {
+                          alert(`Failed to ${action} tenant: ${error.response?.data?.message || 'Unknown error'}`);
+                        }
+                      }
+                    }}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full hover:scale-105 transition-all duration-300 border border-white/40 shadow-lg ${
+                      tenant.status === 'Archived' 
+                        ? 'bg-gradient-to-r from-green-400 to-teal-400 text-white' 
+                        : 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white'
+                    }`}
+                    style={{backdropFilter: 'blur(20px)'}}
+                  >
+                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                      {tenant.status === 'Archived' ? <ArchiveRestore size={14} className="text-white" /> : <Archive size={14} className="text-white" />}
+                    </div>
+                    <span>{tenant.status === 'Archived' ? 'Restore' : 'Archive'}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Address */}
+        <div className="lg:hidden mb-4 mx-4 p-3 rounded-xl border-2 border-white/30 shadow-lg" style={{background: 'linear-gradient(135deg, rgba(255,138,101,0.3), rgba(66,165,245,0.3))', backdropFilter: 'blur(20px)'}}>
+          <div className="flex items-center gap-3 text-white/90">
+            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+              <MapPin size={16} className="text-white" />
+            </div>
+            <span className="text-sm font-medium">Unit {tenant.unit} • {tenant.propertyId?.name}</span>
+          </div>
+        </div>
+
+      {/* Navigation Tabs - Styled like Property Page */}
+      <div className="mb-6 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-3 p-2 rounded-2xl" style={{background: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(15px)', border: '1px solid rgba(255, 255, 255, 0.1)'}}>
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-3 rounded-xl whitespace-nowrap transition-all duration-300 min-w-max ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-orange-400 to-blue-400 text-white shadow-lg scale-105 border border-white/20'
+                    : 'text-white/80 hover:bg-white/10 active:bg-white/20 border border-transparent'
+                }`}
+                style={activeTab === tab.id ? {backdropFilter: 'blur(10px)'} : {}}
+              >
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${activeTab === tab.id ? 'bg-white/20' : 'bg-white/10'}`}>
+                  <Icon size={16} className={activeTab === tab.id ? 'text-white' : 'text-white/70'} />
+                </div>
+                <span className="text-sm font-medium">{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-8">
+        {/* Main Content */}
+        <div className="lg:col-span-3 space-y-4 lg:space-y-8 order-2 lg:order-1">
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
+              {/* Lease Information */}
+              <PropertyStyleCard gradient="primary">
+                <h3 className="text-lg font-bold mb-4 bg-gradient-to-r from-orange-400 to-blue-400 bg-clip-text text-transparent">Lease Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all duration-300" style={{backdropFilter: 'blur(5px)'}}>
+                    <p className="text-sm text-text-secondary">Property</p>
+                    <p className="font-medium">{tenant.propertyId?.name || tenant.property?.name || 'N/A'}</p>
+                  </div>
+                  <div className="p-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all duration-300" style={{backdropFilter: 'blur(5px)'}}>
+                    <p className="text-sm text-text-secondary">Unit</p>
+                    <p className="font-medium">Unit {tenant.unit || 'N/A'}</p>
+                  </div>
+                  <div className="p-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all duration-300" style={{backdropFilter: 'blur(5px)'}}>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                        <DollarSign size={16} className="text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-text-secondary">Monthly Rent</p>
+                        <p className="font-medium text-green-600">${tenant.rentAmount || 0}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all duration-300" style={{backdropFilter: 'blur(5px)'}}>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                        <Calendar size={16} className="text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-text-secondary">Lease Start</p>
+                        <p className="font-medium">{leaseStartDate?.toLocaleDateString() || 'N/A'}</p>
+                      </div>
+                    </div>
+                  </div>
+                  {tenant.leaseEndDate && (
+                    <>
+                      <div className="p-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all duration-300" style={{backdropFilter: 'blur(5px)'}}>
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                            <Calendar size={16} className="text-purple-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm text-text-secondary">Lease End</p>
+                            <p className="font-medium">{new Date(tenant.leaseEndDate).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all duration-300" style={{backdropFilter: 'blur(5px)'}}>
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+                            <AlertTriangle size={16} className="text-orange-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm text-text-secondary">Days Remaining</p>
+                            <p className="font-medium text-orange-600">
+                              {Math.ceil((new Date(tenant.leaseEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </PropertyStyleCard>
+
+              {/* Payment Summary */}
+              <PropertyStyleCard gradient="secondary">
+                <h3 className="text-lg font-bold mb-4 bg-gradient-to-r from-orange-400 to-blue-400 bg-clip-text text-transparent">Payment Summary</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center p-4 rounded-xl border-2 border-green-400/30 hover:scale-105 transition-all duration-300" 
+                    style={{background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.2))', backdropFilter: 'blur(5px)'}}>
+                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-2 shadow-md">
+                      <p className="text-xl font-bold text-green-600">{monthsPaid}</p>
+                    </div>
+                    <p className="text-sm font-medium text-green-600">Months Paid</p>
+                  </div>
+                  <div className="text-center p-4 rounded-xl border-2 border-blue-400/30 hover:scale-105 transition-all duration-300" 
+                    style={{background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.2))', backdropFilter: 'blur(5px)'}}>
+                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-2 shadow-md">
+                      <p className="text-xl font-bold text-blue-600">{monthsSinceStart - monthsPaid}</p>
+                    </div>
+                    <p className="text-sm font-medium text-blue-600">Months Due</p>
+                  </div>
+                  <div className="text-center p-4 rounded-xl border-2 border-purple-400/30 hover:scale-105 transition-all duration-300" 
+                    style={{background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(139, 92, 246, 0.2))', backdropFilter: 'blur(5px)'}}>
+                    <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-2 shadow-md">
+                      <p className="text-xl font-bold text-purple-600">${totalPaid}</p>
+                    </div>
+                    <p className="text-sm font-medium text-purple-600">Total Paid</p>
+                  </div>
+                  <div className="text-center p-4 rounded-xl border-2 border-red-400/30 hover:scale-105 transition-all duration-300" 
+                    style={{background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.2))', backdropFilter: 'blur(5px)'}}>
+                    <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-2 shadow-md">
+                      <p className="text-xl font-bold text-red-600">${outstandingAmount}</p>
+                    </div>
+                    <p className="text-sm font-medium text-red-600">Outstanding</p>
+                  </div>
+                </div>
+              </PropertyStyleCard>
+
+              {/* Recent Receipts */}
+              <PropertyStyleCard gradient="primary">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold bg-gradient-to-r from-orange-400 to-blue-400 bg-clip-text text-transparent">Recent Receipts</h3>
+                  <Link 
+                    to={`/dashboard/receipts?tenantId=${tenantId}`} 
+                    className="px-3 py-1 rounded-full text-sm bg-gradient-to-r from-orange-400 to-blue-400 text-white hover:scale-105 transition-all duration-300 shadow-md"
+                  >
+                    View All
+                  </Link>
+                </div>
+                <div className="space-y-3">
+                  {relatedData?.receipts?.slice(0, 3).map((receipt: any) => (
+                    <div key={receipt._id} className="flex justify-between items-center p-4 rounded-xl border-2 border-blue-400/30 hover:scale-102 transition-all duration-300" 
+                      style={{background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.2))', backdropFilter: 'blur(5px)'}}>
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shadow-md">
+                          <FileText size={20} className="text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-lg">${receipt.amount}</p>
+                          <p className="text-sm text-gray-400">{new Date(receipt.date).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => window.open(`/api/receipts/${receipt._id}/download`, '_blank')}
+                        className="px-4 py-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 hover:scale-105 transition-all duration-300 shadow-md flex items-center gap-1"
+                      >
+                        <Download size={16} />
+                        <span>Download</span>
+                      </button>
+                    </div>
+                  )) || (
+                    <div className="text-center py-8 rounded-xl border border-white/10" style={{backdropFilter: 'blur(5px)'}}>
+                      <FileText size={32} className="mx-auto text-gray-400 mb-2" />
+                      <p className="text-gray-400 mb-2">No receipts available</p>
+                      <button className="px-4 py-2 rounded-full bg-gradient-to-r from-orange-400 to-blue-400 text-white hover:scale-105 transition-all duration-300 shadow-md">
+                        Create Receipt
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </PropertyStyleCard>
+
+              {/* Cash Flow Analysis */}
+              <PropertyStyleCard gradient="dark">
+                <h3 className="text-lg font-bold mb-4 bg-gradient-to-r from-orange-400 to-blue-400 bg-clip-text text-transparent">Cash Flow Analysis</h3>
+                <div className="grid grid-cols-2 gap-6 mb-6">
+                  <div className="relative overflow-hidden rounded-xl border-2 border-green-400/30 hover:scale-105 transition-all duration-300" 
+                    style={{background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.2))', backdropFilter: 'blur(5px)'}}>
+                    <div className="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-green-400/20"></div>
+                    <div className="absolute -left-4 -bottom-4 w-12 h-12 rounded-full bg-green-400/10"></div>
+                    <div className="relative p-4 text-center">
+                      <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-2 shadow-md">
+                        <DollarSign size={24} className="text-green-600" />
+                      </div>
+                      <p className="text-xl font-bold text-green-600">
+                        ${relatedData?.cashFlow?.filter((cf: any) => cf.type === 'income').reduce((sum: number, cf: any) => sum + cf.amount, 0) || 0}
+                      </p>
+                      <p className="text-sm font-medium text-green-600">Total Income</p>
+                    </div>
+                  </div>
+                  <div className="relative overflow-hidden rounded-xl border-2 border-red-400/30 hover:scale-105 transition-all duration-300" 
+                    style={{background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.2))', backdropFilter: 'blur(5px)'}}>
+                    <div className="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-red-400/20"></div>
+                    <div className="absolute -left-4 -bottom-4 w-12 h-12 rounded-full bg-red-400/10"></div>
+                    <div className="relative p-4 text-center">
+                      <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-2 shadow-md">
+                        <DollarSign size={24} className="text-red-600" />
+                      </div>
+                      <p className="text-xl font-bold text-red-600">
+                        ${relatedData?.cashFlow?.filter((cf: any) => cf.type === 'expense').reduce((sum: number, cf: any) => sum + cf.amount, 0) || 0}
+                      </p>
+                      <p className="text-sm font-medium text-red-600">Total Expenses</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {relatedData?.cashFlow?.slice(0, 3).map((flow: any) => (
+                    <div key={flow._id} className="flex justify-between items-center p-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all duration-300" style={{backdropFilter: 'blur(5px)'}}>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${flow.type === 'income' ? 'bg-green-100' : 'bg-red-100'}`}>
+                          <DollarSign size={18} className={flow.type === 'income' ? 'text-green-600' : 'text-red-600'} />
+                        </div>
+                        <div>
+                          <p className="font-medium">{flow.description}</p>
+                          <p className="text-sm text-gray-400">{new Date(flow.transactionDate).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                      <span className={`font-bold text-lg ${flow.type === 'income' ? 'text-green-500' : 'text-red-500'}`}>
+                        {flow.type === 'income' ? '+' : '-'}${flow.amount}
+                      </span>
+                    </div>
+                  )) || (
+                    <div className="text-center py-6 rounded-xl border border-white/10" style={{backdropFilter: 'blur(5px)'}}>
+                      <DollarSign size={32} className="mx-auto text-gray-400 mb-2" />
+                      <p className="text-gray-400">No cash flow data available</p>
+                    </div>
+                  )}
+                </div>
+              </PropertyStyleCard>
+
+              {/* Active Reminders */}
+              <PropertyStyleCard gradient="secondary">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold bg-gradient-to-r from-orange-400 to-blue-400 bg-clip-text text-transparent">Active Reminders</h3>
+                  <span className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center text-white text-sm font-medium shadow-lg">
+                    {relatedData?.reminders?.length || 0}
+                  </span>
+                </div>
+                <div className="space-y-4">
+                  {relatedData?.reminders?.slice(0, 3).map((reminder: any) => (
+                    <div key={reminder._id} className="p-4 rounded-xl border-2 border-orange-400/30 hover:scale-102 transition-all duration-300 relative overflow-hidden" 
+                      style={{background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(234, 88, 12, 0.2))', backdropFilter: 'blur(5px)'}}>
+                      <div className="absolute -right-4 -bottom-4 w-16 h-16 rounded-full bg-orange-400/10"></div>
+                      <div className="flex justify-between items-start relative">
+                        <div className="flex gap-3">
+                          <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center shadow-md">
+                            <Bell size={20} className="text-orange-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{reminder.message}</p>
+                            <p className="text-sm text-gray-500">Next: {new Date(reminder.nextRunDate).toLocaleDateString()}</p>
+                            <span className="inline-block mt-1 text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded-full">{reminder.frequency}</span>
+                          </div>
+                        </div>
+                        <button
+                          onClick={async () => {
+                            try {
+                              await apiClient.put(`/reminders/${reminder._id}`, { status: 'completed' });
+                              window.location.reload();
+                            } catch (error) {
+                              alert('Failed to complete reminder');
+                            }
+                          }}
+                          className="px-3 py-1 rounded-full bg-orange-500 text-white hover:bg-orange-600 hover:scale-105 transition-all duration-300 shadow-md text-sm"
+                        >
+                          Complete
+                        </button>
+                      </div>
+                    </div>
+                  )) || (
+                    <div className="text-center py-8 rounded-xl border border-white/10" style={{backdropFilter: 'blur(5px)'}}>
+                      <Bell size={32} className="mx-auto text-gray-400 mb-2" />
+                      <p className="text-gray-400 mb-2">No active reminders</p>
+                      <button className="px-4 py-2 rounded-full bg-gradient-to-r from-orange-400 to-blue-400 text-white hover:scale-105 transition-all duration-300 shadow-md">
+                        Create Reminder
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </PropertyStyleCard>
+
+              {/* Pending Approvals */}
+              <PropertyStyleCard gradient="primary">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold bg-gradient-to-r from-orange-400 to-blue-400 bg-clip-text text-transparent">Pending Approvals</h3>
+                  <span className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-white text-sm font-medium shadow-lg">
+                    {relatedData?.approvals?.filter((a: any) => a.status === 'pending').length || 0}
+                  </span>
+                </div>
+                <div className="space-y-4">
+                  {relatedData?.approvals?.filter((a: any) => a.status === 'pending').slice(0, 3).map((approval: any) => (
+                    <div key={approval._id} className="p-4 rounded-xl border-2 border-yellow-400/30 hover:scale-102 transition-all duration-300 relative overflow-hidden" 
+                      style={{background: 'linear-gradient(135deg, rgba(250, 204, 21, 0.1), rgba(234, 179, 8, 0.2))', backdropFilter: 'blur(5px)'}}>
+                      <div className="absolute -left-4 -bottom-4 w-16 h-16 rounded-full bg-yellow-400/10"></div>
+                      <div className="flex justify-between items-start relative">
+                        <div className="flex gap-3">
+                          <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center shadow-md">
+                            <AlertTriangle size={20} className="text-yellow-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{approval.description}</p>
+                            <p className="text-sm text-gray-500">Requested: {new Date(approval.createdAt).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={async () => {
+                              try {
+                                await apiClient.put(`/approvals/${approval._id}`, { status: 'approved' });
+                                window.location.reload();
+                              } catch (error) {
+                                alert('Failed to approve request');
+                              }
+                            }}
+                            className="px-3 py-1.5 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-full text-xs hover:scale-105 transition-all duration-300 shadow-md"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={async () => {
+                              try {
+                                await apiClient.put(`/approvals/${approval._id}`, { status: 'rejected' });
+                                window.location.reload();
+                              } catch (error) {
+                                alert('Failed to reject request');
+                              }
+                            }}
+                            className="px-3 py-1.5 bg-gradient-to-r from-red-400 to-rose-500 text-white rounded-full text-xs hover:scale-105 transition-all duration-300 shadow-md"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )) || (
+                    <div className="text-center py-8 rounded-xl border border-white/10" style={{backdropFilter: 'blur(5px)'}}>
+                      <AlertTriangle size={32} className="mx-auto text-gray-400 mb-2" />
+                      <p className="text-gray-400">No pending approvals</p>
+                    </div>
+                  )}
+                </div>
+              </PropertyStyleCard>
+
+              {/* Recent Audit Logs */}
+              <PropertyStyleCard gradient="dark">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold bg-gradient-to-r from-orange-400 to-blue-400 bg-clip-text text-transparent">Recent Activity</h3>
+                  <Link 
+                    to={`/dashboard/audit?tenantId=${tenantId}`} 
+                    className="px-3 py-1 rounded-full text-sm bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:scale-105 transition-all duration-300 shadow-md"
+                  >
+                    View All
+                  </Link>
+                </div>
+                <div className="space-y-3">
+                  {relatedData?.auditLogs?.slice(0, 5).map((log: any) => (
+                    <div key={log._id} className="flex items-center gap-3 p-3 rounded-xl border border-white/10 hover:bg-white/5 transition-all duration-300" style={{backdropFilter: 'blur(5px)'}}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                        log.severity === 'high' ? 'bg-red-100' :
+                        log.severity === 'medium' ? 'bg-yellow-100' : 'bg-green-100'
+                      }`}>
+                        <div className={`w-3 h-3 rounded-full ${
+                          log.severity === 'high' ? 'bg-red-500' :
+                          log.severity === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                        }`}></div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">{log.description}</p>
+                        <p className="text-xs text-gray-400">{new Date(log.createdAt).toLocaleString()}</p>
+                      </div>
+                    </div>
+                  )) || (
+                    <div className="text-center py-6 rounded-xl border border-white/10" style={{backdropFilter: 'blur(5px)'}}>
+                      <FileText size={32} className="mx-auto text-gray-400 mb-2" />
+                      <p className="text-gray-400">No recent activity</p>
+                    </div>
+                  )}
+                </div>
+              </PropertyStyleCard>
+
+            </div>
+          )}
+
+          {activeTab === 'payments' && (
+            <PropertyStyleCard gradient="secondary">
+              <h3 className="text-lg font-bold mb-4 bg-gradient-to-r from-orange-400 to-blue-400 bg-clip-text text-transparent">Payment History</h3>
+              <div className="space-y-4">
+                {payments.length > 0 ? payments.map((payment: any) => (
+                  <div key={payment._id} className="flex justify-between items-center p-4 rounded-xl border-2 border-blue-400/30 hover:scale-102 transition-all duration-300" 
+                    style={{background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.2))', backdropFilter: 'blur(5px)'}}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shadow-md">
+                        <DollarSign size={20} className="text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-lg">${payment.amount}</p>
+                        <p className="text-sm text-gray-400">{new Date(payment.paymentDate).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <UniversalStatusBadge 
+                        status={payment.status} 
+                        variant={payment.status === 'Paid' ? 'success' : 'warning'}
+                      />
+                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
+                        <FileText size={16} className="text-gray-600" />
+                      </div>
+                    </div>
+                  </div>
+                )) : (
+                  <div className="text-center py-8 rounded-xl border border-white/10" style={{backdropFilter: 'blur(5px)'}}>
+                    <DollarSign size={32} className="mx-auto text-gray-400 mb-2" />
+                    <p className="text-gray-400 mb-2">No payment history available</p>
+                    <button 
+                      onClick={() => {
+                        setPaymentType('normal');
+                        setShowQuickPayment(true);
+                      }}
+                      className="px-4 py-2 rounded-full bg-gradient-to-r from-orange-400 to-blue-400 text-white hover:scale-105 transition-all duration-300 shadow-md"
+                    >
+                      Add Payment
+                    </button>
+                  </div>
+                )}
+              </div>
+            </PropertyStyleCard>
+          )}
+
+          {activeTab === 'maintenance' && (
+            <PropertyStyleCard gradient="primary">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold bg-gradient-to-r from-orange-400 to-blue-400 bg-clip-text text-transparent">Maintenance Requests ({relatedData?.maintenance?.length || 0})</h3>
+                <div className="flex gap-2">
+                  <Link 
+                    to={`/dashboard/maintenance?tenantId=${tenantId}`}
+                    className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 text-white hover:scale-105 transition-all duration-300 shadow-md text-sm flex items-center gap-1"
+                  >
+                    <Eye size={16} />
+                    View All
+                  </Link>
+                  <button
+                    onClick={async () => {
+                      const description = prompt('Describe the maintenance issue:');
+                      if (description) {
+                        const priority = prompt('Priority (Low/Medium/High):', 'Medium');
+                        const category = prompt('Category (optional):');
+                        try {
+                          await apiClient.post('/maintenance', {
+                            tenantId: tenant._id,
+                            propertyId: tenant.propertyId?._id || tenant.propertyId,
+                            description,
+                            priority: priority || 'Medium',
+                            category
+                          });
+                          alert('Maintenance request created successfully!');
+                          window.location.reload();
+                        } catch (error: any) {
+                          alert(`Failed to create request: ${error.response?.data?.message || 'Unknown error'}`);
+                        }
+                      }
+                    }}
+                    className="px-4 py-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 text-white hover:scale-105 transition-all duration-300 shadow-md text-sm flex items-center gap-1"
+                  >
+                    <Plus size={16} />
+                    New Request
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-4">
+                {relatedData?.maintenance?.length > 0 ? (
+                  relatedData.maintenance.map((request: any) => (
+                    <div key={request._id} className="p-4 rounded-xl border-2 border-orange-400/30 hover:scale-102 transition-all duration-300 relative overflow-hidden" 
+                      style={{background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(234, 88, 12, 0.2))', backdropFilter: 'blur(5px)'}}>
+                      <div className="absolute -right-4 -bottom-4 w-16 h-16 rounded-full bg-orange-400/10"></div>
+                      <div className="flex justify-between items-start mb-3 relative">
+                        <div className="flex gap-3">
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-md ${
+                            request.priority === 'High' ? 'bg-red-100' :
+                            request.priority === 'Medium' ? 'bg-yellow-100' :
+                            'bg-green-100'
+                          }`}>
+                            <Wrench size={20} className={`${
+                              request.priority === 'High' ? 'text-red-600' :
+                              request.priority === 'Medium' ? 'text-yellow-600' :
+                              'text-green-600'
+                            }`} />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-medium text-lg mb-1">{request.description}</h4>
+                            <div className="flex items-center gap-4 text-sm text-text-secondary">
+                              <span>Created: {new Date(request.createdAt).toLocaleDateString()}</span>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                request.priority === 'High' ? 'bg-red-100 text-red-800' :
+                                request.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-green-100 text-green-800'
+                              }`}>
+                                {request.priority} Priority
+                              </span>
+                              {request.category && <span className="px-2 py-1 rounded-full bg-gray-100 text-gray-800 text-xs">{request.category}</span>}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <UniversalStatusBadge 
+                            status={request.status}
+                            variant={
+                              request.status === 'Completed' ? 'success' :
+                              request.status === 'In Progress' ? 'warning' :
+                              request.status === 'Cancelled' ? 'error' : 'info'
+                            }
+                          />
+                          <button
+                            onClick={async () => {
+                              const newStatus = prompt('Update status (Open/In Progress/Completed/Cancelled):', request.status);
+                              if (newStatus && ['Open', 'In Progress', 'Completed', 'Cancelled'].includes(newStatus)) {
+                                try {
+                                  await apiClient.put(`/maintenance/${request._id}`, { status: newStatus });
+                                  alert('Status updated successfully!');
+                                  window.location.reload();
+                                } catch (error: any) {
+                                  alert(`Failed to update: ${error.response?.data?.message || 'Unknown error'}`);
+                                }
+                              }
+                            }}
+                            className="px-3 py-1.5 bg-gradient-to-r from-blue-400 to-blue-500 text-white rounded-full text-xs hover:scale-105 transition-all duration-300 shadow-md"
+                          >
+                            Update
+                          </button>
+                        </div>
+                      </div>
+                      {request.notes && (
+                        <div className="mt-3 p-3 rounded-xl bg-white/10 text-sm border border-white/10">
+                          <strong>Notes:</strong> {request.notes}
+                        </div>
+                      )}
+                      {(request.estimatedCost || request.actualCost) && (
+                        <div className="mt-3 flex gap-4 text-sm">
+                          {request.estimatedCost && (
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100/30 text-blue-800">
+                              <DollarSign size={14} />
+                              <span>Estimated: ${request.estimatedCost}</span>
+                            </div>
+                          )}
+                          {request.actualCost && (
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-100/30 text-green-800">
+                              <DollarSign size={14} />
+                              <span>Actual: ${request.actualCost}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-12 rounded-xl border-2 border-orange-400/20" 
+                    style={{background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.05), rgba(234, 88, 12, 0.1))', backdropFilter: 'blur(5px)'}}>
+                    <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                      <Wrench size={32} className="text-orange-600" />
+                    </div>
+                    <h4 className="text-lg font-medium text-white mb-2">No Maintenance Requests</h4>
+                    <p className="text-gray-400 mb-6">This tenant has no maintenance requests yet.</p>
+                    <button
+                      onClick={async () => {
+                        const description = prompt('Describe the maintenance issue:');
+                        if (description) {
+                          try {
+                            await apiClient.post('/maintenance', {
+                              tenantId: tenant._id,
+                              propertyId: tenant.propertyId?._id || tenant.propertyId,
+                              description,
+                              priority: 'Medium'
+                            });
+                            alert('Maintenance request created successfully!');
+                            window.location.reload();
+                          } catch (error: any) {
+                            alert(`Failed to create request: ${error.response?.data?.message || 'Unknown error'}`);
+                          }
+                        }
+                      }}
+                      className="px-5 py-2.5 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 text-white hover:scale-105 transition-all duration-300 shadow-md flex items-center gap-2 mx-auto"
+                    >
+                      <Plus size={18} />
+                      Create First Request
+                    </button>
+                  </div>
+                )}
+              </div>
+            </PropertyStyleCard>
+          )}
+
+          {activeTab === 'analytics' && (
+            <PropertyStyleCard gradient="dark">
+              <TenantAnalyticsDashboard tenantId={tenantId!} tenant={tenant} />
+            </PropertyStyleCard>
+          )}
+
+          {activeTab === 'documents' && (
+            <PropertyStyleCard gradient="primary">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold">Documents & Images</h3>
+                <div className="flex gap-2">
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.txt"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const description = prompt('Enter document description:');
+                        if (description) {
+                          try {
+                            const formData = new FormData();
+                            formData.append('document', file);
+                            formData.append('description', description);
+                            formData.append('tenantId', tenant._id);
+                            
+                            await apiClient.post('/upload/document', formData, {
+                              headers: { 'Content-Type': 'multipart/form-data' }
+                            });
+                            alert('Document uploaded successfully!');
+                            window.location.reload();
+                          } catch (error: any) {
+                            alert(`Failed to upload document: ${error.response?.data?.message || 'Unknown error'}`);
+                          }
+                        }
+                      }
+                    }}
+                    className="hidden"
+                    id="document-upload"
+                  />
+                  <label
+                    htmlFor="document-upload"
+                    className="px-3 py-2 bg-blue-500 text-white rounded-lg cursor-pointer hover:bg-blue-600 text-sm"
+                  >
+                    Upload Document
+                  </label>
+                  
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const description = prompt('Enter image description:');
+                        if (description) {
+                          try {
+                            const formData = new FormData();
+                            formData.append('image', file);
+                            formData.append('description', description);
+                            formData.append('tenantId', tenant._id);
+                            
+                            await apiClient.post('/upload/tenant-image', formData, {
+                              headers: { 'Content-Type': 'multipart/form-data' }
+                            });
+                            alert('Image uploaded successfully!');
+                            window.location.reload();
+                          } catch (error: any) {
+                            alert(`Failed to upload image: ${error.response?.data?.message || 'Unknown error'}`);
+                          }
+                        }
+                      }
+                    }}
+                    className="hidden"
+                    id="image-upload"
+                  />
+                  <label
+                    htmlFor="image-upload"
+                    className="px-3 py-2 bg-green-500 text-white rounded-lg cursor-pointer hover:bg-green-600 text-sm"
+                  >
+                    Upload Image
+                  </label>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Tenant Photo */}
+                {(tenant.tenantImage || tenant.imageUrl) && (
+                  <div className="border-2 border-gray-200 rounded-xl p-4 hover:border-blue-300 transition-colors">
+                    <div className="aspect-square mb-3 rounded-lg overflow-hidden bg-gray-100">
+                      <img 
+                        src={tenant.tenantImage || tenant.imageUrl} 
+                        alt="Tenant Photo" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const parent = e.currentTarget.parentElement;
+                          if (parent) {
+                            parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400"><svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg></div>';
+                          }
+                        }}
+                      />
+                    </div>
+                    <p className="text-sm font-semibold text-gray-800 mb-2">Tenant Photo</p>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => window.open(tenant.tenantImage || tenant.imageUrl, '_blank')}
+                        className="flex-1 text-xs bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                      >
+                        View Full Size
+                      </button>
+                      <button 
+                        onClick={() => {
+                          const link = document.createElement('a');
+                          link.href = tenant.tenantImage || tenant.imageUrl;
+                          link.download = `${tenant.name}-photo.jpg`;
+                          link.click();
+                        }}
+                        className="flex-1 text-xs bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                      >
+                        Download
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Government ID Front */}
+                {tenant.govtIdFront && (
+                  <div className="border-2 border-gray-200 rounded-xl p-4 hover:border-blue-300 transition-colors">
+                    <div className="aspect-[3/2] mb-3 rounded-lg overflow-hidden bg-gray-100">
+                      <img 
+                        src={tenant.govtIdFront} 
+                        alt="Government ID Front" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const parent = e.currentTarget.parentElement;
+                          if (parent) {
+                            parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400"><svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg></div>';
+                          }
+                        }}
+                      />
+                    </div>
+                    <p className="text-sm font-semibold text-gray-800 mb-2">Government ID (Front)</p>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => window.open(tenant.govtIdFront, '_blank')}
+                        className="flex-1 text-xs bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                      >
+                        View Full Size
+                      </button>
+                      <button 
+                        onClick={() => {
+                          const link = document.createElement('a');
+                          link.href = tenant.govtIdFront;
+                          link.download = `${tenant.name}-id-front.jpg`;
+                          link.click();
+                        }}
+                        className="flex-1 text-xs bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                      >
+                        Download
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Government ID Back */}
+                {tenant.govtIdBack && (
+                  <div className="border-2 border-gray-200 rounded-xl p-4 hover:border-blue-300 transition-colors">
+                    <div className="aspect-[3/2] mb-3 rounded-lg overflow-hidden bg-gray-100">
+                      <img 
+                        src={tenant.govtIdBack} 
+                        alt="Government ID Back" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const parent = e.currentTarget.parentElement;
+                          if (parent) {
+                            parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400"><svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg></div>';
+                          }
+                        }}
+                      />
+                    </div>
+                    <p className="text-sm font-semibold text-gray-800 mb-2">Government ID (Back)</p>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => window.open(tenant.govtIdBack, '_blank')}
+                        className="flex-1 text-xs bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                      >
+                        View Full Size
+                      </button>
+                      <button 
+                        onClick={() => {
+                          const link = document.createElement('a');
+                          link.href = tenant.govtIdBack;
+                          link.download = `${tenant.name}-id-back.jpg`;
+                          link.click();
+                        }}
+                        className="flex-1 text-xs bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                      >
+                        Download
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Additional Adult Images */}
+                {tenant.additionalAdults && tenant.additionalAdults.length > 0 && tenant.additionalAdults.map((adult: any, index: number) => (
+                  adult.image && (
+                    <div key={`adult-${index}`} className="border-2 border-gray-200 rounded-xl p-4 hover:border-blue-300 transition-colors">
+                      <div className="aspect-square mb-3 rounded-lg overflow-hidden bg-gray-100">
+                        <img 
+                          src={adult.image} 
+                          alt={`${adult.name || `Adult ${index + 1}`} Photo`} 
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            const parent = e.currentTarget.parentElement;
+                            if (parent) {
+                              parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400"><svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg></div>';
+                            }
+                          }}
+                        />
+                      </div>
+                      <p className="text-sm font-semibold text-gray-800 mb-2">{adult.name || `Adult ${index + 1}`} Photo</p>
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => window.open(adult.image, '_blank')}
+                          className="flex-1 text-xs bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                        >
+                          View Full Size
+                        </button>
+                        <button 
+                          onClick={() => {
+                            const link = document.createElement('a');
+                            link.href = adult.image;
+                            link.download = `${adult.name || `adult-${index + 1}`}-photo.jpg`;
+                            link.click();
+                          }}
+                          className="flex-1 text-xs bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                        >
+                          Download
+                        </button>
+                      </div>
+                    </div>
+                  )
+                ))}
+              </div>
+              
+              {/* Uploaded Documents Section */}
+              {tenant.documents && tenant.documents.length > 0 && (
+                <div className="mb-6">
+                  <h4 className="font-semibold mb-3">Uploaded Documents</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {tenant.documents.map((doc: any, index: number) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-center gap-3">
+                          <FileText size={24} className="text-blue-500" />
+                          <div className="flex-1">
+                            <p className="font-medium">{doc.description}</p>
+                            <p className="text-sm text-gray-500">{doc.filename}</p>
+                          </div>
+                          <button
+                            onClick={() => window.open(doc.url, '_blank')}
+                            className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                          >
+                            View
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Uploaded Images Section */}
+              {tenant.uploadedImages && tenant.uploadedImages.length > 0 && (
+                <div className="mb-6">
+                  <h4 className="font-semibold mb-3">Uploaded Images</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {tenant.uploadedImages.map((img: any, index: number) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-4">
+                        <img src={img.url} alt={img.description} className="w-full h-32 object-cover rounded mb-2" />
+                        <p className="text-sm font-medium">{img.description}</p>
+                        <button
+                          onClick={() => window.open(img.url, '_blank')}
+                          className="mt-2 px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+                        >
+                          View Full Size
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* No Documents Message */}
+              {!tenant.tenantImage && !tenant.imageUrl && !tenant.govtIdFront && !tenant.govtIdBack && 
+               (!tenant.additionalAdults || tenant.additionalAdults.length === 0 || !tenant.additionalAdults.some((adult: any) => adult.image)) &&
+               (!tenant.documents || tenant.documents.length === 0) && (!tenant.uploadedImages || tenant.uploadedImages.length === 0) && (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FileText size={32} className="text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Documents Available</h3>
+                  <p className="text-gray-500 mb-4">Use the upload buttons above to add documents and images.</p>
+                </div>
+              )}
+            </PropertyStyleCard>
+          )}
+
+          {activeTab === 'personal' && (
+            <PropertyStyleCard gradient="secondary">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-bold">Complete Personal Details</h3>
+                <div className="flex gap-2">
+                  <button
+                    onClick={async () => {
+                      try {
+                        const response = await apiClient.post(`/tenants/${tenantId}/download-zip`, {}, { responseType: 'blob' });
+                        const blob = new Blob([response.data], { type: 'application/zip' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${tenant.name}-complete-data.zip`;
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                      } catch (error) {
+                        alert('Failed to download complete data');
+                      }
+                    }}
+                    className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm hover:bg-green-600"
+                  >
+                    <Download size={16} />
+                    Download All Data
+                  </button>
+                  <button
+                    onClick={async () => {
+                      try {
+                        const response = await apiClient.post(`/tenants/${tenantId}/personal-details-pdf`, {}, { responseType: 'blob' });
+                        const blob = new Blob([response.data], { type: 'application/pdf' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${tenant.name}-personal-details.pdf`;
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                      } catch (error) {
+                        alert('Failed to download personal details PDF');
+                      }
+                    }}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm hover:bg-blue-600"
+                  >
+                    <Download size={16} />
+                    Download PDF
+                  </button>
+                </div>
+              </div>
+              
+              <div className="space-y-8">
+                {/* Photos Section */}
+                <div>
+                  <h4 className="font-semibold mb-4 text-lg border-b pb-2">Photos & Documents</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Main Tenant Photo */}
+                    {(tenant.tenantImage || tenant.imageUrl) && (
+                      <div className="text-center">
+                        <img 
+                          src={tenant.tenantImage || tenant.imageUrl} 
+                          alt="Tenant Photo" 
+                          className="w-32 h-32 object-cover rounded-lg mx-auto mb-2 border-2 border-gray-200"
+                        />
+                        <p className="text-sm font-medium mb-2">Main Tenant Photo</p>
+                        <button
+                          onClick={() => {
+                            const link = document.createElement('a');
+                            link.href = tenant.tenantImage || tenant.imageUrl;
+                            link.download = `${tenant.name}-photo.jpg`;
+                            link.click();
+                          }}
+                          className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                        >
+                          <Download size={12} className="inline mr-1" />Download
+                        </button>
+                      </div>
+                    )}
+                    
+                    {/* Government IDs */}
+                    {tenant.govtIdFront && (
+                      <div className="text-center">
+                        <img 
+                          src={tenant.govtIdFront} 
+                          alt="ID Front" 
+                          className="w-32 h-20 object-cover rounded-lg mx-auto mb-2 border-2 border-gray-200"
+                        />
+                        <p className="text-sm font-medium mb-2">Government ID (Front)</p>
+                        <button
+                          onClick={() => {
+                            const link = document.createElement('a');
+                            link.href = tenant.govtIdFront;
+                            link.download = `${tenant.name}-id-front.jpg`;
+                            link.click();
+                          }}
+                          className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                        >
+                          <Download size={12} className="inline mr-1" />Download
+                        </button>
+                      </div>
+                    )}
+                    
+                    {tenant.govtIdBack && (
+                      <div className="text-center">
+                        <img 
+                          src={tenant.govtIdBack} 
+                          alt="ID Back" 
+                          className="w-32 h-20 object-cover rounded-lg mx-auto mb-2 border-2 border-gray-200"
+                        />
+                        <p className="text-sm font-medium mb-2">Government ID (Back)</p>
+                        <button
+                          onClick={() => {
+                            const link = document.createElement('a');
+                            link.href = tenant.govtIdBack;
+                            link.download = `${tenant.name}-id-back.jpg`;
+                            link.click();
+                          }}
+                          className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                        >
+                          <Download size={12} className="inline mr-1" />Download
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Basic Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold mb-3 text-lg border-b pb-2">Basic Information</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between"><span className="text-gray-600">Full Name:</span> <span className="font-medium">{tenant.name}</span></div>
+                      <div className="flex justify-between"><span className="text-gray-600">Email:</span> <span className="font-medium">{tenant.email}</span></div>
+                      <div className="flex justify-between"><span className="text-gray-600">Phone:</span> <span className="font-medium">{tenant.phone}</span></div>
+                      {tenant.whatsappNumber && <div className="flex justify-between"><span className="text-gray-600">WhatsApp:</span> <span className="font-medium">{tenant.whatsappNumber}</span></div>}
+                      <div className="flex justify-between"><span className="text-gray-600">Status:</span> <span className={`font-medium ${tenant.status === 'Active' ? 'text-green-600' : 'text-red-600'}`}>{tenant.status}</span></div>
+                      {tenant.numberOfOccupants && <div className="flex justify-between"><span className="text-gray-600">Occupants:</span> <span className="font-medium">{tenant.numberOfOccupants}</span></div>}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold mb-3 text-lg border-b pb-2">Property Information</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between"><span className="text-gray-600">Property:</span> <span className="font-medium">{tenant.propertyId?.name || 'N/A'}</span></div>
+                      <div className="flex justify-between"><span className="text-gray-600">Unit:</span> <span className="font-medium">{tenant.unit}</span></div>
+                      <div className="flex justify-between"><span className="text-gray-600">Monthly Rent:</span> <span className="font-medium text-green-600">${tenant.rentAmount || 0}</span></div>
+                      <div className="flex justify-between"><span className="text-gray-600">Security Deposit:</span> <span className="font-medium">${tenant.securityDeposit || 0}</span></div>
+                      {tenant.leaseStartDate && <div className="flex justify-between"><span className="text-gray-600">Lease Start:</span> <span className="font-medium">{new Date(tenant.leaseStartDate).toLocaleDateString()}</span></div>}
+                      {tenant.leaseEndDate && <div className="flex justify-between"><span className="text-gray-600">Lease End:</span> <span className="font-medium">{new Date(tenant.leaseEndDate).toLocaleDateString()}</span></div>}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Family & Personal Details */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold mb-3 text-lg border-b pb-2">Family Details</h4>
+                    <div className="space-y-3">
+                      {tenant.fatherName && <div className="flex justify-between"><span className="text-gray-600">Father's Name:</span> <span className="font-medium">{tenant.fatherName}</span></div>}
+                      {tenant.motherName && <div className="flex justify-between"><span className="text-gray-600">Mother's Name:</span> <span className="font-medium">{tenant.motherName}</span></div>}
+                      {tenant.govtIdNumber && <div className="flex justify-between"><span className="text-gray-600">Government ID:</span> <span className="font-medium">{tenant.govtIdNumber}</span></div>}
+                      {tenant.occupation && <div className="flex justify-between"><span className="text-gray-600">Occupation:</span> <span className="font-medium">{tenant.occupation}</span></div>}
+                      {tenant.monthlyIncome && <div className="flex justify-between"><span className="text-gray-600">Monthly Income:</span> <span className="font-medium text-green-600">${tenant.monthlyIncome}</span></div>}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold mb-3 text-lg border-b pb-2">Contact & Emergency</h4>
+                    <div className="space-y-3">
+                      {tenant.emergencyContact?.name && <div className="flex justify-between"><span className="text-gray-600">Emergency Contact:</span> <span className="font-medium">{tenant.emergencyContact.name}</span></div>}
+                      {tenant.emergencyContact?.phone && <div className="flex justify-between"><span className="text-gray-600">Emergency Phone:</span> <span className="font-medium">{tenant.emergencyContact.phone}</span></div>}
+                      {tenant.emergencyContact?.relation && <div className="flex justify-between"><span className="text-gray-600">Relation:</span> <span className="font-medium">{tenant.emergencyContact.relation}</span></div>}
+                      {tenant.reference?.name && <div className="flex justify-between"><span className="text-gray-600">Reference:</span> <span className="font-medium">{tenant.reference.name}</span></div>}
+                      {tenant.reference?.phone && <div className="flex justify-between"><span className="text-gray-600">Reference Phone:</span> <span className="font-medium">{tenant.reference.phone}</span></div>}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Addresses */}
+                <div>
+                  <h4 className="font-semibold mb-3 text-lg border-b pb-2">Address Information</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {tenant.presentAddress && (
+                      <div>
+                        <span className="text-gray-600 font-medium">Present Address:</span>
+                        <p className="mt-1 p-3 bg-gray-50 rounded-lg">{tenant.presentAddress}</p>
+                      </div>
+                    )}
+                    {tenant.permanentAddress && (
+                      <div>
+                        <span className="text-gray-600 font-medium">Permanent Address:</span>
+                        <p className="mt-1 p-3 bg-gray-50 rounded-lg">{tenant.permanentAddress}</p>
+                      </div>
+                    )}
+                    {tenant.previousAddress && (
+                      <div>
+                        <span className="text-gray-600 font-medium">Previous Address:</span>
+                        <p className="mt-1 p-3 bg-gray-50 rounded-lg">{tenant.previousAddress}</p>
+                      </div>
+                    )}
+                    {tenant.reasonForMoving && (
+                      <div>
+                        <span className="text-gray-600 font-medium">Reason for Moving:</span>
+                        <p className="mt-1 p-3 bg-gray-50 rounded-lg">{tenant.reasonForMoving}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Additional Information */}
+                {(tenant.vehicleDetails || tenant.petDetails || tenant.specialInstructions) && (
+                  <div>
+                    <h4 className="font-semibold mb-3 text-lg border-b pb-2">Additional Information</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {tenant.vehicleDetails && (
+                        <div>
+                          <span className="text-gray-600 font-medium">Vehicle Details:</span>
+                          <p className="mt-1 p-3 bg-gray-50 rounded-lg">{tenant.vehicleDetails}</p>
+                        </div>
+                      )}
+                      {tenant.petDetails && (
+                        <div>
+                          <span className="text-gray-600 font-medium">Pet Details:</span>
+                          <p className="mt-1 p-3 bg-gray-50 rounded-lg">{tenant.petDetails}</p>
+                        </div>
+                      )}
+                    </div>
+                    {tenant.specialInstructions && (
+                      <div className="mt-4">
+                        <span className="text-gray-600 font-medium">Special Instructions:</span>
+                        <p className="mt-1 p-3 bg-gray-50 rounded-lg">{tenant.specialInstructions}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Additional Adults */}
+                {tenant.additionalAdults && tenant.additionalAdults.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold mb-3 text-lg border-b pb-2">Additional Adults ({tenant.additionalAdults.length})</h4>
+                    <div className="space-y-4">
+                      {tenant.additionalAdults.map((adult: any, index: number) => (
+                        <div key={index} className="border border-gray-200 rounded-lg p-4">
+                          <div className="flex items-start gap-4">
+                            {(adult.imageUrl || adult.image) && (
+                              <img 
+                                src={adult.imageUrl || adult.image} 
+                                alt={`${adult.name || `Adult ${index + 1}`}`} 
+                                className="w-16 h-16 object-cover rounded-lg border-2 border-gray-200"
+                              />
+                            )}
+                            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div className="space-y-2">
+                                {adult.name && <div className="flex justify-between"><span className="text-gray-600">Name:</span> <span className="font-medium">{adult.name}</span></div>}
+                                {adult.phone && <div className="flex justify-between"><span className="text-gray-600">Phone:</span> <span className="font-medium">{adult.phone}</span></div>}
+                                {adult.relation && <div className="flex justify-between"><span className="text-gray-600">Relation:</span> <span className="font-medium">{adult.relation}</span></div>}
+                              </div>
+                              <div className="space-y-2">
+                                {adult.govtIdNumber && <div className="flex justify-between"><span className="text-gray-600">ID Number:</span> <span className="font-medium">{adult.govtIdNumber}</span></div>}
+                                {adult.fatherName && <div className="flex justify-between"><span className="text-gray-600">Father's Name:</span> <span className="font-medium">{adult.fatherName}</span></div>}
+                                {adult.motherName && <div className="flex justify-between"><span className="text-gray-600">Mother's Name:</span> <span className="font-medium">{adult.motherName}</span></div>}
+                              </div>
+                            </div>
+                          </div>
+                          {adult.permanentAddress && (
+                            <div className="mt-3">
+                              <span className="text-gray-600 font-medium">Address:</span>
+                              <p className="mt-1 p-2 bg-gray-50 rounded text-sm">{adult.permanentAddress}</p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </PropertyStyleCard>
+          )}
+        </div>
+
+        {/* Sidebar */}
+        <div className="order-1 lg:order-2 space-y-6">
+          {/* Tenant Overview Card */}
+          <div className="relative">
+            <div className="absolute inset-0 rounded-3xl p-1 animate-pulse" style={{background: 'linear-gradient(135deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4, #FFEAA7)', backgroundSize: '300% 300%', animation: 'gradientFlow 4s ease infinite'}}></div>
+            <div className="rounded-2xl lg:rounded-3xl p-4 lg:p-6 border-2 border-white/30 relative overflow-hidden" style={{background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3))', backdropFilter: 'blur(15px)'}}>
+              <h3 className="text-base lg:text-lg font-bold bg-gradient-to-r from-orange-400 to-blue-400 bg-clip-text text-transparent mb-3 lg:mb-4">Tenant Overview</h3>
+              
+              {/* Tenant Image */}
+              <div className="mb-4 lg:mb-5 flex justify-center">
+                <div className="w-28 h-28 rounded-full bg-gradient-to-r from-orange-400/30 to-blue-400/30 backdrop-blur-sm border-2 border-white/40 flex items-center justify-center overflow-hidden shadow-lg">
+                  {(tenant.tenantImage || tenant.imageUrl) ? (
+                    <img 
+                      src={tenant.tenantImage || tenant.imageUrl}
+                      alt={tenant.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const fallback = e.currentTarget.parentElement?.querySelector('.fallback-text');
+                        if (fallback) fallback.classList.remove('hidden');
+                      }}
+                    />
+                  ) : (
+                    <User size={40} className="text-white" />
+                  )}
+                  <div className={`fallback-text text-white font-bold text-3xl absolute inset-0 flex items-center justify-center ${(tenant.tenantImage || tenant.imageUrl) ? 'hidden' : ''}`}>
+                    {tenant.name?.charAt(0).toUpperCase() || 'T'}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 lg:space-y-4 lg:block">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-2 rounded-xl hover:bg-white/10 transition-all duration-300">
+                  <span className="text-xs lg:text-sm text-white/80">Status</span>
+                  <span className="font-medium text-sm lg:text-base text-white">{tenant.status || 'Active'}</span>
+                </div>
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-2 rounded-xl hover:bg-white/10 transition-all duration-300">
+                  <span className="text-xs lg:text-sm text-white/80">Unit</span>
+                  <span className="font-medium text-sm lg:text-base text-white">{tenant.unit}</span>
+                </div>
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-2 rounded-xl hover:bg-white/10 transition-all duration-300">
+                  <span className="text-xs lg:text-sm text-white/80">Since</span>
+                  <span className="font-medium text-sm lg:text-base text-white">
+                    {new Date(tenant.leaseStartDate || tenant.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between col-span-2 lg:col-span-1 p-2 rounded-xl hover:bg-white/10 transition-all duration-300">
+                  <span className="text-xs lg:text-sm text-white/80">Monthly Rent</span>
+                  <span className="font-medium text-sm lg:text-base text-green-300">
+                    ${tenant.rentAmount?.toLocaleString() || 0}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Primary Actions Wheel */}
+          <div className="rounded-3xl p-6 border-2 border-white/30 relative overflow-hidden" style={{background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(15px)'}}>
+            <h3 className="text-lg font-bold text-white mb-6 text-center">Quick Actions</h3>
+            <div className="relative flex items-center justify-center">
+              {/* Center circle with pulsing animation */}
+              <div className="absolute w-16 h-16 rounded-full border-2 border-white/30 flex items-center justify-center animate-pulse" style={{background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2))'}}>
+                <span className="text-white text-xs font-bold">Actions</span>
+              </div>
+              
+              {/* Action buttons in wheel formation */}
+              <div className="relative w-52 h-52">
+                <button 
+                  onClick={() => {
+                    setPaymentType('normal');
+                    setShowQuickPayment(true);
+                  }}
+                  className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 w-20 h-20 rounded-full border-2 border-green-400/50 hover:scale-110 transition-all duration-300 flex flex-col items-center justify-center text-white shadow-lg"
+                  style={{background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.4), rgba(16, 185, 129, 0.6))', backdropFilter: 'blur(10px)'}}>
+                  <DollarSign size={20} className="mb-1" />
+                  <span className="text-xs font-bold">Payment</span>
+                </button>
+
+                <button 
+                  onClick={async () => {
+                    const description = prompt('Describe the maintenance issue:');
+                    if (description) {
+                      const priority = prompt('Priority (Low/Medium/High):', 'Medium');
+                      try {
+                        await apiClient.post('/maintenance', {
+                          tenantId: tenant._id,
+                          propertyId: tenant.propertyId?._id || tenant.propertyId,
+                          description,
+                          priority: priority || 'Medium'
+                        });
+                        alert('Maintenance request submitted successfully!');
+                        window.location.reload();
+                      } catch (error: any) {
+                        alert(`Failed to submit maintenance request: ${error.response?.data?.message || 'Unknown error'}`);
+                      }
+                    }
+                  }}
+                  className="absolute top-1/2 right-0 transform translate-x-2 -translate-y-1/2 w-20 h-20 rounded-full border-2 border-orange-400/50 hover:scale-110 transition-all duration-300 flex flex-col items-center justify-center text-white shadow-lg"
+                  style={{background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.4), rgba(234, 88, 12, 0.6))', backdropFilter: 'blur(10px)'}}>
+                  <Wrench size={20} className="mb-1" />
+                  <span className="text-xs font-bold">Issue</span>
+                </button>
+
+                <Link 
+                  to={`/dashboard/payments?tenantId=${tenant._id}`}
+                  className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2 w-20 h-20 rounded-full border-2 border-blue-400/50 hover:scale-110 transition-all duration-300 flex flex-col items-center justify-center text-white shadow-lg"
+                  style={{background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(37, 99, 235, 0.6))', backdropFilter: 'blur(10px)'}}>
+                  <Calendar size={20} className="mb-1" />
+                  <span className="text-xs font-bold">History</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Management Wheel */}
+          <div className="rounded-3xl p-6 border-2 border-white/30 relative overflow-hidden" style={{background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3))', backdropFilter: 'blur(15px)'}}>
+            <h3 className="text-lg font-bold text-white mb-6 text-center">Management</h3>
+            <div className="relative flex items-center justify-center">
+              {/* Center circle with subtle animation */}
+              <div className="absolute w-16 h-16 rounded-full border-2 border-white/30 flex items-center justify-center" 
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2))',
+                  animation: 'gradientFlow 4s ease infinite',
+                  backgroundSize: '200% 200%'
+                }}>
+                <span className="text-white text-xs font-bold">Manage</span>
+              </div>
+              
+              {/* Management buttons in wheel formation */}
+              <div className="relative w-56 h-56">
+                <button
+                  onClick={async () => {
+                    const months = prompt('Enter additional months to extend lease:', '12');
+                    if (months && !isNaN(Number(months))) {
+                      try {
+                        const currentEndDate = tenant.leaseEndDate ? new Date(tenant.leaseEndDate) : new Date();
+                        const newEndDate = new Date(currentEndDate);
+                        newEndDate.setMonth(newEndDate.getMonth() + parseInt(months));
+                        
+                        await apiClient.put(`/tenants/${tenant._id}`, {
+                          leaseEndDate: newEndDate.toISOString().split('T')[0],
+                          leaseDuration: (tenant.leaseDuration || 12) + parseInt(months)
+                        });
+                        alert(`Lease extended by ${months} months successfully!`);
+                        window.location.reload();
+                      } catch (error: any) {
+                        alert(`Failed to renew lease: ${error.response?.data?.message || 'Unknown error'}`);
+                      }
+                    }
+                  }}
+                  className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 w-20 h-20 rounded-full border-2 border-indigo-400/50 hover:scale-110 transition-all duration-300 flex flex-col items-center justify-center text-white shadow-lg"
+                  style={{background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(79, 70, 229, 0.6))', backdropFilter: 'blur(10px)'}}>
+                  <Calendar size={18} className="mb-1" />
+                  <span className="text-xs font-bold">Renew</span>
+                </button>
+
+                {hasOverdue && (
+                  <button
+                    onClick={() => {
+                      setPaymentType('overdue');
+                      setShowQuickPayment(true);
+                    }}
+                    className="absolute top-1/2 right-0 transform translate-x-2 -translate-y-1/2 w-20 h-20 rounded-full border-2 border-red-400/50 hover:scale-110 transition-all duration-300 flex flex-col items-center justify-center text-white shadow-lg"
+                    style={{background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(220, 38, 38, 0.6))', backdropFilter: 'blur(10px)'}}>
+                    <AlertTriangle size={18} className="mb-1" />
+                    <span className="text-xs font-bold">Overdue</span>
+                    <span className="absolute -top-2 -right-2 bg-red-400 px-2 py-1 rounded-full text-xs font-bold text-white shadow-md">${overdueAmount}</span>
+                  </button>
+                )}
+
+                <Link 
+                  to={`/dashboard/maintenance?tenantId=${tenant._id}`}
+                  className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2 w-20 h-20 rounded-full border-2 border-purple-400/50 hover:scale-110 transition-all duration-300 flex flex-col items-center justify-center text-white shadow-lg"
+                  style={{background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.4), rgba(139, 92, 246, 0.6))', backdropFilter: 'blur(10px)'}}>
+                  <Wrench size={18} className="mb-1" />
+                  <span className="text-xs font-bold">Issues</span>
+                  <span className="absolute -top-2 -right-2 bg-purple-400 px-2 py-1 rounded-full text-xs font-bold text-white shadow-md">{relatedData?.maintenance?.length || 0}</span>
+                </Link>
+
+                <button
+                  onClick={async () => {
+                    const reason = prompt('Reason for lease termination (optional):');
+                    if (confirm(`Terminate lease for ${tenant.name}? This will archive the tenant.`)) {
+                      try {
+                        await apiClient.put(`/tenants/${tenant._id}`, {
+                          status: 'Archived',
+                          leaseEndDate: new Date().toISOString().split('T')[0],
+                          terminationReason: reason || 'Lease terminated'
+                        });
+                        alert('Lease terminated and tenant archived successfully!');
+                        window.location.reload();
+                      } catch (error: any) {
+                        alert(`Failed to terminate lease: ${error.response?.data?.message || 'Unknown error'}`);
+                      }
+                    }
+                  }}
+                  className="absolute top-1/2 left-0 transform -translate-x-2 -translate-y-1/2 w-20 h-20 rounded-full border-2 border-red-400/50 hover:scale-110 transition-all duration-300 flex flex-col items-center justify-center text-white shadow-lg"
+                  style={{background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(220, 38, 38, 0.6))', backdropFilter: 'blur(10px)'}}>
+                  <Trash2 size={18} className="mb-1" />
+                  <span className="text-xs font-bold">End</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Edit Modal */}
+      <EditTenantModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        tenant={tenant}
+        onTenantUpdated={(updatedTenant) => {
+          // Refresh tenant data
+          window.location.reload();
+        }}
+      />
+      
+      {/* Quick Payment Modal */}
+      <QuickPaymentModal
+        isOpen={showQuickPayment}
+        onClose={() => setShowQuickPayment(false)}
+        tenant={tenant}
+        onPaymentAdded={() => {
+          // Refresh page to show new payment
+          window.location.reload();
+        }}
+        isOverdue={paymentType === 'overdue'}
+        overdueAmount={overdueAmount}
+        monthsOverdue={monthsOverdue}
+      />
+      </motion.div>
+    </PropertyStyleBackground>
+  );
+};
+
+export default TenantDetailsPage;

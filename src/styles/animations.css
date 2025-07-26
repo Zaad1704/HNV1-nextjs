@@ -1,0 +1,111 @@
+/* Water Dropping Animation */
+@keyframes waterDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(40px) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(60px) scale(0.3);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes paymentEmit {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(360deg);
+  }
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes floatingGlow {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+    transform: translateY(0px);
+  }
+  50% {
+    box-shadow: 0 8px 30px rgba(30, 136, 229, 0.6);
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Enhanced Water Drop Classes */
+.water-drop {
+  animation: waterDrop 3s ease-in-out infinite;
+}
+
+.payment-emit {
+  animation: paymentEmit 2s ease-out infinite;
+}
+
+.floating-glow {
+  animation: floatingGlow 3s ease-in-out infinite;
+}
+
+.shimmer-effect {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Responsive Animations */
+@media (prefers-reduced-motion: reduce) {
+  .water-drop,
+  .payment-emit,
+  .floating-glow,
+  .shimmer-effect {
+    animation: none;
+  }
+}

@@ -1,0 +1,91 @@
+/* TenantDetailsStyles.css */
+
+/* Gradient animation for headers and cards */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animation for the tenant details page header */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Glass morphism styles for tenant components */
+.glass-morphism .tenant-card {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+}
+
+.glass-morphism .tenant-header {
+  background: linear-gradient(135deg, rgba(255,138,101,0.3), rgba(66,165,245,0.3));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-morphism .tenant-button {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(15px);
+  transition: all 0.3s;
+}
+
+.glass-morphism .tenant-button:hover {
+  transform: scale(1.05);
+}
+
+/* Mobile grid adjustments */
+.mobile-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .mobile-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.mobile-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .mobile-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.mobile-space-y > * + * {
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .mobile-space-y > * + * {
+    margin-top: 1.5rem;
+  }
+}
+
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}

@@ -1,0 +1,156 @@
+/* Mobile Payment Details Styling */
+
+@media (max-width: 767px) {
+  /* Payment card styling */
+  .payment-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+  }
+  
+  /* Payment details header */
+  .payment-details-header {
+    padding: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  /* Fix double back button in payment details */
+  .payment-details-header + .border-b {
+    display: none !important;
+  }
+  
+  /* Only show the first back button */
+  .payment-details-header ~ nav.flex.space-x-4 {
+    margin-top: 1rem;
+  }
+  
+  /* Payment amount styling */
+  .payment-amount {
+    font-size: 1.5rem !important;
+    font-weight: 700;
+  }
+  
+  .payment-date {
+    font-size: 0.875rem !important;
+  }
+  
+  /* Payment details sections */
+  .payment-section {
+    margin-bottom: 1rem;
+  }
+  
+  .payment-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .payment-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+  }
+  
+  .payment-section-content {
+    padding: 0.75rem;
+  }
+  
+  /* Payment stats */
+  .payment-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .payment-stat-item {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    text-align: center;
+  }
+  
+  .payment-stat-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: white;
+  }
+  
+  .payment-stat-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  /* Payment action buttons */
+  .payment-action-button {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(59, 130, 246, 0.3);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    color: white;
+  }
+  
+  /* Payment details page retractable sections */
+  .payment-retractable-section {
+    margin-bottom: 0.75rem;
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  .payment-section-toggle {
+    width: 100%;
+    padding: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: 600;
+  }
+  
+  .payment-section-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  
+  .payment-section-body.expanded {
+    max-height: 1000px;
+  }
+  
+  /* Fix for PDF, print functionality */
+  @media print {
+    body {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    
+    .print-hidden {
+      display: none !important;
+    }
+    
+    .print-visible {
+      display: block !important;
+    }
+    
+    .print-full-width {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+  }
+}

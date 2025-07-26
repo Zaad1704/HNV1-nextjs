@@ -1,0 +1,142 @@
+/* GlassMorphismCards.css */
+
+/* Override PropertyStyleCard styles to use glass morphism */
+.property-style-card {
+  background: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  padding: 1.5rem !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+  transform: scale(0.98);
+  transition: all 0.3s ease !important;
+}
+
+.property-style-card:hover {
+  transform: scale(1);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25) !important;
+}
+
+.property-style-card h3,
+.property-style-card h4 {
+  color: white !important;
+  margin-bottom: 1.25rem !important;
+}
+
+.property-style-card p {
+  color: rgba(255, 255, 255, 0.7) !important;
+  line-height: 1.5 !important;
+}
+
+.property-style-card .text-text-secondary,
+.property-style-card .text-gray-600,
+.property-style-card .text-gray-500 {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.property-style-card .font-medium,
+.property-style-card .font-semibold,
+.property-style-card .font-bold {
+  color: white !important;
+}
+
+.property-style-card .text-green-600 {
+  color: rgb(134, 239, 172) !important; /* text-green-300 */
+}
+
+.property-style-card .text-blue-600 {
+  color: rgb(147, 197, 253) !important; /* text-blue-300 */
+}
+
+.property-style-card .text-purple-600 {
+  color: rgb(216, 180, 254) !important; /* text-purple-300 */
+}
+
+.property-style-card .text-red-600 {
+  color: rgb(252, 165, 165) !important; /* text-red-300 */
+}
+
+.property-style-card .text-orange-600 {
+  color: rgb(253, 186, 116) !important; /* text-orange-300 */
+}
+
+.property-style-card .bg-green-50,
+.property-style-card .bg-blue-50,
+.property-style-card .bg-purple-50,
+.property-style-card .bg-red-50,
+.property-style-card .bg-orange-50,
+.property-style-card .bg-yellow-50,
+.property-style-card .bg-gray-50 {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Fix for lease information cards text being cut off */
+.property-style-card .line-clamp-2 {
+  height: auto !important;
+  min-height: 2.5rem;
+  overflow: visible !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
+/* Ensure consistent height for info cards */
+.property-style-card .grid .p-4 {
+  min-height: 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Add glass morphism to all cards */
+.rounded-xl, .rounded-2xl, .rounded-3xl {
+  overflow: hidden;
+}
+
+/* Add animation for gradient backgrounds */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Add hover effects to buttons */
+button, a {
+  transition: all 0.3s ease;
+}
+
+button:hover, a:hover {
+  transform: scale(1.05);
+}
+
+/* Apply scrim to all buttons */
+button, 
+.btn-gradient,
+[type="button"],
+[type="submit"],
+[type="reset"],
+.button-like,
+label[for="document-upload"],
+label[for="image-upload"] {
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Enhance button hover effects */
+button:hover, 
+.btn-gradient:hover,
+[type="button"]:hover,
+[type="submit"]:hover,
+[type="reset"]:hover,
+.button-like:hover,
+label[for="document-upload"]:hover,
+label[for="image-upload"]:hover {
+  transform: translateY(-2px) scale(1.03) !important;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}

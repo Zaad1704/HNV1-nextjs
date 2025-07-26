@@ -1,0 +1,63 @@
+/* Compact view for filters in floating menu */
+.compact-view {
+  font-size: 0.9rem;
+}
+
+.compact-view .p-6 {
+  padding: 1rem;
+}
+
+.compact-view h3 {
+  font-size: 1.1rem;
+}
+
+.compact-view button {
+  padding: 0.5rem 0.75rem;
+}
+
+.compact-view .space-y-6 {
+  margin-top: 0.75rem;
+}
+
+.compact-view .grid-cols-2 {
+  gap: 0.5rem;
+}
+
+/* Make left side cards fixed */
+.phase3-sidebar {
+  position: sticky;
+  top: 1rem;
+  height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+/* Fix for floating action buttons */
+.floating-tenant-action-menu button,
+.floating-tenant-action-menu a,
+.glassy-radial-action-wheel button,
+.glassy-radial-action-wheel a {
+  pointer-events: auto !important;
+  z-index: 99999 !important;
+}
+
+/* Ensure action buttons are clickable */
+[style*="z-index: 99999"] {
+  pointer-events: auto !important;
+}
+
+/* Fix for action wheel buttons */
+.glassy-radial-action-wheel button,
+.floating-tenant-action-menu button {
+  cursor: pointer !important;
+}
+
+/* Ensure action buttons are visible and interactive */
+.fixed.bottom-24.right-6 button,
+.fixed.bottom-24.right-6 a {
+  pointer-events: auto !important;
+}
+
+/* Fix for action button positioning */
+.absolute.bottom-0.right-0 > div {
+  pointer-events: auto !important;
+}

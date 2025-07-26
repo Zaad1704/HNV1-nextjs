@@ -1,0 +1,58 @@
+/* Mobile Scaling and Responsive Fixes */
+
+/* Ensure proper viewport scaling */
+@media screen and (max-width: 768px) {
+  /* Fix button sizes for mobile */
+  .btn-primary, .btn-secondary, button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+  
+  /* Fix input field sizes */
+  input, textarea, select {
+    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+  
+  /* Fix table responsiveness */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Fix modal sizing */
+  .modal-content {
+    margin: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+  }
+  
+  /* Fix dropdown menus */
+  .dropdown-menu {
+    position: fixed !important;
+    top: auto !important;
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  
+  /* Fix language switcher */
+  .language-switcher .dropdown-menu {
+    width: 280px !important;
+    right: 0 !important;
+    left: auto !important;
+  }
+}
+
+/* Fix touch targets */
+@media (hover: none) and (pointer: coarse) {
+  button, a, input, select, textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

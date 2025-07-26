@@ -1,0 +1,79 @@
+/* Button redesign with consistent scrim effects */
+
+/* Common button styling with scrim */
+.scrim-button {
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease !important;
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+.scrim-button:hover {
+  transform: translateY(-2px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Quick action buttons */
+.quick-action-button {
+  border-radius: 1rem !important;
+  padding: 1rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Tab styling */
+.tab-button {
+  border-radius: 0.75rem 0.75rem 0 0 !important;
+  padding: 0.75rem 1.25rem !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+}
+
+.tab-button.active {
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-bottom: 2px solid rgba(59, 130, 246, 0.8) !important;
+  color: white !important;
+  transform: translateY(-2px) !important;
+}
+
+.tab-button:not(.active) {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-bottom: 2px solid transparent !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Action buttons in different sections */
+.action-button {
+  border-radius: 0.75rem !important;
+  padding: 0.5rem 1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  font-size: 0.875rem !important;
+}
+
+/* Download buttons */
+.download-button {
+  border-radius: 0.5rem !important;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.75rem !important;
+}
+
+/* Icon buttons */
+.icon-button {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  border-radius: 9999px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}

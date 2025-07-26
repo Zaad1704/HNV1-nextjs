@@ -1,0 +1,183 @@
+/* UI Consistency Utilities */
+
+/* Consistent Button Styles */
+.btn-primary {
+  @apply bg-gradient-to-r from-brand-orange to-brand-blue text-white font-semibold py-3 px-6 rounded-2xl hover:shadow-lg hover:scale-105 transition-all duration-300;
+}
+
+.btn-secondary {
+  @apply bg-app-surface text-text-primary border border-app-border font-semibold py-3 px-6 rounded-2xl hover:bg-app-bg hover:shadow-md transition-all duration-300;
+}
+
+.btn-danger {
+  @apply bg-red-500 text-white font-semibold py-3 px-6 rounded-2xl hover:bg-red-600 hover:shadow-lg transition-all duration-300;
+}
+
+.btn-success {
+  @apply bg-green-500 text-white font-semibold py-3 px-6 rounded-2xl hover:bg-green-600 hover:shadow-lg transition-all duration-300;
+}
+
+/* Consistent Card Styles */
+.card {
+  @apply app-surface rounded-3xl p-6 border border-app-border shadow-app hover:shadow-app-lg transition-all duration-300;
+}
+
+.card-header {
+  @apply flex items-center justify-between mb-4 pb-4 border-b border-app-border;
+}
+
+.card-title {
+  @apply text-xl font-bold text-text-primary;
+}
+
+.card-subtitle {
+  @apply text-sm text-text-secondary mt-1;
+}
+
+/* Consistent Form Styles */
+.form-group {
+  @apply mb-4;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-text-secondary mb-2;
+}
+
+.form-input {
+  @apply w-full p-3 border border-app-border rounded-2xl bg-app-surface text-text-primary focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all duration-300;
+}
+
+.form-error {
+  @apply text-red-500 text-sm mt-1;
+}
+
+/* Consistent Badge Styles */
+.badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-success {
+  @apply bg-green-100 text-green-800;
+}
+
+.badge-warning {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.badge-danger {
+  @apply bg-red-100 text-red-800;
+}
+
+.badge-info {
+  @apply bg-blue-100 text-blue-800;
+}
+
+/* Consistent Typography */
+.heading-1 {
+  @apply text-4xl font-bold text-text-primary leading-tight;
+}
+
+.heading-2 {
+  @apply text-3xl font-bold text-text-primary leading-tight;
+}
+
+.heading-3 {
+  @apply text-2xl font-bold text-text-primary leading-tight;
+}
+
+.heading-4 {
+  @apply text-xl font-semibold text-text-primary;
+}
+
+.body-large {
+  @apply text-lg text-text-secondary leading-relaxed;
+}
+
+.body-regular {
+  @apply text-base text-text-secondary leading-relaxed;
+}
+
+.body-small {
+  @apply text-sm text-text-muted;
+}
+
+/* Consistent Spacing */
+.section-padding {
+  @apply py-16 px-4;
+}
+
+.container-padding {
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
+/* Consistent Animations */
+.fade-in {
+  @apply opacity-0 animate-[fadeIn_0.5s_ease-in-out_forwards];
+}
+
+.slide-up {
+  @apply translate-y-4 opacity-0 animate-[slideUp_0.5s_ease-out_forwards];
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  to { 
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Dark mode consistency */
+.dark .badge-success {
+  @apply bg-green-900 text-green-200;
+}
+
+.dark .badge-warning {
+  @apply bg-yellow-900 text-yellow-200;
+}
+
+.dark .badge-danger {
+  @apply bg-red-900 text-red-200;
+}
+
+.dark .badge-info {
+  @apply bg-blue-900 text-blue-200;
+}
+
+/* Universal Grid System */
+.universal-grid {
+  @apply grid gap-6;
+}
+
+.universal-grid-1 {
+  @apply grid-cols-1;
+}
+
+.universal-grid-2 {
+  @apply grid-cols-1 md:grid-cols-2;
+}
+
+.universal-grid-3 {
+  @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+}
+
+.universal-grid-4 {
+  @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+}
+
+/* Touch feedback for mobile */
+.touch-feedback {
+  @apply active:scale-95 transition-transform duration-150;
+}
+
+/* Brand colors */
+.brand-blue {
+  color: var(--brand-blue);
+}
+
+.brand-orange {
+  color: var(--brand-orange);
+}

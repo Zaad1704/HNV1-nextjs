@@ -1,0 +1,51 @@
+/* Frosted Glass / Blurred Background Effects */
+
+/* Core backdrop-filter blur effect - EXACT SEARCH ICON FORMULA */
+.frosted-glass {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Tailwind equivalent classes for the perfect formula */
+.perfect-blur {
+  @apply backdrop-blur-xl bg-white/10 border-2 border-white/20 shadow-lg;
+}
+
+/* Enhanced frosted glass with stronger blur */
+.frosted-glass-strong {
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Dark frosted glass variant */
+.frosted-glass-dark {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Property card specific frosted effect */
+.property-card-frosted {
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Modal/overlay frosted background */
+.modal-backdrop-blur {
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Hover states */
+.frosted-glass:hover {
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}

@@ -1,0 +1,161 @@
+/* Mobile Tenant Details Styling */
+
+@media (max-width: 767px) {
+  /* Tenant card styling */
+  .tenant-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+  }
+  
+  /* Fix tenant image scaling */
+  .tenant-avatar {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50%;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+  
+  /* Tenant card content scaling */
+  .tenant-card-content {
+    padding: 0.75rem !important;
+  }
+  
+  .tenant-name {
+    font-size: 1rem !important;
+    font-weight: 600;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .tenant-details {
+    font-size: 0.875rem !important;
+  }
+  
+  /* Tenant swipe card improvements */
+  .tenant-swipe-card {
+    touch-action: pan-x;
+    user-select: none;
+  }
+  
+  /* Smart filters for mobile */
+  .tenant-smart-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .tenant-filter-chip {
+    padding: 0.5rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+  
+  .tenant-filter-chip.active {
+    background: rgba(59, 130, 246, 0.3);
+    border-color: rgba(59, 130, 246, 0.5);
+  }
+  
+  /* Tenant details page sections */
+  .tenant-section {
+    margin-bottom: 1rem;
+  }
+  
+  .tenant-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .tenant-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+  }
+  
+  .tenant-section-content {
+    padding: 0.75rem;
+  }
+  
+  /* Tenant stats */
+  .tenant-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .tenant-stat-item {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    text-align: center;
+  }
+  
+  .tenant-stat-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: white;
+  }
+  
+  .tenant-stat-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  /* Tenant action buttons */
+  .tenant-action-button {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(59, 130, 246, 0.3);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    color: white;
+  }
+  
+  /* Tenant details page retractable sections */
+  .tenant-retractable-section {
+    margin-bottom: 0.75rem;
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  .tenant-section-toggle {
+    width: 100%;
+    padding: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: 600;
+  }
+  
+  .tenant-section-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  
+  .tenant-section-body.expanded {
+    max-height: 1000px;
+  }
+}

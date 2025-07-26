@@ -1,0 +1,208 @@
+/* Mobile Design Improvements */
+
+/* Global mobile styling */
+@media (max-width: 767px) {
+  /* Consistent card styling */
+  .mobile-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Consistent padding */
+  .mobile-padding {
+    padding: 0.75rem !important;
+  }
+  
+  /* Consistent text sizing */
+  .mobile-heading {
+    font-size: 1.125rem !important;
+    font-weight: 600;
+  }
+  
+  .mobile-subheading {
+    font-size: 0.875rem !important;
+  }
+  
+  .mobile-text {
+    font-size: 0.875rem !important;
+  }
+  
+  /* Consistent button styling */
+  .mobile-button {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 0.5rem !important;
+    height: auto !important;
+  }
+  
+  /* Improved touch targets */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Consistent spacing */
+  .mobile-spacing {
+    margin-bottom: 0.75rem !important;
+  }
+  
+  /* Improved shadows for depth */
+  .mobile-shadow {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 
+                0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Improved gradients */
+  .mobile-gradient-primary {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(16, 185, 129, 0.2));
+  }
+  
+  .mobile-gradient-secondary {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(236, 72, 153, 0.2));
+  }
+  
+  /* Improved animations */
+  .mobile-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Improved scrolling */
+  .mobile-smooth-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Native app-like bottom navigation */
+  .mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  /* Native app-like status bar */
+  .mobile-status-bar {
+    height: 24px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  /* Improved form elements */
+  .mobile-input {
+    height: 44px;
+    font-size: 16px; /* Prevents iOS zoom */
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+  
+  /* Improved select elements */
+  .mobile-select {
+    height: 44px;
+    font-size: 16px;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1rem;
+  }
+}
+
+/* Specific improvements for property, tenant, and payment sections */
+@media (max-width: 767px) {
+  /* Property section */
+  .property-card {
+    height: auto !important;
+    padding: 0.75rem !important;
+  }
+  
+  .property-card-image {
+    height: 100px !important;
+    border-radius: 0.5rem !important;
+  }
+  
+  .property-card-title {
+    font-size: 1rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  /* Tenant section */
+  .tenant-card {
+    height: auto !important;
+    padding: 0.75rem !important;
+  }
+  
+  .tenant-avatar {
+    width: 48px !important;
+    height: 48px !important;
+  }
+  
+  .tenant-card-title {
+    font-size: 1rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  /* Payment section */
+  .payment-card {
+    height: auto !important;
+    padding: 0.75rem !important;
+  }
+  
+  .payment-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .payment-amount {
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+  }
+  
+  /* Fix double back button in payment details */
+  .payment-details-header .duplicate-back-button {
+    display: none !important;
+  }
+}
+
+/* Fix for PDF, print functionality */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .print-hidden {
+    display: none !important;
+  }
+  
+  .print-visible {
+    display: block !important;
+  }
+  
+  .print-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

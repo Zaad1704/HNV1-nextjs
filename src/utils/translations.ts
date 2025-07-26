@@ -1,0 +1,67 @@
+// Fallback translations for when i18n fails to load
+export const fallbackTranslations: Record<string, Record<string, string>> = {
+  en: {
+    'header.login': 'Login',
+    'header.get_started': 'Get Started',
+    'nav.home': 'Home',
+    'nav.about': 'About',
+    'nav.pricing': 'Pricing',
+    'nav.contact': 'Contact',
+    'auth.welcome_back': 'Welcome Back!',
+    'auth.sign_in_subtitle': 'Sign in to continue to your dashboard',
+    'auth.email_address': 'Email Address',
+    'auth.password': 'Password',
+    'auth.sign_in': 'Sign In',
+    'auth.continue_google': 'Continue with Google',
+    'auth.no_account': "Don't have an account?",
+    'auth.sign_up': 'Sign Up',
+    'auth.or': 'OR',
+    'common.loading': 'Loading...',
+    'common.error': 'Error',
+    'common.success': 'Success',
+    'common.cancel': 'Cancel',
+    'common.save': 'Save',
+    'dashboard.overview': 'Overview',
+    'dashboard.properties': 'Properties',
+    'dashboard.tenants': 'Tenants',
+    'dashboard.settings': 'Settings',
+    'dashboard.logout': 'Logout',
+    'landing.hero_title': 'The All-in-One Platform for Modern Property Management',
+    'landing.hero_subtitle': 'Automate tasks, track finances, and manage tenants with ease.',
+    'landing.hero_cta': 'Start Your Free Trial'
+  },
+  bn: {
+    'header.login': 'লগইন',
+    'header.get_started': 'শুরু করুন',
+    'nav.home': 'হোম',
+    'nav.about': 'সম্পর্কে',
+    'nav.pricing': 'মূল্য তালিকা',
+    'nav.contact': 'যোগাযোগ',
+    'auth.welcome_back': 'আবার স্বাগতম!',
+    'auth.sign_in_subtitle': 'চালিয়ে যেতে আপনার অ্যাকাউন্টে লগ ইন করুন',
+    'auth.email_address': 'ইমেইল ঠিকানা',
+    'auth.password': 'পাসওয়ার্ড',
+    'auth.sign_in': 'সাইন ইন',
+    'auth.continue_google': 'Google দিয়ে চালিয়ে যান',
+    'auth.no_account': 'কোনো অ্যাকাউন্ট নেই?',
+    'auth.sign_up': 'নিবন্ধন করুন',
+    'auth.or': 'অথবা',
+    'common.loading': 'লোড হচ্ছে...',
+    'common.error': 'ত্রুটি',
+    'common.success': 'সফল',
+    'common.cancel': 'বাতিল করুন',
+    'common.save': 'সংরক্ষণ করুন',
+    'dashboard.overview': 'একনজরে',
+    'dashboard.properties': 'সম্পত্তি',
+    'dashboard.tenants': 'ভাড়াটে',
+    'dashboard.settings': 'সেটিংস',
+    'dashboard.logout': 'লগ আউট',
+    'landing.hero_title': 'আধুনিক সম্পত্তি ব্যবস্থাপনার জন্য অল-ইন-ওয়ান প্ল্যাটফর্ম',
+    'landing.hero_subtitle': 'স্বয়ংক্রিয়ভাবে কাজ করুন, অর্থ ট্র্যাক করুন এবং ভাড়াটেদের সহজে পরিচালনা করুন।',
+    'landing.hero_cta': 'আপনার বিনামূল্যে ট্রায়াল শুরু করুন'
+  }
+};
+
+export const getFallbackTranslation = (key: string, lang: string, fallback?: string): string => {
+  return fallbackTranslations[lang]?.[key] || fallbackTranslations['en']?.[key] || fallback || key;
+};

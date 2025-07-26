@@ -1,0 +1,144 @@
+import React, { useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import apiClient from '../api/client';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Users, DollarSign, Calendar, MapPin, Phone, Mail, FileText, Wrench, AlertTriangle, Download, Edit, Trash2, Archive, ArchiveRestore, User, Bell, Eye, Plus } from 'lucide-react';
+import PropertyStyleBackground from '../components/common/PropertyStyleBackground';
+import PropertyStyleCard from '../components/common/PropertyStyleCard';
+import UniversalCard from '../components/common/UniversalCard';
+import UniversalHeader from '../components/common/UniversalHeader';
+import UniversalStatusBadge from '../components/common/UniversalStatusBadge';
+import UniversalActionButton from '../components/common/UniversalActionButton';
+
+import TenantAnalyticsDashboard from '../components/tenant/TenantAnalyticsDashboard';
+import EditTenantModal from '../components/common/EditTenantModal';
+import QuickPaymentModal from '../components/common/QuickPaymentModal';
+
+const TenantDetailsPage = () => {
+  const { tenantId } = useParams<{ tenantId: string }>();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showQuickPayment, setShowQuickPayment] = useState(false);
+  const [paymentType, setPaymentType] = useState<'normal' | 'overdue'>('normal');
+
+  const { data: tenant, isLoading } = useQuery({
+    queryKey: ['tenant', tenantId],
+    queryFn: async () => {
+      const { data } = await apiClient.get(`/tenants/${tenantId}`);
+      return data.data;
+    },
+    enabled: !!tenantId
+  });
+
+  const { data: relatedData } = useQuery({
+    queryKey: ['tenantRelatedData', tenantId],
+    queryFn: async () => {
+      const [payments, expenses, maintenance, approvals, receipts, cashFlow, reminders, auditLogs] = await Promise.all([
+        apiClient.get(`/payments?tenantId=${tenantId}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/expenses?tenantId=${tenantId}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/maintenance?tenantId=${tenantId}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/approvals?tenantId=${tenantId}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/receipts?tenantId=${tenantId}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/cashflow?tenantId=${tenantId}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/reminders?tenantId=${tenantId}&status=active`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/audit?resourceId=${tenantId}&limit=10`).catch(() => ({ data: { data: [] } }))
+      ]);
+
+      return {
+        payments: payments.data.data || [],
+        expenses: expenses.data.data || [],
+        maintenance: maintenance.data.data || [],
+        approvals: approvals.data.data || [],
+        receipts: receipts.data.data || [],
+        cashFlow: cashFlow.data.data || [],
+        reminders: reminders.data.data || [],
+        auditLogs: auditLogs.data.data || []
+      };
+    },
+    enabled: !!tenantId
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 app-gradient rounded-full animate-pulse"></div>
+        <span className="ml-3 text-text-secondary">Loading tenant details...</span>
+      </div>
+    );
+  }
+
+  if (!tenant) {
+    return (
+      <div className="text-center py-16">
+        <h3 className="text-xl font-bold text-text-primary mb-2">Tenant Not Found</h3>
+        <Link to="/dashboard/tenants" className="btn-gradient px-6 py-3 rounded-2xl font-semibold">
+          Back to Tenants
+        </Link>
+      </div>
+    );
+  }
+
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: Users },
+    { id: 'payments', label: 'Payment History', icon: DollarSign },
+    { id: 'maintenance', label: 'Maintenance', icon: Wrench },
+    { id: 'analytics', label: 'Analytics', icon: Calendar },
+    { id: 'documents', label: 'Documents', icon: FileText },
+    { id: 'personal', label: 'Personal Details', icon: User }
+  ];
+
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  const payments = relatedData?.payments || [];
+  const totalPaid = payments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
+  const currentMonthPayment = payments.find((p: any) => {
+    const paymentDate = new Date(p.paymentDate);
+    return paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear;
+  });
+  const outstandingAmount = currentMonthPayment ? 0 : (tenant.rentAmount || 0);
+  const monthsPaid = payments.length;
+  const leaseStartDate = tenant.createdAt ? new Date(tenant.createdAt) : null;
+  const monthsSinceStart = leaseStartDate ? 
+    (currentYear - leaseStartDate.getFullYear()) * 12 + (currentMonth - leaseStartDate.getMonth()) + 1 : 0;
+  
+  // Calculate overdue payments
+  const monthsOverdue = Math.max(0, monthsSinceStart - monthsPaid);
+  const overdueAmount = monthsOverdue * (tenant.rentAmount || 0);
+  const hasOverdue = monthsOverdue > 0;
+
+  return (
+    <PropertyStyleBackground>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 p-6">
+      {/* Content of the component */}
+      
+      {/* Edit Modal */}
+      <EditTenantModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        tenant={tenant}
+        onTenantUpdated={(updatedTenant) => {
+          // Refresh tenant data
+          window.location.reload();
+        }}
+      />
+      
+      {/* Quick Payment Modal */}
+      <QuickPaymentModal
+        isOpen={showQuickPayment}
+        onClose={() => setShowQuickPayment(false)}
+        tenant={tenant}
+        onPaymentAdded={() => {
+          // Refresh page to show new payment
+          window.location.reload();
+        }}
+        isOverdue={paymentType === 'overdue'}
+        overdueAmount={overdueAmount}
+        monthsOverdue={monthsOverdue}
+      />
+      </motion.div>
+    </PropertyStyleBackground>
+  );
+};
+
+export default TenantDetailsPage;

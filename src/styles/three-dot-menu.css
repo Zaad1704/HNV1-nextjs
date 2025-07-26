@@ -1,0 +1,36 @@
+/* Three-dot menu specific styles */
+
+/* Menu button */
+button[aria-label="More options"],
+button[aria-label="Menu"],
+.more-options-button,
+.three-dot-menu-button {
+  position: relative !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation !important;
+}
+
+/* Menu container */
+.fixed.top-0.right-0.h-full.w-4\/5.max-w-sm {
+  z-index: 9999 !important;
+  overscroll-behavior: contain !important;
+  touch-action: pan-y !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* Menu items */
+.fixed.top-0.right-0.h-full.w-4\/5.max-w-sm nav a,
+.fixed.top-0.right-0.h-full.w-4\/5.max-w-sm nav button {
+  min-height: 56px !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Menu backdrop */
+.fixed.inset-0.bg-black\/80.z-\\[9998\\] {
+  z-index: 9998 !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(8px) !important;
+}

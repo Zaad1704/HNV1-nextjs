@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    
+    <!-- Content Security Policy with API connectivity -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://hnv.onrender.com https://api.exchangerate-api.com https://fonts.googleapis.com https://fonts.gstatic.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
+
+    <link rel="icon" type="image/png" href="/logo-min.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="HNV">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <title>HNV Property Management Solutions</title>
+    <meta name="description" content="HNV Property Management Solutions" />
+    <meta name="theme-color" content="#1E3A8A" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1E3A8A" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
+    <link rel="apple-touch-startup-image" href="/pwa-512x512.png">
+    <link rel="manifest" href="/manifest.webmanifest" />
+    
+    <!-- Samsung Internet PWA support -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-title" content="HNV PM">
+    
+    <!-- Additional PWA meta tags -->
+    <meta name="application-name" content="HNV PM">
+    <meta name="msapplication-TileColor" content="#1E3A8A">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/pwa-192x192.png" as="image">
+    <link rel="preload" href="/manifest.webmanifest" as="fetch" crossorigin>
+    
+    <!-- iOS PWA optimizations -->
+    <style>
+      @media screen and (max-width: 768px) {
+        input, select, textarea {
+          font-size: 16px !important;
+        }
+        /* iOS native app feel */
+        body {
+          -webkit-user-select: none;
+          -webkit-touch-callout: none;
+          -webkit-tap-highlight-color: transparent;
+        }
+        /* Prevent bounce scrolling */
+        html, body {
+          overscroll-behavior: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>

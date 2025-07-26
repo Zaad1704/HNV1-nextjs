@@ -1,0 +1,450 @@
+/* Phase 3: Mobile Navigation Optimization */
+
+/* Sticky Mobile Header - Minimal with essential info only */
+.phase3-mobile-header {
+  @apply sticky top-0 z-20;
+  @apply backdrop-blur-xl bg-white/10 border-2 border-white/20;
+  @apply px-4 py-2;
+  @apply shadow-lg;
+  height: 56px;
+  min-height: 56px;
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+.phase3-mobile-header-content {
+  @apply flex items-center justify-between h-full;
+}
+
+.phase3-mobile-header-title {
+  @apply flex flex-col;
+}
+
+.phase3-mobile-header-title h1 {
+  @apply text-base font-bold text-white leading-tight;
+}
+
+.phase3-mobile-header-title .subtitle {
+  @apply text-xs text-white/70 leading-tight;
+}
+
+.phase3-mobile-header-actions {
+  @apply flex items-center gap-2;
+}
+
+.phase3-mobile-header-btn {
+  @apply w-8 h-8 rounded-lg flex items-center justify-center;
+  @apply backdrop-blur-xl bg-white/10 border-2 border-white/20 text-white;
+  @apply active:bg-white/20 active:scale-95;
+  @apply transition-all duration-150;
+  @apply touch-manipulation;
+  min-width: 44px;
+  min-height: 44px;
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Tab-Based Filters - Horizontal scrollable tabs */
+.phase3-mobile-tabs {
+  @apply sticky z-10;
+  top: 56px; /* Below header */
+  @apply bg-white border-b border-gray-100;
+  @apply overflow-hidden;
+}
+
+.phase3-mobile-tabs-container {
+  @apply flex items-center;
+  @apply overflow-x-auto scrollbar-hide;
+  @apply px-4 py-3;
+  @apply gap-2;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.phase3-mobile-tab {
+  @apply flex items-center gap-2;
+  @apply px-4 py-2;
+  @apply rounded-full;
+  @apply whitespace-nowrap;
+  @apply text-sm font-medium;
+  @apply transition-all duration-200;
+  @apply touch-manipulation;
+  @apply flex-shrink-0;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.phase3-mobile-tab-active {
+  @apply phase3-mobile-tab;
+  @apply bg-blue-500 text-white;
+  @apply shadow-lg scale-105;
+}
+
+.phase3-mobile-tab-inactive {
+  @apply phase3-mobile-tab;
+  @apply bg-gray-100 text-gray-700;
+  @apply hover:bg-gray-200 active:bg-gray-300;
+}
+
+/* Touch-Optimized Buttons - 44px minimum touch targets */
+.phase3-touch-btn {
+  @apply flex items-center justify-center;
+  @apply rounded-xl;
+  @apply font-medium;
+  @apply transition-all duration-200;
+  @apply touch-manipulation;
+  @apply active:scale-95;
+  min-height: 44px;
+  min-width: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.phase3-touch-btn-primary {
+  @apply phase3-touch-btn;
+  @apply bg-blue-500 text-white;
+  @apply px-6 py-3;
+  @apply shadow-lg active:shadow-xl;
+}
+
+.phase3-touch-btn-secondary {
+  @apply phase3-touch-btn;
+  @apply bg-gray-100 text-gray-700;
+  @apply px-4 py-2;
+  @apply hover:bg-gray-200 active:bg-gray-300;
+}
+
+.phase3-touch-btn-icon {
+  @apply phase3-touch-btn;
+  @apply w-11 h-11;
+  @apply bg-gray-100 text-gray-600;
+  @apply hover:bg-gray-200 active:bg-gray-300;
+}
+
+/* Enhanced Swipe Gestures for Cards */
+.phase3-swipeable-card {
+  @apply relative overflow-hidden;
+  @apply bg-white rounded-xl;
+  @apply border border-gray-100;
+  @apply shadow-sm;
+  @apply mb-4;
+  touch-action: pan-x;
+}
+
+.phase3-swipe-actions {
+  @apply absolute right-0 top-0 h-full;
+  @apply flex items-center;
+  @apply bg-gradient-to-l from-red-500 to-orange-500;
+  @apply px-4 gap-2;
+  width: 140px;
+}
+
+.phase3-swipe-action-btn {
+  @apply w-10 h-10 rounded-full;
+  @apply flex items-center justify-center;
+  @apply text-white;
+  @apply active:scale-90;
+  @apply transition-transform duration-150;
+  @apply touch-manipulation;
+}
+
+.phase3-swipe-action-edit {
+  @apply phase3-swipe-action-btn bg-blue-500;
+}
+
+.phase3-swipe-action-delete {
+  @apply phase3-swipe-action-btn bg-red-600;
+}
+
+.phase3-swipe-action-view {
+  @apply phase3-swipe-action-btn bg-green-500;
+}
+
+/* Card Content with Swipe Support */
+.phase3-card-content {
+  @apply transition-transform duration-300 ease-out;
+  @apply bg-white rounded-xl;
+  @apply p-4;
+  @apply relative z-10;
+}
+
+/* Floating Action Button - Enhanced */
+.phase3-mobile-fab {
+  @apply fixed z-30;
+  @apply w-14 h-14;
+  @apply rounded-full;
+  @apply shadow-2xl;
+  @apply flex items-center justify-center;
+  @apply transition-all duration-300;
+  @apply active:scale-90;
+  bottom: 24px;
+  right: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.phase3-mobile-fab-property {
+  @apply phase3-mobile-fab;
+  @apply bg-gradient-to-r from-blue-500 to-purple-500;
+  @apply text-white;
+  @apply hover:from-blue-600 hover:to-purple-600;
+}
+
+.phase3-mobile-fab-tenant {
+  @apply phase3-mobile-fab;
+  @apply bg-gradient-to-r from-green-500 to-blue-500;
+  @apply text-white;
+  @apply hover:from-green-600 hover:to-blue-600;
+}
+
+.phase3-mobile-fab-payment {
+  @apply phase3-mobile-fab;
+  @apply bg-gradient-to-r from-orange-500 to-red-500;
+  @apply text-white;
+  @apply hover:from-orange-600 hover:to-red-600;
+}
+
+/* Bottom Sheet Actions - Slide-up bottom sheet */
+.phase3-bottom-sheet {
+  @apply fixed inset-0 z-50;
+  @apply flex items-end;
+}
+
+.phase3-bottom-sheet-backdrop {
+  @apply absolute inset-0;
+  @apply bg-black/50 backdrop-blur-sm;
+  @apply transition-opacity duration-300;
+}
+
+.phase3-bottom-sheet-content {
+  @apply relative w-full;
+  @apply bg-white;
+  @apply rounded-t-3xl;
+  @apply max-h-[80vh];
+  @apply overflow-hidden;
+  @apply transform transition-transform duration-300;
+}
+
+.phase3-bottom-sheet-handle {
+  @apply w-12 h-1;
+  @apply bg-gray-300 rounded-full;
+  @apply mx-auto my-3;
+}
+
+.phase3-bottom-sheet-header {
+  @apply flex items-center justify-between;
+  @apply px-6 py-4;
+  @apply border-b border-gray-100;
+}
+
+.phase3-bottom-sheet-body {
+  @apply p-6;
+  @apply overflow-y-auto;
+  @apply max-h-[60vh];
+}
+
+/* Progressive Disclosure - Collapsible sections */
+.phase3-collapsible {
+  @apply bg-white rounded-xl;
+  @apply border border-gray-100;
+  @apply overflow-hidden;
+}
+
+.phase3-collapsible-header {
+  @apply flex items-center justify-between;
+  @apply p-4;
+  @apply cursor-pointer;
+  @apply transition-colors duration-200;
+  @apply active:bg-gray-50;
+  @apply touch-manipulation;
+  min-height: 44px;
+}
+
+.phase3-collapsible-content {
+  @apply border-t border-gray-100;
+  @apply transition-all duration-300;
+  @apply overflow-hidden;
+}
+
+.phase3-collapsible-content.collapsed {
+  @apply max-h-0;
+}
+
+.phase3-collapsible-content.expanded {
+  @apply max-h-screen;
+}
+
+/* Right Sidebar for Filters and AI Insights */
+.phase3-right-sidebar {
+  @apply w-80 flex-shrink-0;
+  @apply space-y-4;
+  @apply hidden lg:block;
+}
+
+.phase3-sidebar-section {
+  @apply backdrop-blur-xl bg-white/10 border-2 border-white/20 rounded-xl;
+  @apply overflow-hidden;
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+.phase3-sidebar-header {
+  @apply flex items-center justify-between;
+  @apply p-4;
+  @apply backdrop-blur-xl bg-white/10 border-2 border-white/20;
+  @apply border-b border-white/20;
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+.phase3-sidebar-content {
+  @apply p-4;
+}
+
+/* Card Layout Optimizations - Much wider cards for comprehensive data display */
+.phase3-card-grid {
+  @apply grid gap-8;
+  @apply grid-cols-1 xl:grid-cols-2;
+}
+
+.phase3-card-wider {
+  @apply w-full;
+  @apply max-w-none;
+  @apply min-h-[600px];
+}
+
+/* Extra wide cards for comprehensive data display - Properties, Tenants, Payments */
+.phase3-card-extra-wide {
+  @apply w-full;
+  @apply max-w-none;
+  @apply min-h-[650px];
+  @apply col-span-1;
+}
+
+/* Mobile card adjustments */
+@media (max-width: 1279px) {
+  .phase3-card-grid {
+    @apply grid-cols-1;
+  }
+  
+  .phase3-card-extra-wide {
+    @apply min-h-[550px];
+  }
+}
+
+/* Mobile-specific card adjustments */
+@media (max-width: 768px) {
+  .phase3-card-grid {
+    @apply grid-cols-1;
+    @apply px-4;
+  }
+  
+  .phase3-card-wider {
+    @apply mx-0;
+  }
+  
+  .phase3-right-sidebar {
+    @apply hidden;
+  }
+}
+
+/* Desktop Layout with Right Sidebar */
+.phase3-desktop-layout {
+  @apply flex gap-6;
+}
+
+.phase3-main-content {
+  @apply flex-1;
+  @apply min-w-0; /* Prevent flex item from growing beyond container */
+}
+
+/* Animations and Transitions */
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.phase3-slide-in-right {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+.phase3-slide-out-right {
+  animation: slideOutToRight 0.3s ease-out;
+}
+
+/* Accessibility Improvements */
+.phase3-focus-visible {
+  @apply focus-visible:outline-2 focus-visible:outline-blue-500 focus-visible:outline-offset-2;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .phase3-mobile-tab-active {
+    @apply border-2 border-white;
+  }
+  
+  .phase3-touch-btn-primary {
+    @apply border-2 border-blue-700;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .phase3-mobile-tab,
+  .phase3-touch-btn,
+  .phase3-swipeable-card,
+  .phase3-mobile-fab {
+    @apply transition-none;
+  }
+  
+  .phase3-slide-in-right,
+  .phase3-slide-out-right {
+    animation: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .phase3-mobile-header {
+    @apply bg-gray-900/95 border-gray-800;
+  }
+  
+  .phase3-mobile-header-title h1 {
+    @apply text-white;
+  }
+  
+  .phase3-mobile-header-title .subtitle {
+    @apply text-gray-400;
+  }
+  
+  .phase3-mobile-tabs {
+    @apply bg-gray-900 border-gray-800;
+  }
+  
+  .phase3-mobile-tab-inactive {
+    @apply bg-gray-800 text-gray-300;
+  }
+  
+  .phase3-swipeable-card {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  .phase3-collapsible {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  .phase3-sidebar-section {
+    @apply bg-gray-800 border-gray-700;
+  }
+}

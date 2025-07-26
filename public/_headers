@@ -1,0 +1,18 @@
+# Subdomain routing headers for Render.com
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# Handle subdomain routing
+/login
+  X-Subdomain-Route: login
+
+/register  
+  X-Subdomain-Route: register
+
+/admin/*
+  X-Subdomain-Route: admin
+
+/dashboard/*
+  X-Subdomain-Route: dashboard

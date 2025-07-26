@@ -1,0 +1,81 @@
+/* GlassMorphismOverrides.css */
+
+/* Override PropertyStyleCard styles to use glass morphism */
+.property-style-card {
+  background: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.property-style-card h3,
+.property-style-card h4 {
+  color: white !important;
+}
+
+.property-style-card p {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.property-style-card .text-text-secondary,
+.property-style-card .text-gray-600,
+.property-style-card .text-gray-500 {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.property-style-card .font-medium,
+.property-style-card .font-semibold,
+.property-style-card .font-bold {
+  color: white !important;
+}
+
+.property-style-card .text-green-600 {
+  color: rgb(134, 239, 172) !important; /* text-green-300 */
+}
+
+.property-style-card .text-blue-600 {
+  color: rgb(147, 197, 253) !important; /* text-blue-300 */
+}
+
+.property-style-card .text-purple-600 {
+  color: rgb(216, 180, 254) !important; /* text-purple-300 */
+}
+
+.property-style-card .text-red-600 {
+  color: rgb(252, 165, 165) !important; /* text-red-300 */
+}
+
+.property-style-card .text-orange-600 {
+  color: rgb(253, 186, 116) !important; /* text-orange-300 */
+}
+
+.property-style-card .bg-green-50,
+.property-style-card .bg-blue-50,
+.property-style-card .bg-purple-50,
+.property-style-card .bg-red-50,
+.property-style-card .bg-orange-50,
+.property-style-card .bg-yellow-50,
+.property-style-card .bg-gray-50 {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Add glass morphism to all cards */
+.rounded-xl, .rounded-2xl, .rounded-3xl {
+  overflow: hidden;
+}
+
+/* Add animation for gradient backgrounds */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Add hover effects to buttons */
+button, a {
+  transition: all 0.3s ease;
+}
+
+button:hover, a:hover {
+  transform: scale(1.05);
+}

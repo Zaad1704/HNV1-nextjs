@@ -1,0 +1,46 @@
+/* Floating Action Buttons - Specific Styles */
+
+/* Main container */
+.fixed.bottom-24.right-6 {
+  position: fixed !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+/* Main button */
+.fixed.bottom-24.right-6 > button {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation !important;
+}
+
+/* Action buttons */
+.fixed.bottom-24.right-6 a {
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation !important;
+}
+
+/* Hide tooltips by default */
+.fixed.bottom-24.right-6 a > div,
+.fixed.bottom-24.right-6 > button > div {
+  display: none;
+}
+
+/* Show tooltips on hover/touch on desktop */
+@media (hover: hover) {
+  .fixed.bottom-24.right-6 a:hover > div,
+  .fixed.bottom-24.right-6 > button:hover > div {
+    display: block;
+  }
+}
+
+/* Prevent any animations */
+.fixed.bottom-24.right-6 * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Only allow rotation for the plus icon */
+.fixed.bottom-24.right-6 > button > svg {
+  transition: transform 0.2s ease-in-out !important;
+}
