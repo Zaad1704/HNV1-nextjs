@@ -1,134 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to HNV1 Property Management</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .header {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 300;
-        }
-        .content {
-            padding: 40px 30px;
-        }
-        .content h2 {
-            color: #2563eb;
-            margin-top: 0;
-            font-size: 24px;
-        }
-        .button {
-            display: inline-block;
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 500;
-            margin: 20px 0;
-            transition: transform 0.2s;
-        }
-        .button:hover {
-            transform: translateY(-2px);
-        }
-        .features {
-            background-color: #f8fafc;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-        .features ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-        .features li {
-            margin: 8px 0;
-            color: #4b5563;
-        }
-        .footer {
-            background-color: #f8fafc;
-            padding: 20px;
-            text-align: center;
-            font-size: 14px;
-            color: #6b7280;
-            border-top: 1px solid #e5e7eb;
-        }
-        .social-links {
-            margin: 15px 0;
-        }
-        .social-links a {
-            color: #2563eb;
-            text-decoration: none;
-            margin: 0 10px;
-        }
-    </style>
+    <meta charset="utf-8">
+    <title>Welcome to HNV Property Management</title>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🏠 HNV1 Property Management</h1>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+        <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to HNV!</h1>
+        <p style="color: white; margin: 10px 0 0 0; opacity: 0.9;">Your property management journey starts here</p>
+    </div>
+    
+    <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
+        <p style="font-size: 16px; margin-bottom: 20px;">Hello {{name}},</p>
+        
+        <p style="font-size: 16px; margin-bottom: 20px;">
+            Welcome to HNV Property Management! Your account has been successfully created.
+        </p>
+        
+        <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #667eea;">
+            <h3 style="margin: 0 0 10px 0; color: #333;">Get started with:</h3>
+            <ul style="margin: 0; padding-left: 20px;">
+                <li>Add your first property</li>
+                <li>Invite tenants and agents</li>
+                <li>Set up payment processing</li>
+                <li>Explore dashboard features</li>
+            </ul>
         </div>
         
-        <div class="content">
-            <h2>Welcome, {{firstName}}! 🎉</h2>
-            
-            <p>Thank you for joining HNV1 Property Management! We're excited to help you streamline your property management operations and grow your business.</p>
-            
-            <div class="features">
-                <h3>🚀 What you can do with HNV1:</h3>
-                <ul>
-                    <li><strong>Property Management:</strong> Add and manage multiple properties with ease</li>
-                    <li><strong>Tenant Tracking:</strong> Keep detailed records of all your tenants</li>
-                    <li><strong>Payment Processing:</strong> Collect rent and track payments efficiently</li>
-                    <li><strong>Maintenance Requests:</strong> Handle maintenance issues seamlessly</li>
-                    <li><strong>Financial Analytics:</strong> Get insights into your property performance</li>
-                    <li><strong>Document Management:</strong> Store and organize important documents</li>
-                </ul>
-            </div>
-            
-            <p>Ready to get started? Click the button below to access your dashboard:</p>
-            
-            <div style="text-align: center;">
-                <a href="{{loginUrl}}" class="button">Access Your Dashboard</a>
-            </div>
-            
-            <p><strong>Need help getting started?</strong></p>
-            <p>Our support team is here to help you every step of the way. Feel free to reach out if you have any questions or need assistance setting up your account.</p>
-            
-            <p>Best regards,<br>
-            The HNV1 Team</p>
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{dashboardUrl}}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                Go to Dashboard
+            </a>
         </div>
         
-        <div class="footer">
-            <div class="social-links">
-                <a href="#">Help Center</a> |
-                <a href="#">Contact Support</a> |
-                <a href="#">Privacy Policy</a>
-            </div>
-            <p>&copy; {{currentYear}} HNV1 Property Management. All rights reserved.</p>
-            <p>This email was sent to {{email}}. If you didn't create an account, please ignore this email.</p>
-        </div>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        
+        <p style="font-size: 12px; color: #999; text-align: center;">
+            Welcome to HNV Property Management<br>
+            Need help? Contact our support team anytime.
+        </p>
     </div>
 </body>
 </html>

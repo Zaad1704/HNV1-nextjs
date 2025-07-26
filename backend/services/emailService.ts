@@ -1,240 +1,127 @@
-import nodemailer from 'nodemailer';
-import fs from 'fs';
-import path from 'path';
+import { Resend } from 'resend';
 
 interface EmailOptions {
   to: string;
   subject: string;
-  template?: string;
-  html?: string;
-  text?: string;
-  data?: Record<string, any>;
+  html: string;
+  from?: string;
 }
 
 class EmailService {
-  private transporter: nodemailer.Transporter;
+  private resend: Resend | null;
 
   constructor() {
-    this.transporter = nodemailer.createTransporter({
-      host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.EMAIL_PORT || '587'),
-      secure: process.env.EMAIL_SECURE === 'true',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
-
-    // Verify connection configuration
-    this.transporter.verify((error, success) => {
-      if (error) {
-        console.error('Email service configuration error:', error);
-      } else {
-        console.log('✅ Email service is ready');
-      }
-    });
+    if (process.env.RESEND_API_KEY) {
+      this.resend = new Resend(process.env.RESEND_API_KEY);
+    } else {
+      this.resend = null;
+      console.warn('Resend API key not configured - email service disabled');
+    }
   }
 
-  private loadTemplate(templateName: string, data: Record<string, any> = {}): string {
+  async sendEmail(options: EmailOptions) {
     try {
-      const templatePath = path.join(__dirname, '../templates', `${templateName}.html`);
-      let template = fs.readFileSync(templatePath, 'utf8');
+      if (!process.env.RESEND_API_KEY) {
+        console.warn('Resend API key not configured - skipping email send');
+        return { success: false, message: 'Email service not configured' };
+      }
 
-      // Replace placeholders with actual data
-      Object.keys(data).forEach(key => {
-        const placeholder = new RegExp(`{{${key}}}`, 'g');
-        template = template.replace(placeholder, data[key] || '');
+      const result = await this.resend!.emails.send({
+        from: options.from || process.env.EMAIL_FROM || 'HNV1 <noreply@hnvpm.com>',
+        to: [options.to],
+        subject: options.subject,
+        html: options.html
       });
 
-      return template;
-    } catch (error) {
-      console.error(`Error loading email template ${templateName}:`, error);
-      return this.getDefaultTemplate(data);
+      console.log('Email sent successfully:', result.data?.id);
+      return { success: true, messageId: result.data?.id };
+    } catch (error: any) {
+      console.error('Failed to send email:', error);
+      return { success: false, error: error.message };
     }
   }
 
-  private getDefaultTemplate(data: Record<string, any>): string {
-    return `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>HNV1 Property Management</title>
-        <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #2563eb; color: white; padding: 20px; text-align: center; }
-          .content { padding: 20px; background: #f9f9f9; }
-          .footer { padding: 20px; text-align: center; font-size: 12px; color: #666; }
-          .button { display: inline-block; padding: 12px 24px; background: #2563eb; color: white; text-decoration: none; border-radius: 4px; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>HNV1 Property Management</h1>
-          </div>
-          <div class="content">
-            <p>Hello ${data.firstName || 'User'},</p>
-            <p>${data.message || 'Thank you for using HNV1 Property Management.'}</p>
-            ${data.actionUrl ? `<p><a href="${data.actionUrl}" class="button">Take Action</a></p>` : ''}
-          </div>
-          <div class="footer">
-            <p>&copy; ${new Date().getFullYear()} HNV1 Property Management. All rights reserved.</p>
-          </div>
-        </div>
-      </body>
-      </html>
+  async sendWelcomeEmail(to: string, name: string) {
+    const html = `
+      <h1>Welcome to HNV Property Management!</h1>
+      <p>Hello ${name},</p>
+      <p>Thank you for joining our platform. We're excited to help you manage your properties efficiently.</p>
+      <p>Best regards,<br>The HNV Team</p>
     `;
+
+    return this.sendEmail({
+      to,
+      subject: 'Welcome to HNV Property Management',
+      html
+    });
   }
 
-  async sendEmail(options: EmailOptions): Promise<void> {
+  async sendVerificationEmail(to: string, token: string, userName?: string) {
+    const fs = require('fs');
+    const path = require('path');
+    
     try {
-      let html = options.html;
-
-      // If template is specified, load and process it
-      if (options.template && !html) {
-        html = this.loadTemplate(options.template, options.data || {});
-      }
-
-      // If no HTML content, use default template
-      if (!html && !options.text) {
-        html = this.getDefaultTemplate(options.data || {});
-      }
-
-      const mailOptions = {
-        from: `${process.env.FROM_NAME || 'HNV1 Property Management'} <${process.env.FROM_EMAIL || 'noreply@hnv1.com'}>`,
-        to: options.to,
-        subject: options.subject,
-        text: options.text,
-        html: html
-      };
-
-      const info = await this.transporter.sendMail(mailOptions);
-      console.log('Email sent successfully:', info.messageId);
+      const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
+      
+      // Read HTML template
+      const templatePath = path.join(__dirname, '../templates/emailVerification.html');
+      let html = fs.readFileSync(templatePath, 'utf8');
+      
+      // Replace placeholders
+      html = html.replace('{{userName}}', userName || 'User');
+      html = html.replace('{{verificationUrl}}', verificationUrl);
+      
+      return this.sendEmail({
+        to,
+        subject: 'Verify Your Email Address - HNV Property Management',
+        html
+      });
     } catch (error) {
-      console.error('Error sending email:', error);
-      throw new Error('Failed to send email');
+      console.error('Error reading email template:', error);
+      // Fallback to simple HTML
+      const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
+      const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #333;">Verify Your Email Address</h1>
+          <p>Hello ${userName || 'User'},</p>
+          <p>Please click the button below to verify your email address:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${verificationUrl}" style="background-color: #0d6efd; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Verify Email</a>
+          </div>
+          <p>This link will expire in 24 hours.</p>
+          <p>If you did not create an account, please ignore this email.</p>
+        </div>
+      `;
+      
+      return this.sendEmail({
+        to,
+        subject: 'Verify Your Email Address - HNV Property Management',
+        html
+      });
     }
   }
 
-  async sendWelcomeEmail(to: string, firstName: string): Promise<void> {
-    await this.sendEmail({
+  async sendPasswordResetEmail(to: string, token: string, userName?: string) {
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #333;">Reset Your Password</h1>
+        <p>Hello ${userName || 'User'},</p>
+        <p>You requested to reset your password. Click the button below to set a new password:</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${resetUrl}" style="background-color: #dc3545; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
+        </div>
+        <p>This link will expire in 1 hour.</p>
+        <p>If you did not request this, please ignore this email.</p>
+      </div>
+    `;
+    
+    return this.sendEmail({
       to,
-      subject: 'Welcome to HNV1 Property Management',
-      template: 'welcome',
-      data: {
-        firstName,
-        loginUrl: `${process.env.FRONTEND_URL}/login`
-      }
+      subject: 'Reset Your Password - HNV Property Management',
+      html
     });
-  }
-
-  async sendPasswordResetEmail(to: string, firstName: string, resetUrl: string): Promise<void> {
-    await this.sendEmail({
-      to,
-      subject: 'Password Reset Request',
-      template: 'passwordReset',
-      data: {
-        firstName,
-        resetUrl,
-        expiryTime: '10 minutes'
-      }
-    });
-  }
-
-  async sendEmailVerificationEmail(to: string, firstName: string, verificationUrl: string): Promise<void> {
-    await this.sendEmail({
-      to,
-      subject: 'Verify Your Email Address',
-      template: 'emailVerification',
-      data: {
-        firstName,
-        verificationUrl
-      }
-    });
-  }
-
-  async sendPaymentConfirmationEmail(to: string, firstName: string, paymentDetails: any): Promise<void> {
-    await this.sendEmail({
-      to,
-      subject: 'Payment Confirmation',
-      template: 'paymentSuccess',
-      data: {
-        firstName,
-        amount: paymentDetails.amount,
-        property: paymentDetails.property,
-        unit: paymentDetails.unit,
-        date: paymentDetails.date,
-        receiptUrl: paymentDetails.receiptUrl
-      }
-    });
-  }
-
-  async sendMaintenanceUpdateEmail(to: string, firstName: string, maintenanceDetails: any): Promise<void> {
-    await this.sendEmail({
-      to,
-      subject: 'Maintenance Request Update',
-      template: 'maintenanceUpdate',
-      data: {
-        firstName,
-        requestId: maintenanceDetails.id,
-        status: maintenanceDetails.status,
-        property: maintenanceDetails.property,
-        unit: maintenanceDetails.unit,
-        description: maintenanceDetails.description,
-        updateUrl: `${process.env.FRONTEND_URL}/maintenance/${maintenanceDetails.id}`
-      }
-    });
-  }
-
-  async sendRentReminderEmail(to: string, firstName: string, rentDetails: any): Promise<void> {
-    await this.sendEmail({
-      to,
-      subject: 'Rent Payment Reminder',
-      template: 'rentReminder',
-      data: {
-        firstName,
-        amount: rentDetails.amount,
-        dueDate: rentDetails.dueDate,
-        property: rentDetails.property,
-        unit: rentDetails.unit,
-        paymentUrl: `${process.env.FRONTEND_URL}/payments`
-      }
-    });
-  }
-
-  async sendBulkEmail(recipients: string[], subject: string, template: string, data: Record<string, any>): Promise<void> {
-    const promises = recipients.map(recipient => 
-      this.sendEmail({
-        to: recipient,
-        subject,
-        template,
-        data
-      })
-    );
-
-    try {
-      await Promise.all(promises);
-      console.log(`Bulk email sent to ${recipients.length} recipients`);
-    } catch (error) {
-      console.error('Error sending bulk email:', error);
-      throw new Error('Failed to send bulk email');
-    }
   }
 }
 
-// Create and export a singleton instance
-const emailService = new EmailService();
-
-export const sendEmail = (options: EmailOptions) => emailService.sendEmail(options);
-export const sendWelcomeEmail = (to: string, firstName: string) => emailService.sendWelcomeEmail(to, firstName);
-export const sendPasswordResetEmail = (to: string, firstName: string, resetUrl: string) => emailService.sendPasswordResetEmail(to, firstName, resetUrl);
-export const sendEmailVerificationEmail = (to: string, firstName: string, verificationUrl: string) => emailService.sendEmailVerificationEmail(to, firstName, verificationUrl);
-export const sendPaymentConfirmationEmail = (to: string, firstName: string, paymentDetails: any) => emailService.sendPaymentConfirmationEmail(to, firstName, paymentDetails);
-export const sendMaintenanceUpdateEmail = (to: string, firstName: string, maintenanceDetails: any) => emailService.sendMaintenanceUpdateEmail(to, firstName, maintenanceDetails);
-export const sendRentReminderEmail = (to: string, firstName: string, rentDetails: any) => emailService.sendRentReminderEmail(to, firstName, rentDetails);
-export const sendBulkEmail = (recipients: string[], subject: string, template: string, data: Record<string, any>) => emailService.sendBulkEmail(recipients, subject, template, data);
-
-export default emailService;
+export default new EmailService();

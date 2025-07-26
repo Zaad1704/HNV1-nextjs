@@ -1,15 +1,25 @@
-import express from 'express';
-import { requireOrganization } from '../middleware/auth';
-import { getExpenses, createExpense, updateExpense, deleteExpense } from '../controllers/expenseController-real';
+import { Router } from 'express';
+import { protect } from '../middleware/authMiddleware';
+import { requireApproval } from '../middleware/approvalMiddleware';
+import {
+  getExpenses,
+  getExpenseById,
+  createExpense,
+  updateExpense,
+  deleteExpense
+} from '../controllers/expenseController';
 
-const router = express.Router();
+const router = Router();
+
+router.use(protect);
 
 router.route('/')
-  .get(requireOrganization, getExpenses)
-  .post(requireOrganization, createExpense);
+  .get(getExpenses)
+  .post(requireApproval('expense'), createExpense);
 
 router.route('/:id')
-  .put(requireOrganization, updateExpense)
-  .delete(requireOrganization, deleteExpense);
+  .get(getExpenseById)
+  .put(requireApproval('expense'), updateExpense)
+  .delete(requireApproval('expense'), deleteExpense);
 
 export default router;

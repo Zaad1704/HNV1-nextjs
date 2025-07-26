@@ -1,215 +1,250 @@
 import { Request, Response } from 'express';
 import Property from '../models/Property';
 import Tenant from '../models/Tenant';
-import { catchAsync } from '../middleware/errorHandler';
+import Payment from '../models/Payment';
+import Expense from '../models/Expense';
+import dashboardService from '../services/dashboardService';
 
-export const getDashboardStats = catchAsync(async (req: Request, res: Response): Promise<void> => {
-  const orgId = req.user!.organization;
+interface AuthRequest extends Request {
+  user?: any;
+}
 
-  // Get basic counts
-  const [totalProperties, totalTenants, activeTenants, vacantUnits] = await Promise.all([
-    Property.countDocuments({ organization: orgId, isActive: true }),
-    Tenant.countDocuments({ organization: orgId }),
-    Tenant.countDocuments({ organization: orgId, status: 'active' }),
-    Property.aggregate([
-      { $match: { organization: orgId, isActive: true } },
-      { $unwind: '$units' },
-      { $match: { 'units.status': 'vacant' } },
-      { $count: 'vacant' }
-    ])
-  ]);
-
-  // Get financial data
-  const properties = await Property.find({ organization: orgId, isActive: true });
-  
-  let totalRent = 0;
-  let totalUnits = 0;
-  let occupiedUnits = 0;
-
-  properties.forEach(property => {
-    totalUnits += property.units.length;
-    property.units.forEach(unit => {
-      totalRent += unit.rent;
-      if (unit.status === 'occupied') {
-        occupiedUnits++;
+const safeAsync = (fn: (req: AuthRequest, res: Response) => Promise<any>) => {
+  return async (req: AuthRequest, res: Response) => {
+    try {
+      await fn(req, res);
+    } catch (error) {
+      console.error('Dashboard controller error:', error);
+      if (!res.headersSent) {
+        res.status(500).json({ 
+          success: false, 
+          message: 'Dashboard data temporarily unavailable',
+          error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
       }
+    }
+  };
+};
+
+export const getOverviewStats = safeAsync(async (req: AuthRequest, res: Response) => {
+  if (!req.user?.organizationId) {
+    return res.status(200).json({ 
+      success: true, 
+      data: { totalProperties: 0, activeTenants: 0, monthlyRevenue: 0, occupancyRate: 0 }
     });
-  });
+  }
 
-  const occupancyRate = totalUnits > 0 ? Math.round((occupiedUnits / totalUnits) * 100) : 0;
-  const monthlyRevenue = totalRent;
-  const yearlyRevenue = totalRent * 12;
-
-  // Get recent tenants
-  const recentTenants = await Tenant.find({ organization: orgId })
-    .populate('property', 'name')
-    .sort({ createdAt: -1 })
-    .limit(5)
-    .select('firstName lastName email status createdAt property');
-
-  // Get properties with low occupancy
-  const propertiesWithOccupancy = await Property.aggregate([
-    { $match: { organization: orgId, isActive: true } },
-    {
-      $addFields: {
-        totalUnits: { $size: '$units' },
-        occupiedUnits: {
-          $size: {
-            $filter: {
-              input: '$units',
-              cond: { $eq: ['$$this.status', 'occupied'] }
-            }
-          }
-        }
-      }
-    },
-    {
-      $addFields: {
-        occupancyRate: {
-          $cond: {
-            if: { $gt: ['$totalUnits', 0] },
-            then: { $multiply: [{ $divide: ['$occupiedUnits', '$totalUnits'] }, 100] },
-            else: 0
-          }
-        }
-      }
-    },
-    { $match: { occupancyRate: { $lt: 80 } } },
-    { $sort: { occupancyRate: 1 } },
-    { $limit: 5 },
-    { $project: { name: 1, occupancyRate: 1, totalUnits: 1, occupiedUnits: 1 } }
+  const organizationId = req.user.organizationId;
+  
+  // Use Promise.allSettled for better error handling
+  const [propertiesResult, tenantsResult, revenueResult] = await Promise.allSettled([
+    Property.countDocuments({ organizationId }).exec(),
+    Tenant.countDocuments({ organizationId, status: { $in: ['Active', 'Late'] } }).exec(),
+    Payment.aggregate([
+      { $match: { organizationId, status: { $in: ['Paid', 'completed', 'Completed'] } } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]).exec()
   ]);
+
+  const totalProperties = propertiesResult.status === 'fulfilled' ? propertiesResult.value || 0 : 0;
+  const activeTenants = tenantsResult.status === 'fulfilled' ? tenantsResult.value || 0 : 0;
+  const monthlyRevenue = revenueResult.status === 'fulfilled' ? 
+    (revenueResult.value?.[0]?.total || 0) : 0;
+
+  const occupancyRate = totalProperties > 0 ? Math.round((activeTenants / totalProperties) * 100) : 0;
 
   res.status(200).json({
     success: true,
     data: {
-      overview: {
-        totalProperties,
-        totalTenants,
-        activeTenants,
-        vacantUnits: vacantUnits[0]?.vacant || 0,
-        occupancyRate,
-        monthlyRevenue,
-        yearlyRevenue
-      },
-      recentTenants,
-      lowOccupancyProperties: propertiesWithOccupancy,
-      alerts: [
-        ...(occupancyRate < 70 ? [{ type: 'warning', message: 'Overall occupancy rate is below 70%' }] : []),
-        ...(vacantUnits[0]?.vacant > 5 ? [{ type: 'info', message: `${vacantUnits[0].vacant} units are currently vacant` }] : [])
-      ]
+      totalProperties,
+      activeTenants,
+      monthlyRevenue,
+      occupancyRate
     }
   });
 });
 
-export const getFinancialSummary = catchAsync(async (req: Request, res: Response): Promise<void> => {
-  const orgId = req.user!.organization;
-  const { period = 'month' } = req.query;
+export const getLateTenants = safeAsync(async (req: AuthRequest, res: Response) => {
+  if (!req.user?.organizationId) {
+    return res.status(200).json({ success: true, data: [] });
+  }
 
-  const properties = await Property.find({ organization: orgId, isActive: true });
+  const lateTenants = await Tenant.find({
+    organizationId: req.user.organizationId,
+    status: { $in: ['Late', 'Overdue'] }
+  })
+  .select('name email phone unit status lastPaymentDate')
+  .limit(5)
+  .lean()
+  .exec() || [];
+
+  res.status(200).json({ success: true, data: lateTenants });
+});
+
+export const getExpiringLeases = safeAsync(async (req: AuthRequest, res: Response) => {
+  if (!req.user?.organizationId) {
+    return res.status(200).json({ success: true, data: [] });
+  }
+
+  const today = new Date();
+  const threeMonthsFromNow = new Date();
+  threeMonthsFromNow.setMonth(today.getMonth() + 3);
+
+  const expiringLeases = await Tenant.find({
+    organizationId: req.user.organizationId,
+    leaseEndDate: { $gte: today, $lte: threeMonthsFromNow },
+    status: 'Active'
+  }).limit(5) || [];
+
+  res.status(200).json({ success: true, data: expiringLeases });
+});
+
+export const getFinancialSummary = safeAsync(async (req: AuthRequest, res: Response) => {
+  if (!req.user?.organizationId) {
+    return res.status(200).json({ success: true, data: [] });
+  }
+
+  const organizationId = req.user.organizationId;
+  const promises = [];
+
+  // Prepare all date ranges and queries
+  for (let i = 0; i < 6; i++) {
+    const monthStart = new Date();
+    monthStart.setMonth(monthStart.getMonth() - (5 - i));
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+
+    const monthEnd = new Date(monthStart);
+    monthEnd.setMonth(monthEnd.getMonth() + 1);
+    monthEnd.setDate(0);
+    monthEnd.setHours(23, 59, 59, 999);
+
+    const monthName = monthStart.toLocaleDateString('en-US', { month: 'short' });
+
+    promises.push(
+      Promise.allSettled([
+        Payment.aggregate([
+          { $match: { organizationId, paymentDate: { $gte: monthStart, $lte: monthEnd }, status: { $in: ['Paid', 'completed', 'Completed'] } } },
+          { $group: { _id: null, total: { $sum: '$amount' } } }
+        ]).exec(),
+        Expense.aggregate([
+          { $match: { organizationId, date: { $gte: monthStart, $lte: monthEnd } } },
+          { $group: { _id: null, total: { $sum: '$amount' } } }
+        ]).exec()
+      ]).then(([revenueResult, expenseResult]) => ({
+        name: monthName,
+        Revenue: revenueResult.status === 'fulfilled' ? (revenueResult.value?.[0]?.total || 0) : 0,
+        Expenses: expenseResult.status === 'fulfilled' ? (expenseResult.value?.[0]?.total || 0) : 0
+      }))
+    );
+  }
+
+  const results = await Promise.allSettled(promises);
+  const financialData = results.map(result => 
+    result.status === 'fulfilled' ? result.value : { name: 'N/A', Revenue: 0, Expenses: 0 }
+  );
+
+  res.status(200).json({ success: true, data: financialData });
+});
+
+export const getRentStatus = safeAsync(async (req: AuthRequest, res: Response) => {
+  if (!req.user?.organizationId) {
+    return res.status(200).json({ success: true, data: [] });
+  }
+
+  const activeCount = await Tenant.countDocuments({ organizationId: req.user.organizationId, status: 'Active' }) || 0;
+  const lateCount = await Tenant.countDocuments({ organizationId: req.user.organizationId, status: 'Late' }) || 0;
+  const archivedCount = await Tenant.countDocuments({ organizationId: req.user.organizationId, status: 'Archived' }) || 0;
   
-  let totalRent = 0;
-  let totalDeposit = 0;
-  let occupiedUnits = 0;
-  let totalUnits = 0;
+  const data = [
+    { name: 'Paid / Current', value: activeCount },
+    { name: 'Overdue', value: lateCount },
+    { name: 'Archived', value: archivedCount }
+  ];
 
-  const propertyFinancials = properties.map(property => {
-    let propertyRent = 0;
-    let propertyDeposit = 0;
-    let propertyOccupied = 0;
+  res.status(200).json({ success: true, data });
+});
 
-    property.units.forEach(unit => {
-      propertyRent += unit.rent;
-      propertyDeposit += unit.deposit;
-      totalUnits++;
+export const getStats = safeAsync(async (req: AuthRequest, res: Response) => {
+  if (!req.user?.organizationId) {
+    console.log('User has no organization, creating one:', req.user?.email);
+    
+    // Create organization for user if they don't have one
+    try {
+      const Organization = (await import('../models/Organization')).default;
+      const Plan = (await import('../models/Plan')).default;
+      const subscriptionService = (await import('../services/subscriptionService')).default;
       
-      if (unit.status === 'occupied') {
-        occupiedUnits++;
-        propertyOccupied++;
+      const organization = new Organization({
+        name: `${req.user.name}'s Organization`,
+        owner: req.user._id,
+        members: [req.user._id],
+        status: 'active'
+      });
+      await organization.save();
+      
+      // Update user with organization
+      const User = (await import('../models/User')).default;
+      await User.findByIdAndUpdate(req.user._id, { 
+        organizationId: organization._id,
+        status: 'active'
+      });
+      
+      // Create trial subscription
+      try {
+        const trialPlan = await Plan.findOne({ name: 'Free Trial' });
+        await subscriptionService.createTrialSubscription(organization._id.toString(), trialPlan?._id?.toString() || 'default-plan');
+        console.log('✅ Trial subscription created for user:', req.user.email);
+      } catch (error) {
+        console.error('❌ Failed to create trial subscription:', error);
       }
-    });
-
-    totalRent += propertyRent;
-    totalDeposit += propertyDeposit;
-
-    return {
-      propertyId: property._id,
-      propertyName: property.name,
-      monthlyRent: propertyRent,
-      totalDeposit: propertyDeposit,
-      occupiedUnits: propertyOccupied,
-      totalUnits: property.units.length,
-      occupancyRate: property.units.length > 0 ? Math.round((propertyOccupied / property.units.length) * 100) : 0
-    };
-  });
-
-  const multiplier = period === 'year' ? 12 : 1;
-
-  res.status(200).json({
-    success: true,
-    data: {
-      summary: {
-        totalMonthlyRent: totalRent,
-        totalRevenue: totalRent * multiplier,
-        totalDeposits: totalDeposit,
-        occupancyRate: totalUnits > 0 ? Math.round((occupiedUnits / totalUnits) * 100) : 0,
-        totalProperties: properties.length,
-        totalUnits,
-        occupiedUnits,
-        vacantUnits: totalUnits - occupiedUnits
-      },
-      propertyBreakdown: propertyFinancials,
-      period
+      
+      // Update req.user for this request
+      req.user.organizationId = organization._id;
+      
+      console.log('✅ Organization created for user:', req.user.email);
+    } catch (error) {
+      console.error('❌ Failed to create organization:', error);
+      return res.status(200).json({ 
+        success: true, 
+        data: { 
+          totalProperties: 0, 
+          totalTenants: 0, 
+          monthlyRevenue: 0, 
+          occupancyRate: 0,
+          pendingMaintenance: 0,
+          recentPayments: 0
+        },
+        message: 'Organization setup in progress - showing empty dashboard'
+      });
     }
-  });
+  }
+
+  console.log('Fetching stats for organization:', req.user.organizationId);
+  const stats = await dashboardService.getDashboardStats(req.user.organizationId, req.user.role, req.user._id);
+  console.log('Dashboard stats result:', stats);
+  res.status(200).json({ success: true, data: stats });
 });
 
-export const getOccupancyTrends = catchAsync(async (req: Request, res: Response): Promise<void> => {
-  const orgId = req.user!.organization;
+export const getDashboardStats = safeAsync(async (req: AuthRequest, res: Response) => {
+  if (!req.user?.organizationId) {
+    console.log('User has no organization for dashboard stats:', req.user?.email);
+    return res.status(200).json({ 
+      success: true, 
+      data: { 
+        totalProperties: 0, 
+        totalTenants: 0, 
+        monthlyRevenue: 0, 
+        occupancyRate: 0, 
+        pendingMaintenance: 0, 
+        recentPayments: 0 
+      },
+      message: 'No organization found - showing empty dashboard'
+    });
+  }
 
-  // Get current occupancy by property type
-  const occupancyByType = await Property.aggregate([
-    { $match: { organization: orgId, isActive: true } },
-    {
-      $addFields: {
-        totalUnits: { $size: '$units' },
-        occupiedUnits: {
-          $size: {
-            $filter: {
-              input: '$units',
-              cond: { $eq: ['$$this.status', 'occupied'] }
-            }
-          }
-        }
-      }
-    },
-    {
-      $group: {
-        _id: '$type',
-        totalUnits: { $sum: '$totalUnits' },
-        occupiedUnits: { $sum: '$occupiedUnits' },
-        properties: { $sum: 1 }
-      }
-    },
-    {
-      $addFields: {
-        occupancyRate: {
-          $cond: {
-            if: { $gt: ['$totalUnits', 0] },
-            then: { $multiply: [{ $divide: ['$occupiedUnits', '$totalUnits'] }, 100] },
-            else: 0
-          }
-        }
-      }
-    }
-  ]);
-
-  res.status(200).json({
-    success: true,
-    data: {
-      occupancyByType,
-      totalProperties: await Property.countDocuments({ organization: orgId, isActive: true }),
-      totalTenants: await Tenant.countDocuments({ organization: orgId, status: 'active' })
-    }
-  });
+  console.log('Fetching dashboard stats for organization:', req.user.organizationId);
+  const stats = await dashboardService.getDashboardStats(req.user.organizationId, req.user.role, req.user._id);
+  console.log('Dashboard stats result:', stats);
+  res.status(200).json({ success: true, data: stats });
 });

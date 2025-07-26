@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const integrationController_1 = require("../controllers/integrationController");
+const router = (0, express_1.Router)();
+router.get('/', integrationController_1.getIntegrations);
+router.delete('/:id', integrationController_1.deleteIntegration);
+router.get('/search', integrationController_1.searchIntegrations);
+router.get('/search/suggestions', integrationController_1.getSearchSuggestions);
+router.post('/payment/intent', integrationController_1.createPaymentIntent);
+exports.default = router;

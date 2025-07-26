@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>A Message from {{senderName}}</title>
+     <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .footer { font-size: 0.8em; color: #777; text-align: center; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;}
+        p { margin: 1em 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p>Hello,</p>
+        <p>You have received a new message from <strong>{{senderName}}</strong> via the HNV platform:</p>
+        <hr>
+        <p>{{{messageBody}}}</p> 
+        <hr>
+        <div class="footer">
+            <p>This is an automated message sent from the HNV Property Management Solutions platform.</p>
+        </div>
+    </div>
+</body>
+</html>

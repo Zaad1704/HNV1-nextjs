@@ -1,372 +1,434 @@
-import mongoose, { Document, Schema } from 'mongoose';
-
-export interface IUnit {
-  _id?: string;
-  unitNumber: string;
-  rent: number;
-  deposit: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  squareFeet?: number;
-  status: 'vacant' | 'occupied' | 'maintenance' | 'reserved';
-  tenant?: mongoose.Types.ObjectId;
-  description?: string;
-  amenities?: string[];
-  images?: string[];
-  lastInspection?: Date;
-  nextInspection?: Date;
-}
+import { Schema, model, Document } from 'mongoose';
 
 export interface IProperty extends Document {
-  _id: string;
   name: string;
-  description?: string;
   address: {
     street: string;
     city: string;
     state: string;
     zipCode: string;
-    country: string;
-    coordinates?: {
-      latitude: number;
-      longitude: number;
-    };
+    country?: string;
+    formattedAddress?: string;
   };
-  type: 'apartment' | 'house' | 'commercial' | 'condo' | 'townhouse' | 'other';
-  units: IUnit[];
-  owner: mongoose.Types.ObjectId;
-  organization: mongoose.Types.ObjectId;
-  manager?: mongoose.Types.ObjectId;
-  images: string[];
-  documents: {
-    name: string;
-    url: string;
-    type: string;
-    uploadedAt: Date;
-  }[];
-  amenities: string[];
-  policies: {
-    petPolicy?: string;
-    smokingPolicy?: string;
-    guestPolicy?: string;
-    parkingPolicy?: string;
+  location: {
+    type: 'Point';
+    coordinates: [number, number];
   };
-  financials: {
-    totalRent: number;
-    totalDeposit: number;
-    monthlyIncome: number;
-    yearlyIncome: number;
+  numberOfUnits: number;
+  totalUnits?: number;
+  rentAmount?: number;
+  organizationId: Schema.Types.ObjectId;
+  createdBy: Schema.Types.ObjectId;
+  managedByAgentId?: Schema.Types.ObjectId;
+  status: 'Active' | 'Inactive' | 'Under Renovation' | 'Archived';
+  occupancyRate?: number;
+  cashFlow?: {
+    income: number;
     expenses: number;
     netIncome: number;
   };
-  maintenance: {
-    lastInspection?: Date;
-    nextInspection?: Date;
-    maintenanceRequests: number;
-    averageResponseTime?: number;
-  };
-  analytics: {
-    occupancyRate: number;
-    averageRent: number;
-    turnoverRate: number;
-    collectionRate: number;
+  maintenanceStatus?: string;
+  imageUrl?: string;
+  propertyType: 'Apartment' | 'House' | 'Commercial' | 'Condo' | 'Townhouse' | 'Other';
+  description?: string;
+  amenities?: string[];
+  yearBuilt?: number;
+  squareFootage?: number;
+  parkingSpaces?: number;
+  petPolicy?: 'Allowed' | 'Not Allowed' | 'Conditional';
+  utilities?: {
+    water: boolean;
+    electricity: boolean;
+    gas: boolean;
+    internet: boolean;
+    cable: boolean;
   };
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-  getVacantUnits(): IUnit[];
-  getOccupiedUnits(): IUnit[];
-  getTotalUnits(): number;
-  getOccupancyRate(): number;
 }
 
-const unitSchema = new Schema<IUnit>({
-  unitNumber: {
-    type: String,
-    required: [true, 'Unit number is required'],
-    trim: true
-  },
-  rent: {
-    type: Number,
-    required: [true, 'Rent amount is required'],
-    min: [0, 'Rent cannot be negative']
-  },
-  deposit: {
-    type: Number,
-    required: [true, 'Deposit amount is required'],
-    min: [0, 'Deposit cannot be negative']
-  },
-  bedrooms: {
-    type: Number,
-    min: [0, 'Bedrooms cannot be negative'],
-    max: [20, 'Bedrooms cannot exceed 20']
-  },
-  bathrooms: {
-    type: Number,
-    min: [0, 'Bathrooms cannot be negative'],
-    max: [20, 'Bathrooms cannot exceed 20']
-  },
-  squareFeet: {
-    type: Number,
-    min: [0, 'Square feet cannot be negative']
-  },
-  status: {
-    type: String,
-    enum: ['vacant', 'occupied', 'maintenance', 'reserved'],
-    default: 'vacant'
-  },
-  tenant: {
-    type: Schema.Types.ObjectId,
-    ref: 'Tenant'
-  },
-  description: {
-    type: String,
-    trim: true,
-    maxlength: [1000, 'Description cannot exceed 1000 characters']
-  },
-  amenities: [{
-    type: String,
-    trim: true
-  }],
-  images: [{
-    type: String
-  }],
-  lastInspection: Date,
-  nextInspection: Date
-}, {
-  timestamps: true
-});
-
-const propertySchema = new Schema<IProperty>({
+const PropertySchema = new Schema<IProperty>({
   name: {
     type: String,
     required: [true, 'Property name is required'],
     trim: true,
-    maxlength: [100, 'Property name cannot exceed 100 characters']
-  },
-  description: {
-    type: String,
-    trim: true,
-    maxlength: [2000, 'Description cannot exceed 2000 characters']
+    maxlength: [100, 'Property name cannot exceed 100 characters'],
+    index: true
   },
   address: {
-    street: {
-      type: String,
+    street: { 
+      type: String, 
       required: [true, 'Street address is required'],
-      trim: true
+      trim: true,
+      maxlength: [200, 'Street address cannot exceed 200 characters']
     },
-    city: {
-      type: String,
+    city: { 
+      type: String, 
       required: [true, 'City is required'],
-      trim: true
+      trim: true,
+      maxlength: [50, 'City name cannot exceed 50 characters'],
+      index: true
     },
-    state: {
-      type: String,
+    state: { 
+      type: String, 
       required: [true, 'State is required'],
-      trim: true
+      trim: true,
+      maxlength: [50, 'State name cannot exceed 50 characters'],
+      index: true
     },
-    zipCode: {
-      type: String,
+    zipCode: { 
+      type: String, 
       required: [true, 'Zip code is required'],
-      trim: true
+      trim: true,
+      maxlength: [20, 'Zip code cannot exceed 20 characters']
     },
     country: {
       type: String,
-      required: [true, 'Country is required'],
-      trim: true,
-      default: 'United States'
-    },
-    coordinates: {
-      latitude: {
-        type: Number,
-        min: [-90, 'Latitude must be between -90 and 90'],
-        max: [90, 'Latitude must be between -90 and 90']
-      },
-      longitude: {
-        type: Number,
-        min: [-180, 'Longitude must be between -180 and 180'],
-        max: [180, 'Longitude must be between -180 and 180']
-      }
-    }
-  },
-  type: {
-    type: String,
-    enum: ['apartment', 'house', 'commercial', 'condo', 'townhouse', 'other'],
-    required: [true, 'Property type is required']
-  },
-  units: [unitSchema],
-  owner: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'Property owner is required']
-  },
-  organization: {
-    type: Schema.Types.ObjectId,
-    ref: 'Organization',
-    required: [true, 'Organization is required']
-  },
-  manager: {
-    type: Schema.Types.ObjectId,
-    ref: 'User'
-  },
-  images: [{
-    type: String
-  }],
-  documents: [{
-    name: {
-      type: String,
-      required: true,
+      default: 'United States',
       trim: true
     },
-    url: {
-      type: String,
-      required: true
-    },
+    formattedAddress: String,
+  },
+  location: {
     type: {
       type: String,
-      required: true
+      enum: ['Point'],
+      default: 'Point'
     },
-    uploadedAt: {
-      type: Date,
-      default: Date.now
+    coordinates: {
+      type: [Number],
+      index: '2dsphere',
+      default: [-74.0060, 40.7128]
+    },
+  },
+  numberOfUnits: {
+    type: Number,
+    required: [true, 'Number of units is required'],
+    min: [1, 'Property must have at least 1 unit'],
+    max: [10000, 'Number of units cannot exceed 10,000'],
+    default: 1,
+  },
+  totalUnits: {
+    type: Number,
+    min: [1, 'Total units must be at least 1']
+  },
+  rentAmount: {
+    type: Number,
+    min: [0, 'Rent amount cannot be negative'],
+    default: 0,
+  },
+  organizationId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Organization',
+    required: [true, 'Organization ID is required'],
+    index: true
+  },
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Created by user ID is required'],
+    index: true
+  },
+  managedByAgentId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    index: true
+  },
+  status: {
+    type: String,
+    enum: {
+      values: ['Active', 'Inactive', 'Under Renovation', 'Archived'],
+      message: 'Status must be Active, Inactive, Under Renovation, or Archived'
+    },
+    default: 'Active',
+    index: true
+  },
+  occupancyRate: {
+    type: Number,
+    min: [0, 'Occupancy rate cannot be negative'],
+    max: [100, 'Occupancy rate cannot exceed 100%'],
+    default: 0
+  },
+  cashFlow: {
+    income: { type: Number, default: 0, min: [0, 'Income cannot be negative'] },
+    expenses: { type: Number, default: 0, min: [0, 'Expenses cannot be negative'] },
+    netIncome: { type: Number, default: 0 }
+  },
+  maintenanceStatus: {
+    type: String,
+    enum: ['excellent', 'good', 'fair', 'poor', 'critical'],
+    default: 'good'
+  },
+  imageUrl: { 
+    type: String,
+    validate: {
+      validator: function(v: string) {
+        if (!v) return true;
+        return /^(https?:\/\/)|(\/)/.test(v);
+      },
+      message: 'Image URL must be a valid URL or path'
     }
-  }],
+  },
+  propertyType: {
+    type: String,
+    enum: {
+      values: ['Apartment', 'House', 'Commercial', 'Condo', 'Townhouse', 'Other'],
+      message: 'Property type must be Apartment, House, Commercial, Condo, Townhouse, or Other'
+    },
+    required: [true, 'Property type is required'],
+    default: 'Apartment',
+    index: true
+  },
+  description: { 
+    type: String,
+    maxlength: [2000, 'Description cannot exceed 2000 characters']
+  },
   amenities: [{
     type: String,
-    trim: true
+    trim: true,
+    maxlength: [50, 'Amenity name cannot exceed 50 characters']
   }],
-  policies: {
-    petPolicy: {
-      type: String,
-      trim: true
-    },
-    smokingPolicy: {
-      type: String,
-      trim: true
-    },
-    guestPolicy: {
-      type: String,
-      trim: true
-    },
-    parkingPolicy: {
-      type: String,
-      trim: true
-    }
+  yearBuilt: {
+    type: Number,
+    min: [1800, 'Year built cannot be before 1800'],
+    max: [new Date().getFullYear() + 5, 'Year built cannot be more than 5 years in the future']
   },
-  financials: {
-    totalRent: {
-      type: Number,
-      default: 0,
-      min: [0, 'Total rent cannot be negative']
-    },
-    totalDeposit: {
-      type: Number,
-      default: 0,
-      min: [0, 'Total deposit cannot be negative']
-    },
-    monthlyIncome: {
-      type: Number,
-      default: 0
-    },
-    yearlyIncome: {
-      type: Number,
-      default: 0
-    },
-    expenses: {
-      type: Number,
-      default: 0
-    },
-    netIncome: {
-      type: Number,
-      default: 0
-    }
+  squareFootage: {
+    type: Number,
+    min: [1, 'Square footage must be at least 1']
   },
-  maintenance: {
-    lastInspection: Date,
-    nextInspection: Date,
-    maintenanceRequests: {
-      type: Number,
-      default: 0
-    },
-    averageResponseTime: Number
+  parkingSpaces: {
+    type: Number,
+    min: [0, 'Parking spaces cannot be negative'],
+    default: 0
   },
-  analytics: {
-    occupancyRate: {
-      type: Number,
-      default: 0,
-      min: [0, 'Occupancy rate cannot be negative'],
-      max: [100, 'Occupancy rate cannot exceed 100']
-    },
-    averageRent: {
-      type: Number,
-      default: 0
-    },
-    turnoverRate: {
-      type: Number,
-      default: 0
-    },
-    collectionRate: {
-      type: Number,
-      default: 100
-    }
+  petPolicy: {
+    type: String,
+    enum: ['Allowed', 'Not Allowed', 'Conditional'],
+    default: 'Conditional'
+  },
+  utilities: {
+    water: { type: Boolean, default: true },
+    electricity: { type: Boolean, default: true },
+    gas: { type: Boolean, default: false },
+    internet: { type: Boolean, default: false },
+    cable: { type: Boolean, default: false }
   },
   isActive: {
     type: Boolean,
-    default: true
+    default: true,
+    index: true
   }
-}, {
-  timestamps: true
+}, { 
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
-// Indexes
-propertySchema.index({ organization: 1 });
-propertySchema.index({ owner: 1 });
-propertySchema.index({ type: 1 });
-propertySchema.index({ 'address.city': 1, 'address.state': 1 });
-propertySchema.index({ isActive: 1 });
-propertySchema.index({ name: 'text', description: 'text' });
+// Indexes for better query performance
+PropertySchema.index({ organizationId: 1, status: 1 });
+PropertySchema.index({ organizationId: 1, propertyType: 1 });
+PropertySchema.index({ organizationId: 1, createdAt: -1 });
+PropertySchema.index({ 'address.city': 1, 'address.state': 1 });
+PropertySchema.index({ name: 'text', description: 'text' });
+
+// Virtual for net income calculation
+PropertySchema.virtual('netIncome').get(function() {
+  if (this.cashFlow) {
+    return (this.cashFlow.income || 0) - (this.cashFlow.expenses || 0);
+  }
+  return 0;
+});
 
 // Virtual for full address
-propertySchema.virtual('fullAddress').get(function() {
-  const addr = this.address;
-  return `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}, ${addr.country}`;
+PropertySchema.virtual('fullAddress').get(function() {
+  const { street, city, state, zipCode, country } = this.address;
+  return `${street}, ${city}, ${state} ${zipCode}${country && country !== 'United States' ? `, ${country}` : ''}`;
 });
 
-// Instance methods
-propertySchema.methods.getVacantUnits = function(): IUnit[] {
-  return this.units.filter((unit: IUnit) => unit.status === 'vacant');
-};
-
-propertySchema.methods.getOccupiedUnits = function(): IUnit[] {
-  return this.units.filter((unit: IUnit) => unit.status === 'occupied');
-};
-
-propertySchema.methods.getTotalUnits = function(): number {
-  return this.units.length;
-};
-
-propertySchema.methods.getOccupancyRate = function(): number {
-  const totalUnits = this.getTotalUnits();
-  if (totalUnits === 0) return 0;
-  const occupiedUnits = this.getOccupiedUnits().length;
-  return Math.round((occupiedUnits / totalUnits) * 100);
-};
-
-// Pre-save middleware to calculate financials and analytics
-propertySchema.pre('save', function(next) {
-  // Calculate total rent and deposit
-  this.financials.totalRent = this.units.reduce((total, unit) => total + unit.rent, 0);
-  this.financials.totalDeposit = this.units.reduce((total, unit) => total + unit.deposit, 0);
-  
-  // Calculate occupancy rate
-  this.analytics.occupancyRate = this.getOccupancyRate();
-  
-  // Calculate average rent
-  if (this.units.length > 0) {
-    this.analytics.averageRent = this.financials.totalRent / this.units.length;
+// Pre-save middleware
+PropertySchema.pre('save', async function(next) {
+  try {
+    // Generate formatted address
+    this.address.formattedAddress = `${this.address.street}, ${this.address.city}, ${this.address.state} ${this.address.zipCode}`;
+    
+    // Set totalUnits if not provided
+    if (!this.totalUnits) {
+      this.totalUnits = this.numberOfUnits;
+    }
+    
+    // Calculate net income if cashFlow exists
+    if (this.cashFlow) {
+      this.cashFlow.netIncome = (this.cashFlow.income || 0) - (this.cashFlow.expenses || 0);
+    }
+    
+    // Set location coordinates (in production, you'd use a geocoding service)
+    if (!this.location || !this.location.coordinates || this.location.coordinates.length !== 2) {
+      this.location = {
+        type: 'Point',
+        coordinates: [
+          -74.0060 + (Math.random() - 0.5) * 0.1, // Longitude
+          40.7128 + (Math.random() - 0.5) * 0.1   // Latitude
+        ]
+      };
+    }
+    
+    next();
+  } catch (error) {
+    next(error as Error);
   }
-  
-  next();
 });
 
-export default mongoose.model<IProperty>('Property', propertySchema);
+// Post-save middleware to create units
+PropertySchema.post('save', async function(doc) {
+  try {
+    const Unit = require('./Unit').default;
+    
+    // Check if units already exist for this property
+    const existingUnits = await Unit.countDocuments({ propertyId: doc._id });
+    
+    if (existingUnits === 0 && doc.numberOfUnits > 0) {
+      // Create units for the property with better error handling
+      const units = [];
+      for (let i = 1; i <= doc.numberOfUnits; i++) {
+        units.push({
+          propertyId: doc._id,
+          organizationId: doc.organizationId,
+          unitNumber: i.toString().padStart(3, '0'), // Better unit numbering
+          status: 'Available',
+          rentAmount: doc.rentAmount || 0,
+          historyTracking: {
+            totalTenants: 0,
+            averageStayDuration: 0,
+            rentHistory: [{
+              amount: doc.rentAmount || 0,
+              effectiveDate: new Date(),
+              tenantId: null
+            }]
+          }
+        });
+      }
+      
+      // Use insertMany with ordered: false for better error handling
+      await Unit.insertMany(units, { ordered: false });
+      console.log(`Created ${units.length} units for property ${doc.name}`);
+    } else if (existingUnits > 0 && existingUnits !== doc.numberOfUnits) {
+      // Handle unit count changes
+      if (doc.numberOfUnits > existingUnits) {
+        // Add new units
+        const newUnits = [];
+        for (let i = existingUnits + 1; i <= doc.numberOfUnits; i++) {
+          newUnits.push({
+            propertyId: doc._id,
+            organizationId: doc.organizationId,
+            unitNumber: i.toString().padStart(3, '0'),
+            status: 'Available',
+            rentAmount: doc.rentAmount || 0,
+            historyTracking: {
+              totalTenants: 0,
+              averageStayDuration: 0,
+              rentHistory: [{
+                amount: doc.rentAmount || 0,
+                effectiveDate: new Date(),
+                tenantId: null
+              }]
+            }
+          });
+        }
+        await Unit.insertMany(newUnits, { ordered: false });
+      } else if (doc.numberOfUnits < existingUnits) {
+        // Mark excess units as maintenance instead of deleting
+        await Unit.updateMany(
+          { 
+            propertyId: doc._id,
+            unitNumber: { $gt: doc.numberOfUnits.toString().padStart(3, '0') }
+          },
+          { status: 'Maintenance' }
+        );
+      }
+    }
+  } catch (error) {
+    console.error('Error managing units for property:', error);
+    // Don't throw error to prevent property creation failure
+  }
+});
+
+// Pre-remove middleware to handle cascading operations
+PropertySchema.pre('deleteOne', { document: true, query: false }, async function(next) {
+  try {
+    const Unit = require('./Unit').default;
+    const Tenant = require('./Tenant').default;
+    const Payment = require('./Payment').default;
+    const Expense = require('./Expense').default;
+    const MaintenanceRequest = require('./MaintenanceRequest').default;
+    
+    // Check for active tenants before allowing deletion
+    const activeTenants = await Tenant.countDocuments({ 
+      propertyId: this._id, 
+      status: 'Active' 
+    });
+    
+    if (activeTenants > 0) {
+      throw new Error(`Cannot delete property with ${activeTenants} active tenant(s). Please move or deactivate tenants first.`);
+    }
+    
+    // Archive related data instead of deleting to preserve history
+    const archiveOperations = [
+      Unit.updateMany({ propertyId: this._id }, { 
+        status: 'Archived',
+        $unset: { tenantId: 1 }
+      }),
+      Tenant.updateMany({ propertyId: this._id }, { 
+        status: 'Archived',
+        isActive: false
+      }),
+      Payment.updateMany({ propertyId: this._id }, { 
+        status: 'Archived'
+      }),
+      Expense.updateMany({ propertyId: this._id }, { 
+        status: 'Archived'
+      }),
+      MaintenanceRequest.updateMany({ propertyId: this._id }, { 
+        status: 'Archived'
+      })
+    ];
+    
+    await Promise.allSettled(archiveOperations);
+    console.log(`Archived all related data for property ${this.name}`);
+    
+    next();
+  } catch (error) {
+    console.error('Error in property pre-delete middleware:', error);
+    next(error as Error);
+  }
+});
+
+// Add method to safely restore property
+PropertySchema.methods.restore = async function() {
+  try {
+    const Unit = require('./Unit').default;
+    const Tenant = require('./Tenant').default;
+    
+    // Restore property
+    this.status = 'Active';
+    this.isActive = true;
+    await this.save();
+    
+    // Restore units
+    await Unit.updateMany(
+      { propertyId: this._id, status: 'Archived' },
+      { status: 'Available' }
+    );
+    
+    // Note: Don't automatically restore tenants as they may have moved
+    console.log(`Restored property ${this.name} and its units`);
+    
+    return this;
+  } catch (error) {
+    console.error('Error restoring property:', error);
+    throw error;
+  }
+};
+
+export default model<IProperty>('Property', PropertySchema);

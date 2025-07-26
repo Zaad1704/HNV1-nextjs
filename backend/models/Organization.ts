@@ -1,239 +1,271 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
 export interface IOrganization extends Document {
-  _id: string;
   name: string;
-  description?: string;
-  logo?: string;
-  website?: string;
-  phone?: string;
-  email?: string;
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-  };
-  owner: mongoose.Types.ObjectId;
-  members: mongoose.Types.ObjectId[];
+  owner: Schema.Types.ObjectId;
+  members: Schema.Types.ObjectId[];
+  status: 'Active' | 'Inactive' | 'Suspended' | 'Pending Deletion' | 'Archived';
+  subscription: Schema.Types.ObjectId;
+  inviteCode?: string;
   settings: {
-    currency: string;
     timezone: string;
+    currency: string;
     dateFormat: string;
     language: string;
-    features: {
-      analytics: boolean;
-      notifications: boolean;
-      fileUpload: boolean;
-      paymentProcessing: boolean;
-      maintenanceTracking: boolean;
-      tenantPortal: boolean;
-    };
   };
-  subscription: {
-    plan: string;
-    status: 'active' | 'inactive' | 'trial' | 'expired';
-    startDate: Date;
-    endDate: Date;
-    features: string[];
+  branding: {
+    companyName: string;
+    companyLogoUrl: string;
+    companyAddress: string;
+    primaryColor?: string;
+    secondaryColor?: string;
   };
-  billing: {
-    stripeCustomerId?: string;
-    paymentMethod?: string;
-    billingAddress?: {
-      street: string;
-      city: string;
-      state: string;
-      zipCode: string;
-      country: string;
-    };
+  contact: {
+    email?: string;
+    phone?: string;
+    website?: string;
   };
-  isActive: boolean;
+  limits: {
+    maxProperties: number;
+    maxTenants: number;
+    maxUsers: number;
+  };
+  dataManagement: {
+    dataExportRequestedAt?: Date;
+    accountDeletionRequestedAt?: Date;
+    lastBackupAt?: Date;
+  };
+  allowSelfDeletion: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const organizationSchema = new Schema<IOrganization>({
-  name: {
-    type: String,
+const OrganizationSchema = new Schema<IOrganization>({
+  name: { 
+    type: String, 
     required: [true, 'Organization name is required'],
     trim: true,
-    maxlength: [100, 'Organization name cannot exceed 100 characters']
+    maxlength: [200, 'Organization name cannot exceed 200 characters'],
+    index: true
   },
-  description: {
-    type: String,
-    trim: true,
-    maxlength: [500, 'Description cannot exceed 500 characters']
+  owner: { 
+    type: Schema.Types.ObjectId, 
+    ref: 'User',
+    required: [true, 'Owner is required'],
+    index: true
   },
-  logo: {
-    type: String,
-    default: ''
-  },
-  website: {
-    type: String,
-    trim: true,
-    match: [/^https?:\/\/.+/, 'Please enter a valid website URL']
-  },
-  phone: {
-    type: String,
-    trim: true,
-    match: [/^\+?[\d\s-()]+$/, 'Please enter a valid phone number']
-  },
-  email: {
-    type: String,
-    lowercase: true,
-    trim: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
-  },
-  address: {
-    street: {
-      type: String,
-      required: [true, 'Street address is required'],
-      trim: true
+  members: [{ 
+    type: Schema.Types.ObjectId, 
+    ref: 'User',
+    validate: {
+      validator: function(v: Schema.Types.ObjectId[]) {
+        return v.length <= 1000;
+      },
+      message: 'Cannot have more than 1000 members'
+    }
+  }],
+  status: { 
+    type: String, 
+    enum: {
+      values: ['Active', 'Inactive', 'Suspended', 'Pending Deletion', 'Archived'],
+      message: 'Invalid status'
     },
-    city: {
-      type: String,
-      required: [true, 'City is required'],
-      trim: true
-    },
-    state: {
-      type: String,
-      required: [true, 'State is required'],
-      trim: true
-    },
-    zipCode: {
-      type: String,
-      required: [true, 'Zip code is required'],
-      trim: true
-    },
-    country: {
-      type: String,
-      required: [true, 'Country is required'],
-      trim: true,
-      default: 'United States'
+    default: 'Active',
+    index: true
+  },
+  subscription: { 
+    type: Schema.Types.ObjectId, 
+    ref: 'Subscription',
+    index: true
+  },
+  inviteCode: { 
+    type: String, 
+    unique: true, 
+    sparse: true,
+    uppercase: true,
+    validate: {
+      validator: function(v: string) {
+        return !v || /^[A-Z0-9]{6,12}$/.test(v);
+      },
+      message: 'Invite code must be 6-12 alphanumeric characters'
     }
   },
-  owner: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'Organization owner is required']
-  },
-  members: [{
-    type: Schema.Types.ObjectId,
-    ref: 'User'
-  }],
   settings: {
+    timezone: {
+      type: String,
+      default: 'UTC',
+      validate: {
+        validator: function(v: string) {
+          return /^[A-Za-z_]+\/[A-Za-z_]+$/.test(v) || v === 'UTC';
+        },
+        message: 'Invalid timezone format'
+      }
+    },
     currency: {
       type: String,
       default: 'USD',
-      enum: ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CNY', 'INR']
-    },
-    timezone: {
-      type: String,
-      default: 'America/New_York'
+      enum: {
+        values: ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CNY', 'INR'],
+        message: 'Unsupported currency'
+      }
     },
     dateFormat: {
       type: String,
       default: 'MM/DD/YYYY',
-      enum: ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD']
+      enum: {
+        values: ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD'],
+        message: 'Invalid date format'
+      }
     },
     language: {
       type: String,
-      default: 'en'
-    },
-    features: {
-      analytics: {
-        type: Boolean,
-        default: true
-      },
-      notifications: {
-        type: Boolean,
-        default: true
-      },
-      fileUpload: {
-        type: Boolean,
-        default: true
-      },
-      paymentProcessing: {
-        type: Boolean,
-        default: true
-      },
-      maintenanceTracking: {
-        type: Boolean,
-        default: true
-      },
-      tenantPortal: {
-        type: Boolean,
-        default: false
+      default: 'en',
+      enum: {
+        values: ['en', 'es', 'fr', 'de', 'it', 'pt', 'ar', 'zh', 'ja', 'ko'],
+        message: 'Unsupported language'
       }
     }
   },
-  subscription: {
-    plan: {
-      type: String,
-      default: 'basic',
-      enum: ['trial', 'basic', 'professional', 'enterprise']
+  branding: {
+    companyName: { 
+      type: String, 
+      default: '',
+      trim: true,
+      maxlength: [200, 'Company name cannot exceed 200 characters']
     },
-    status: {
-      type: String,
-      default: 'trial',
-      enum: ['active', 'inactive', 'trial', 'expired']
-    },
-    startDate: {
-      type: Date,
-      default: Date.now
-    },
-    endDate: {
-      type: Date,
-      default: function() {
-        // Default to 30 days from now for trial
-        return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    companyLogoUrl: { 
+      type: String, 
+      default: '',
+      validate: {
+        validator: function(v: string) {
+          return !v || /^(https?:\/\/)|(\/)/.test(v);
+        },
+        message: 'Logo URL must be valid'
       }
     },
-    features: [{
-      type: String
-    }]
-  },
-  billing: {
-    stripeCustomerId: String,
-    paymentMethod: String,
-    billingAddress: {
-      street: String,
-      city: String,
-      state: String,
-      zipCode: String,
-      country: String
+    companyAddress: { 
+      type: String, 
+      default: '',
+      trim: true,
+      maxlength: [500, 'Address cannot exceed 500 characters']
+    },
+    primaryColor: {
+      type: String,
+      validate: {
+        validator: function(v: string) {
+          return !v || /^#[0-9A-Fa-f]{6}$/.test(v);
+        },
+        message: 'Primary color must be a valid hex color'
+      }
+    },
+    secondaryColor: {
+      type: String,
+      validate: {
+        validator: function(v: string) {
+          return !v || /^#[0-9A-Fa-f]{6}$/.test(v);
+        },
+        message: 'Secondary color must be a valid hex color'
+      }
     }
   },
-  isActive: {
-    type: Boolean,
-    default: true
+  contact: {
+    email: {
+      type: String,
+      lowercase: true,
+      trim: true,
+      validate: {
+        validator: function(v: string) {
+          return !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+        },
+        message: 'Please enter a valid email address'
+      }
+    },
+    phone: {
+      type: String,
+      validate: {
+        validator: function(v: string) {
+          return !v || /^[+]?[1-9]\d{1,14}$/.test(v.replace(/[\s()-]/g, ''));
+        },
+        message: 'Please enter a valid phone number'
+      }
+    },
+    website: {
+      type: String,
+      validate: {
+        validator: function(v: string) {
+          return !v || /^https?:\/\/.+/.test(v);
+        },
+        message: 'Website must be a valid URL'
+      }
+    }
+  },
+  limits: {
+    maxProperties: {
+      type: Number,
+      default: 100,
+      min: [1, 'Must allow at least 1 property'],
+      max: [10000, 'Cannot exceed 10000 properties']
+    },
+    maxTenants: {
+      type: Number,
+      default: 1000,
+      min: [1, 'Must allow at least 1 tenant'],
+      max: [100000, 'Cannot exceed 100000 tenants']
+    },
+    maxUsers: {
+      type: Number,
+      default: 50,
+      min: [1, 'Must allow at least 1 user'],
+      max: [1000, 'Cannot exceed 1000 users']
+    }
+  },
+  dataManagement: {
+    dataExportRequestedAt: Date,
+    accountDeletionRequestedAt: Date,
+    lastBackupAt: Date
+  },
+  allowSelfDeletion: { type: Boolean, default: true }
+}, { 
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+// Indexes for performance
+OrganizationSchema.index({ name: 1 });
+OrganizationSchema.index({ owner: 1 });
+OrganizationSchema.index({ status: 1 });
+OrganizationSchema.index({ createdAt: -1 });
+OrganizationSchema.index({ inviteCode: 1 }, { unique: true, sparse: true });
+
+// Virtual for member count
+OrganizationSchema.virtual('memberCount').get(function() {
+  return this.members ? this.members.length : 0;
+});
+
+// Virtual for display name
+OrganizationSchema.virtual('displayName').get(function() {
+  return this.branding?.companyName || this.name;
+});
+
+// Pre-save middleware
+OrganizationSchema.pre('save', function(next) {
+  // Generate invite code if not provided
+  if (!this.inviteCode && this.isNew) {
+    this.inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
   }
-}, {
-  timestamps: true
+  next();
 });
 
-// Indexes
-organizationSchema.index({ owner: 1 });
-organizationSchema.index({ 'subscription.status': 1 });
-organizationSchema.index({ isActive: 1 });
-organizationSchema.index({ name: 'text', description: 'text' });
-
-// Virtual for full address
-organizationSchema.virtual('fullAddress').get(function() {
-  const addr = this.address;
-  return `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}, ${addr.country}`;
-});
-
-// Method to check if organization has feature
-organizationSchema.methods.hasFeature = function(feature: string): boolean {
-  return this.settings.features[feature] === true;
+// Static methods
+OrganizationSchema.statics.findActive = function() {
+  return this.find({ status: 'Active' })
+    .populate('owner', 'name email')
+    .sort({ createdAt: -1 });
 };
 
-// Method to check if subscription is active
-organizationSchema.methods.isSubscriptionActive = function(): boolean {
-  return this.subscription.status === 'active' && this.subscription.endDate > new Date();
+OrganizationSchema.statics.findByInviteCode = function(code: string) {
+  return this.findOne({ inviteCode: code.toUpperCase(), status: 'Active' });
 };
 
-export default mongoose.model<IOrganization>('Organization', organizationSchema);
+export default model<IOrganization>('Organization', OrganizationSchema);

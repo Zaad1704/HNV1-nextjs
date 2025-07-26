@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authMiddleware_1 = require("../middleware/authMiddleware");
+const bulkPaymentController_1 = require("../controllers/bulkPaymentController");
+const router = (0, express_1.Router)();
+router.use(authMiddleware_1.protect);
+router.post('/payments', bulkPaymentController_1.createBulkPayments);
+router.post('/whatsapp-notices', bulkPaymentController_1.sendBulkWhatsAppNotices);
+exports.default = router;

@@ -1,194 +1,112 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import helmet from 'helmet';
-import compression from 'compression';
-import morgan from 'morgan';
-import rateLimit from 'express-rate-limit';
-import { createServer } from 'http';
-import { Server } from 'socket.io';
 import dotenv from 'dotenv';
-
-// Import configurations
-import { connectDB } from './config/database-memory';
-import { setupPassport } from './config/passport';
-import { setupSwagger } from './config/swagger';
-
-// Import middleware
-import { errorHandler } from './middleware/errorHandler';
-import { authMiddleware } from './middleware/auth-simple';
-
-// Import routes
-import authRoutes from './routes/authRoutes';
-import userRoutes from './routes/userRoutes';
-import propertyRoutes from './routes/propertyRoutes';
-import tenantRoutes from './routes/tenantRoutes';
-import paymentRoutes from './routes/paymentRoutes';
-import expenseRoutes from './routes/expenseRoutes';
-import maintenanceRoutes from './routes/maintenanceRoutes';
-import dashboardRoutes from './routes/dashboardRoutes';
-import analyticsRoutes from './routes/analyticsRoutes';
-import notificationRoutes from './routes/notificationRoutes';
-import uploadRoutes from './routes/uploadRoutes';
-import webhookRoutes from './routes/webhookRoutes';
+import mongoose from 'mongoose';
+import { createServer } from 'http';
+import app from './app';
+import { config } from './config';
+import { startSubscriptionCron } from './scripts/subscriptionCron';
 
 // Load environment variables
 dotenv.config();
 
-const app = express();
-const server = createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    methods: ['GET', 'POST']
-  }
-});
+// Environment validation with defaults for development
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key-change-in-production';
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb+srv://rajputragav420:5EIWHghGDZ4rEpmr@hnv.qw1lakw.mongodb.net/hnv?retryWrites=true&w=majority&appName=HNV';
+const PORT = process.env.PORT || 5000;
 
-const PORT = process.env.PORT || 10000;
+console.log('MongoDB URI from env:', process.env.MONGODB_URI);
+console.log('Final MongoDB URI:', MONGO_URI);
+console.log('Environment:', process.env.NODE_ENV);
 
-// Connect to MongoDB
-connectDB();
-
-// Security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https:", "http:"],
-      scriptSrc: ["'self'"],
-      connectSrc: ["'self'", "https:", "wss:"]
+// Database connection with retry logic
+const connectDB = async (retries = 5): Promise<void> => {
+  try {
+    // Validate MongoDB URI format
+    if (!MONGO_URI || (!MONGO_URI.startsWith('mongodb://') && !MONGO_URI.startsWith('mongodb+srv://'))) {
+      throw new Error(`Invalid MongoDB URI format: ${MONGO_URI}`);
+    }
+    
+    console.log('Attempting to connect to MongoDB...');
+    const conn = await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error('Database connection error:', error);
+    if (retries > 0) {
+      console.log(`Retrying database connection... (${retries} attempts left)`);
+      setTimeout(() => connectDB(retries - 1), 5000);
+    } else {
+      console.error('Failed to connect to database after multiple attempts');
+      process.exit(1);
     }
   }
-}));
+};
 
-// CORS configuration
-app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || 'http://localhost:3000',
-    'http://localhost:3000',
-    'https://your-production-domain.com'
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'), // limit each IP to 100 requests per windowMs
-  message: {
-    error: 'Too many requests from this IP, please try again later.'
-  },
-  standardHeaders: true,
-  legacyHeaders: false
-});
-
-app.use('/api/', limiter);
-
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Compression middleware
-app.use(compression());
-
-// Logging middleware
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-} else {
-  app.use(morgan('combined'));
-}
-
-// Setup Passport
-setupPassport();
-
-// Setup Swagger documentation
-setupSwagger(app);
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV,
-    version: process.env.npm_package_version || '1.0.0'
-  });
-});
-
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', authMiddleware, userRoutes);
-app.use('/api/properties', authMiddleware, propertyRoutes);
-app.use('/api/tenants', authMiddleware, tenantRoutes);
-app.use('/api/payments', authMiddleware, paymentRoutes);
-app.use('/api/expenses', authMiddleware, expenseRoutes);
-app.use('/api/maintenance', authMiddleware, maintenanceRoutes);
-app.use('/api/dashboard', authMiddleware, dashboardRoutes);
-app.use('/api/analytics', authMiddleware, analyticsRoutes);
-app.use('/api/notifications', authMiddleware, notificationRoutes);
-app.use('/api/upload', authMiddleware, uploadRoutes);
-app.use('/api/webhooks', webhookRoutes); // No auth middleware for webhooks
-
-// Socket.IO connection handling
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-
-  socket.on('join-organization', (orgId) => {
-    socket.join(`org-${orgId}`);
-    console.log(`User ${socket.id} joined organization ${orgId}`);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-  });
-});
-
-// Make io available to other modules
-app.set('io', io);
-
-// Setup notification service
-import notificationService from './services/notificationService';
-notificationService.setSocketIO(io);
-
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'API endpoint not found',
-    path: req.originalUrl
-  });
-});
-
-// Error handling middleware (must be last)
-app.use(errorHandler);
+// Create HTTP server
+const server = createServer(app);
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('SIGTERM received. Shutting down gracefully...');
+  console.log('SIGTERM received, shutting down gracefully');
   server.close(() => {
     console.log('Process terminated');
     mongoose.connection.close();
+    process.exit(0);
   });
 });
 
 process.on('SIGINT', () => {
-  console.log('SIGINT received. Shutting down gracefully...');
+  console.log('SIGINT received, shutting down gracefully');
   server.close(() => {
     console.log('Process terminated');
     mongoose.connection.close();
+    process.exit(0);
   });
 });
 
 // Start server
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
-  console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+const startServer = async () => {
+  try {
+    // Connect to database first
+    await connectDB();
+    
+    // Start server
+    server.listen(Number(PORT), () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
+      console.log(`🔗 Server URL: http://0.0.0.0:${PORT}`);
+      
+      // Test database connection
+      console.log('Database connection state:', mongoose.connection.readyState);
+      
+      // Start subscription cron job
+      if (process.env.NODE_ENV !== 'test') {
+        try {
+          startSubscriptionCron();
+          console.log('✅ Subscription cron job started');
+        } catch (cronError) {
+          console.warn('⚠️ Subscription cron job failed to start:', cronError);
+        }
+      }
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
 });
 
-export default app;
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
+
+// Start the server
+startServer();

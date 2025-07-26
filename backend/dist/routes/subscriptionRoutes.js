@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authMiddleware_1 = require("../middleware/authMiddleware");
+const subscriptionController_1 = require("../controllers/subscriptionController");
+const router = (0, express_1.Router)();
+router.get('/status', authMiddleware_1.protect, subscriptionController_1.getSubscriptionStatus);
+router.post('/trial', authMiddleware_1.protect, subscriptionController_1.createTrialSubscription);
+router.post('/activate', authMiddleware_1.protect, subscriptionController_1.activateSubscription);
+router.post('/cancel', authMiddleware_1.protect, subscriptionController_1.cancelSubscription);
+router.post('/reactivate', authMiddleware_1.protect, subscriptionController_1.reactivateSubscription);
+router.get('/plans', authMiddleware_1.protect, subscriptionController_1.getAvailablePlans);
+router.get('/admin/all', authMiddleware_1.protect, (0, authMiddleware_1.authorize)('Super Admin'), subscriptionController_1.getAllSubscriptions);
+router.put('/admin/:id', authMiddleware_1.protect, (0, authMiddleware_1.authorize)('Super Admin'), subscriptionController_1.updateSubscription);
+exports.default = router;

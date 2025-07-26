@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const testEmailController_1 = require("../controllers/testEmailController");
+const authMiddleware_1 = require("../middleware/authMiddleware");
+const router = (0, express_1.Router)();
+router.use(authMiddleware_1.protect);
+router.get('/status', (0, authMiddleware_1.authorize)('Super Admin'), testEmailController_1.getEmailStatus);
+router.post('/send', (0, authMiddleware_1.authorize)('Super Admin'), testEmailController_1.testEmail);
+exports.default = router;
