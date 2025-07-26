@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
-import Link, Navigate } from 'next/navigation';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import UniversalCard from '@/components/common/UniversalCard';
 import UniversalHeader from '@/components/common/UniversalHeader';
@@ -117,10 +118,12 @@ const DashboardPage = () => {
     ))
   );
   
+  const router = useRouter();
+  
   // Additional safety check
   if (!user) {
-
-    return <Navigate to="/login" replace />;
+    router.push('/login');
+    return null;
   }
   
   const { data: stats, isLoading, error, refetch } = useQuery({

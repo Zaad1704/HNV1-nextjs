@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email Address</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 300;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .content h2 {
+            color: #10b981;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .verification-box {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 16px;
+            margin: 20px 0;
+            transition: transform 0.2s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+        }
+        .security-note {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .footer {
+            background-color: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+        }
+        .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 HNV1 Property Management</h1>
+        </div>
+        
+        <div class="content">
+            <h2>Verify Your Email Address</h2>
+            
+            <p>Hi {{firstName}},</p>
+            
+            <p>Thank you for signing up for HNV1 Property Management! To complete your registration and secure your account, please verify your email address.</p>
+            
+            <div class="verification-box">
+                <div class="icon">✉️</div>
+                <h3>Email Verification Required</h3>
+                <p>Click the button below to verify your email address and activate your account:</p>
+                <a href="{{verificationUrl}}" class="button">Verify Email Address</a>
+            </div>
+            
+            <div class="security-note">
+                <strong>🔒 Security Note:</strong> This verification link will expire in 24 hours for your security. If you didn't create an account with HNV1, please ignore this email.
+            </div>
+            
+            <p><strong>Why do we need to verify your email?</strong></p>
+            <ul>
+                <li>To ensure you receive important account notifications</li>
+                <li>To help you recover your account if needed</li>
+                <li>To protect your account from unauthorized access</li>
+                <li>To send you payment confirmations and receipts</li>
+            </ul>
+            
+            <p><strong>Having trouble with the button?</strong><br>
+            Copy and paste this link into your browser:</p>
+            <p style="word-break: break-all; color: #2563eb; font-family: monospace; background: #f3f4f6; padding: 10px; border-radius: 4px;">{{verificationUrl}}</p>
+            
+            <p>If you have any questions or need assistance, our support team is here to help.</p>
+            
+            <p>Best regards,<br>
+            The HNV1 Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; {{currentYear}} HNV1 Property Management. All rights reserved.</p>
+            <p>This email was sent to {{email}}. If you didn't create an account, please ignore this email.</p>
+            <p><a href="#" style="color: #2563eb;">Contact Support</a> | <a href="#" style="color: #2563eb;">Privacy Policy</a></p>
+        </div>
+    </div>
+</body>
+</html>
