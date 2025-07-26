@@ -83,7 +83,7 @@ export default function ApiTestPage() {
 
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">🏢 API Endpoints</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <button
               onClick={() => testEndpoint('/api/properties')}
               className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
@@ -104,6 +104,41 @@ export default function ApiTestPage() {
               disabled={loading}
             >
               📊 Dashboard
+            </button>
+            <button
+              onClick={() => testEndpoint('/api/payments')}
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
+              disabled={loading}
+            >
+              💰 Payments
+            </button>
+            <button
+              onClick={() => testEndpoint('/api/expenses')}
+              className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 disabled:opacity-50"
+              disabled={loading}
+            >
+              📋 Expenses
+            </button>
+            <button
+              onClick={() => testEndpoint('/api/maintenance')}
+              className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600 disabled:opacity-50"
+              disabled={loading}
+            >
+              🔧 Maintenance
+            </button>
+            <button
+              onClick={() => testEndpoint('/api/analytics/advanced')}
+              className="bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600 disabled:opacity-50"
+              disabled={loading}
+            >
+              📈 Analytics
+            </button>
+            <button
+              onClick={() => testEndpoint('/api/notifications/test', 'POST')}
+              className="bg-violet-500 text-white px-4 py-2 rounded hover:bg-violet-600 disabled:opacity-50"
+              disabled={loading}
+            >
+              🔔 Notifications
             </button>
           </div>
         </div>

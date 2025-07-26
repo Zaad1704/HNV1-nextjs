@@ -156,6 +156,69 @@ class ApiClient {
   async getOccupancyTrends() {
     return this.request('/dashboard/occupancy');
   }
+
+  // Payment endpoints
+  async getPayments(params?: any) {
+    const query = params ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/payments${query}`);
+  }
+
+  async createPayment(data: any) {
+    return this.request('/payments', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Expense endpoints
+  async getExpenses(params?: any) {
+    const query = params ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/expenses${query}`);
+  }
+
+  async createExpense(data: any) {
+    return this.request('/expenses', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Maintenance endpoints
+  async getMaintenanceRequests(params?: any) {
+    const query = params ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/maintenance${query}`);
+  }
+
+  async createMaintenanceRequest(data: any) {
+    return this.request('/maintenance', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Analytics endpoints
+  async getAdvancedAnalytics(period?: string) {
+    const query = period ? `?period=${period}` : '';
+    return this.request(`/analytics/advanced${query}`);
+  }
+
+  async getTenantAnalytics() {
+    return this.request('/analytics/tenants');
+  }
+
+  // File upload
+  async uploadFile(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    return fetch(`${this.baseURL}/upload/single`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+      body: formData,
+    }).then(r => r.json());
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);

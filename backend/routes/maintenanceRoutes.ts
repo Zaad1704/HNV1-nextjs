@@ -1,22 +1,14 @@
 import express from 'express';
 import { requireOrganization } from '../middleware/auth';
+import { getMaintenanceRequests, createMaintenanceRequest, updateMaintenanceRequest } from '../controllers/maintenanceController';
 
 const router = express.Router();
 
 router.route('/')
-  .get(requireOrganization, async (req, res) => {
-    res.json({
-      success: true,
-      message: 'Maintenance requests list endpoint - Coming soon',
-      data: []
-    });
-  })
-  .post(requireOrganization, async (req, res) => {
-    res.json({
-      success: true,
-      message: 'Create maintenance request endpoint - Coming soon',
-      data: null
-    });
-  });
+  .get(requireOrganization, getMaintenanceRequests)
+  .post(requireOrganization, createMaintenanceRequest);
+
+router.route('/:id')
+  .put(requireOrganization, updateMaintenanceRequest);
 
 export default router;

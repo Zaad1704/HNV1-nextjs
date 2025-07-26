@@ -27,3 +27,6 @@ digest: "3374457209"
 [0m [90m 26 |[39m   })[33m;[39m[0m
  GET /api-test 500 in 3426ms
  ✓ Compiled in 343ms (499 modules)
+ ✓ Compiled in 327ms (499 modules)
+ ✓ Compiled in 248ms (499 modules)
+ ✓ Compiled in 197ms (499 modules)

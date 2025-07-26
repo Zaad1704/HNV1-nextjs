@@ -1,14 +1,10 @@
 import express from 'express';
 import { requireOrganization } from '../middleware/auth';
+import { getAdvancedAnalytics, getTenantAnalytics } from '../controllers/analyticsController';
 
 const router = express.Router();
 
-router.get('/', requireOrganization, async (req, res) => {
-  res.json({
-    success: true,
-    message: 'Analytics endpoint - Coming soon',
-    data: []
-  });
-});
+router.get('/advanced', requireOrganization, getAdvancedAnalytics);
+router.get('/tenants', requireOrganization, getTenantAnalytics);
 
 export default router;

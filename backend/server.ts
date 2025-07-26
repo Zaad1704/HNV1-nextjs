@@ -150,6 +150,10 @@ io.on('connection', (socket) => {
 // Make io available to other modules
 app.set('io', io);
 
+// Setup notification service
+import notificationService from './services/notificationService';
+notificationService.setSocketIO(io);
+
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({

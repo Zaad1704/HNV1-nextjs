@@ -1,22 +1,15 @@
 import express from 'express';
 import { requireOrganization } from '../middleware/auth';
+import { getExpenses, createExpense, updateExpense, deleteExpense } from '../controllers/expenseController';
 
 const router = express.Router();
 
 router.route('/')
-  .get(requireOrganization, async (req, res) => {
-    res.json({
-      success: true,
-      message: 'Expenses list endpoint - Coming soon',
-      data: []
-    });
-  })
-  .post(requireOrganization, async (req, res) => {
-    res.json({
-      success: true,
-      message: 'Create expense endpoint - Coming soon',
-      data: null
-    });
-  });
+  .get(requireOrganization, getExpenses)
+  .post(requireOrganization, createExpense);
+
+router.route('/:id')
+  .put(requireOrganization, updateExpense)
+  .delete(requireOrganization, deleteExpense);
 
 export default router;
