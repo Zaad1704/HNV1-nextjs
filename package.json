@@ -9,7 +9,9 @@
     "serve": "next start -p 3000",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "build:prod": "NODE_ENV=production next build"
+    "build:prod": "NODE_ENV=production next build",
+    "export": "next build && next export",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.1",

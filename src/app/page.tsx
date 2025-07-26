@@ -1,11 +1,26 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if user is authenticated
+    const token = localStorage.getItem('token');
+    if (token) {
+      router.push('/dashboard');
+    } else {
+      router.push('/login');
+    }
+  }, [router]);
+
   return (
-    <div className="min-h-screen bg-white p-8">
-      <h1 className="text-4xl font-bold text-black">HNV Property Management</h1>
-      <p className="text-lg text-gray-600 mt-4">Welcome to the property management system!</p>
-      <div className="mt-8">
-        <a href="/login" className="bg-blue-500 text-white px-6 py-3 rounded-lg mr-4">Login</a>
-        <a href="/register" className="bg-green-500 text-white px-6 py-3 rounded-lg">Register</a>
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-black mb-4">HNV Property Management</h1>
+        <p className="text-lg text-gray-600">Loading...</p>
       </div>
     </div>
   );
