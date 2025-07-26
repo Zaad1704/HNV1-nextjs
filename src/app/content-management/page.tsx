@@ -1,5 +1,5 @@
 import ContentManagementPage from '@/components/pages/ContentManagementPage';
 
-export default function content-managementPage() {
+export default function ComponentPage() {
   return <ContentManagementPage />;
 }

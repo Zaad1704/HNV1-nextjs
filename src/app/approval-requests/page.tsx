@@ -1,5 +1,5 @@
 import ApprovalRequestsPage from '@/components/pages/ApprovalRequestsPage';
 
-export default function approval-requestsPage() {
+export default function ComponentPage() {
   return <ApprovalRequestsPage />;
 }
