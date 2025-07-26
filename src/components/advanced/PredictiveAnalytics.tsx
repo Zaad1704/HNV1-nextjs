@@ -14,7 +14,8 @@ interface Prediction {
 }
 
 const PredictiveAnalytics: React.FC = () => {
-  const { stats } = useCrossData();
+  const crossData = useCrossData();
+  const stats = crossData?.stats;
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

@@ -153,7 +153,7 @@ const PerformanceOptimizer: React.FC = () => {
                   status={suggestion.status} 
                   variant={
                     suggestion.status === 'completed' ? 'success' :
-                    suggestion.status === 'in-progress' ? 'warning' : 'default'
+                    suggestion.status === 'in-progress' ? 'warning' : 'neutral'
                   }
                 />
               </div>

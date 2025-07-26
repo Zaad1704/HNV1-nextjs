@@ -58,12 +58,12 @@ const AutomationCenter: React.FC = () => {
     ));
   };
 
-  const getStatusVariant = (status: string) => {
+  const getStatusVariant = (status: string): 'warning' | 'success' | 'danger' | 'info' | 'neutral' => {
     switch (status) {
       case 'active': return 'success';
       case 'paused': return 'warning';
-      case 'draft': return 'default';
-      default: return 'default';
+      case 'draft': return 'neutral';
+      default: return 'neutral';
     }
   };
 
@@ -101,7 +101,6 @@ const AutomationCenter: React.FC = () => {
               <UniversalStatusBadge 
                 status={automation.status} 
                 variant={getStatusVariant(automation.status)}
-                icon={automation.status === 'active' ? CheckCircle : undefined}
               />
             </div>
 

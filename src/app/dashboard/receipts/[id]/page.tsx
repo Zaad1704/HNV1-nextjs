@@ -1,5 +1,5 @@
 import ReceiptDetailsPage from '@/components/pages/ReceiptDetailsPageUniversal';
 
 export default function ReceiptDetails({ params }: { params: { id: string } }) {
-  return <ReceiptDetailsPage receiptId={params.id} />;
+  return <ReceiptDetailsPage />;
 }

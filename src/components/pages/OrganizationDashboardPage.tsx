@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import { useOrgStore } from "../store/orgStore";
+import { useOrgStore } from "@/store/orgStore";
 import apiClient from "@/lib/api";
 import OrgSwitcher from "@/components/OrgSwitcher";
 
