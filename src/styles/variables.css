@@ -1,0 +1,38 @@
+/* CSS Variables for the application */
+:root {
+  /* Background Colors */
+  --app-bg: #ffffff;
+  --app-surface: #f8fafc;
+  --app-border: #e2e8f0;
+  
+  /* Text Colors */
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #4A69E2 0%, #4A90E2 100%);
+  --gradient-secondary: linear-gradient(135deg, #FFA87A 0%, #FF8A65 100%);
+  --gradient-accent: linear-gradient(135deg, #4AE2B6 0%, #26D0CE 100%);
+}
+
+/* Dark mode variables */
+[data-theme="dark"] {
+  --app-bg: #0f172a;
+  --app-surface: #1e293b;
+  --app-border: #334155;
+  
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+}
+
+/* Button gradient utilities */
+.btn-gradient {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.app-gradient {
+  background: var(--gradient-primary);
+}
