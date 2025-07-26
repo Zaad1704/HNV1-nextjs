@@ -1,7 +1,7 @@
 'use client';
 import React from "react";
-import { useAuthStore } from "../store/authStore";
-import { Navigate } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
+import { useRouter } from "next/navigation";
 
 const FullScreenLoader = () => (
   <div className="flex items-center justify-center h-screen bg-slate-900">
@@ -11,26 +11,35 @@ const FullScreenLoader = () => (
 
 const DashboardRedirector = () => {
   const { user, isAuthenticated, loading } = useAuthStore();
+  const router = useRouter();
 
-  if (loading) return <FullScreenLoader />;
-  if (isAuthenticated && !user) return <FullScreenLoader />;
+  React.useEffect(() => {
+    if (loading) return;
+    
+    if (!user) {
+      router.push('/login');
+      return;
+    }
 
-  // If not authenticated or user lost, redirect to login
-  if (!user) return <Navigate to="/login" replace />;
+    // Role-based redirect
+    switch (user.role) {
+      case "Tenant":
+        router.push('/dashboard/tenant');
+        break;
+      case "Super Admin":
+      case "Super Moderator":
+        router.push('/dashboard/overview');
+        break;
+      case "Landlord":
+      case "Agent":
+        router.push('/dashboard/overview');
+        break;
+      default:
+        router.push('/login');
+    }
+  }, [user, loading, router]);
 
-  // Role-based redirect
-  switch (user.role) {
-    case "Tenant":
-      return <Navigate to="/dashboard/tenant" replace />;
-    case "Super Admin":
-    case "Super Moderator":
-      return <Navigate to="/dashboard/overview" replace />;
-    case "Landlord":
-    case "Agent":
-      return <Navigate to="/dashboard/overview" replace />;
-    default:
-      return <Navigate to="/login" replace />;
-  }
+  return <FullScreenLoader />;
 };
 
 export default DashboardRedirector;

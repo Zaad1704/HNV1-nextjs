@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import apiClient from "../api/client"; // Corrected: Import the default export
-import AdminSidebar from "../components/admin/AdminSidebar";
+import apiClient from "@/lib/api"; // Corrected: Import the default export
+import AdminSidebar from "@/components/admin/AdminSidebar";
 
 type Content = {
   id: string;

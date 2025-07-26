@@ -1,8 +1,8 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import { useOrgStore } from "../store/orgStore";
-import apiClient from "../api/client";
-import OrgSwitcher from "../components/OrgSwitcher";
+import apiClient from "@/lib/api";
+import OrgSwitcher from "@/components/OrgSwitcher";
 
 const OrganizationDashboardPage: React.FC = () => {
   const { orgs, setOrgs, currentOrg, persistCurrentOrg } = useOrgStore();

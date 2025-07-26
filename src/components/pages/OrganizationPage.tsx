@@ -1,9 +1,9 @@
 'use client';
 // frontend/src/pages/OrganizationPage.tsx
 import React, { useEffect, useState } from "react";
-import apiClient from "../api/client";
-import OrgSwitcher from "../components/OrgSwitcher";
-import { useAuthStore } from "../store/authStore"; // Import useAuthStore
+import apiClient from "@/lib/api";
+import OrgSwitcher from "@/components/OrgSwitcher";
+import { useAuthStore } from "@/store/authStore"; // Import useAuthStore
 
 // Update Org type to match the expected populated data from backend
 type Org = {

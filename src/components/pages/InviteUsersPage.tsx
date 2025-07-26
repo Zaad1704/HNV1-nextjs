@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from "react";
-import apiClient from "../api/client"; // Corrected: Import the default export
+import apiClient from "@/lib/api"; // Corrected: Import the default export
 
 const InviteUsersPage: React.FC = () => {
   const [email, setEmail] = useState("");

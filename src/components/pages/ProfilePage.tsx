@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import apiClient from "../api/client";
-import { useAuthStore } from "../store/authStore";
+import apiClient from "@/lib/api";
+import { useAuthStore } from "@/store/authStore";
 import { User, Mail, Shield, Calendar } from 'lucide-react';
 import UniversalCard from '@/components/common/UniversalCard';
 import UniversalHeader from '@/components/common/UniversalHeader';

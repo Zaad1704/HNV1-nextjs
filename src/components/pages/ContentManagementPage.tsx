@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from "react";
-import apiClient from "../api/client";
+import apiClient from "@/lib/api";
 
 const ContentManagementPage: React.FC = () => {
   const [content, setContent] = useState<any>({});
