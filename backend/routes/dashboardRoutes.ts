@@ -1,19 +1,15 @@
 import express from 'express';
 import { requireOrganization } from '../middleware/auth';
+import {
+  getDashboardStats,
+  getFinancialSummary,
+  getOccupancyTrends
+} from '../controllers/dashboardController';
 
 const router = express.Router();
 
-router.get('/stats', requireOrganization, async (req, res) => {
-  res.json({
-    success: true,
-    message: 'Dashboard stats endpoint - Coming soon',
-    data: {
-      totalProperties: 0,
-      totalTenants: 0,
-      totalRevenue: 0,
-      occupancyRate: 0
-    }
-  });
-});
+router.get('/stats', requireOrganization, getDashboardStats);
+router.get('/financial', requireOrganization, getFinancialSummary);
+router.get('/occupancy', requireOrganization, getOccupancyTrends);
 
 export default router;

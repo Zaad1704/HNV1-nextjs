@@ -1,0 +1,29 @@
+
+> hnv-frontend-nextjs@0.1.0 dev
+> next dev -p 3000
+
+  ▲ Next.js 14.2.30
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+  - Experiments (use with caution):
+    · esmExternals
+
+ ✓ Starting...
+ ✓ Ready in 2.2s
+ ○ Compiling /api-test ...
+ ✓ Compiled /api-test in 3.1s (1011 modules)
+Using NEXT_PUBLIC_API_URL: http://localhost:5001/api
+API Client configured with baseURL: http://localhost:5001/api
+ ⨯ src/components/common/AccessibilityProvider.tsx (23:20) @ window
+ ⨯ ReferenceError: window is not defined
+    at AccessibilityProvider (./src/components/common/AccessibilityProvider.tsx:17:24)
+digest: "3374457209"
+[0m [90m 21 |[39m     highContrast[33m:[39m [36mfalse[39m[33m,[39m[0m
+[0m [90m 22 |[39m     largeText[33m:[39m [36mfalse[39m[33m,[39m[0m
+[0m[31m[1m>[22m[39m[90m 23 |[39m     reducedMotion[33m:[39m window[33m.[39mmatchMedia([32m'(prefers-reduced-motion: reduce)'[39m)[33m.[39mmatches[33m,[39m[0m
+[0m [90m    |[39m                    [31m[1m^[22m[39m[0m
+[0m [90m 24 |[39m     screenReader[33m:[39m [36mfalse[39m[33m,[39m[0m
+[0m [90m 25 |[39m     keyboardNavigation[33m:[39m [36mfalse[39m[0m
+[0m [90m 26 |[39m   })[33m;[39m[0m
+ GET /api-test 500 in 3426ms
+ ✓ Compiled in 343ms (499 modules)

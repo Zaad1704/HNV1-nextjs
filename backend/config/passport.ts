@@ -72,7 +72,7 @@ export const setupPassport = (): void => {
             await newUser.save();
             return done(null, newUser);
           } catch (error) {
-            return done(error, null);
+            return done(error, false);
           }
         }
       )
@@ -92,7 +92,7 @@ export const setupPassport = (): void => {
         .select('-password');
       done(null, user);
     } catch (error) {
-      done(error, null);
+      done(error, false);
     }
   });
 };

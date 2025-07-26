@@ -1,83 +1,32 @@
 import express from 'express';
 import { requireOrganization } from '../middleware/auth';
+import {
+  getProperties,
+  getProperty,
+  createProperty,
+  updateProperty,
+  deleteProperty,
+  addUnit,
+  updateUnit,
+  deleteUnit
+} from '../controllers/propertyController';
 
 const router = express.Router();
 
-/**
- * @swagger
- * /api/properties:
- *   get:
- *     summary: Get all properties
- *     tags: [Properties]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: List of properties
- *   post:
- *     summary: Create a new property
- *     tags: [Properties]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       201:
- *         description: Property created successfully
- */
 router.route('/')
-  .get(requireOrganization, async (req, res) => {
-    res.json({
-      success: true,
-      message: 'Properties list endpoint - Coming soon',
-      data: []
-    });
-  })
-  .post(requireOrganization, async (req, res) => {
-    res.json({
-      success: true,
-      message: 'Create property endpoint - Coming soon',
-      data: null
-    });
-  });
+  .get(requireOrganization, getProperties)
+  .post(requireOrganization, createProperty);
 
-/**
- * @swagger
- * /api/properties/{id}:
- *   get:
- *     summary: Get property by ID
- *     tags: [Properties]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Property details
- */
 router.route('/:id')
-  .get(requireOrganization, async (req, res) => {
-    res.json({
-      success: true,
-      message: 'Property details endpoint - Coming soon',
-      data: null
-    });
-  })
-  .put(requireOrganization, async (req, res) => {
-    res.json({
-      success: true,
-      message: 'Update property endpoint - Coming soon',
-      data: null
-    });
-  })
-  .delete(requireOrganization, async (req, res) => {
-    res.json({
-      success: true,
-      message: 'Delete property endpoint - Coming soon',
-      data: null
-    });
-  });
+  .get(requireOrganization, getProperty)
+  .put(requireOrganization, updateProperty)
+  .delete(requireOrganization, deleteProperty);
+
+router.route('/:id/units')
+  .post(requireOrganization, addUnit);
+
+router.route('/:id/units/:unitId')
+  .put(requireOrganization, updateUnit)
+  .delete(requireOrganization, deleteUnit);
 
 export default router;
